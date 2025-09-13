@@ -38,9 +38,9 @@ class LoginController extends Controller
             return redirect()->intended(route('admin.dashboard'));
         }
 
-        throw ValidationException::withMessages([
-            'email' => __('auth.failed'),
-        ]);
+        return back()->withErrors([
+            'email' => 'The provided credentials do not match our records.',
+        ])->onlyInput('email');
     }
 
     /**
@@ -56,6 +56,6 @@ class LoginController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('admin.login');
+        return redirect()->route('login');
     }
 }

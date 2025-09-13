@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\Admin\Auth\LoginController;
 use App\Http\Controllers\Admin\DashboardController;
 use Illuminate\Support\Facades\Route;
 
@@ -15,16 +14,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Authentication Routes (Public)
-Route::middleware('guest:web')->group(function () {
-    Route::get('/login', [LoginController::class, 'showLoginForm'])->name('admin.login');
-    Route::post('/login', [LoginController::class, 'login'])->name('admin.login.submit');
-});
-
 // Authenticated Admin Routes
 Route::middleware(['auth:web'])->group(function () {
-    // Logout Route
-    Route::post('/logout', [LoginController::class, 'logout'])->name('admin.logout');
 
     // Dashboard
     Route::get('/', [DashboardController::class, 'index'])->name('admin.dashboard');
