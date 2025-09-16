@@ -20,13 +20,12 @@
             </div>
         </div>
     </div>
-    
     <!-- Sidebar Menu -->
     <nav class="mt-3">
         <div class="list-group list-group-flush">
             <!-- Dashboard -->
             <a href="{{ route('admin.dashboard') }}" 
-               class="list-group-item list-group-item-action {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}" style="color: #5a5c69;">
+               class="list-group-item list-group-item-action {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
                 <i class="fas fa-tachometer-alt me-2"></i> Dashboard
             </a>
         
