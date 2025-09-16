@@ -8,14 +8,12 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the users.
-     *
-     * @return \Illuminate\View\View
-     */
+    use AuthorizesRequests;
+    
     public function index()
     {
         $this->authorize('view-users');

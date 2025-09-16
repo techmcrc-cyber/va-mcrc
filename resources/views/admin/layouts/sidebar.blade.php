@@ -32,7 +32,7 @@
         @canany(['view-users', 'create-users', 'edit-users', 'delete-users'])
         <div class="list-group-item p-0">
             <a href="#userSubmenu" data-bs-toggle="collapse" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" style="background-color: #edf2f7;">
-                <span><i class="fas fa-users me-2"></i> User Management</span>
+                <span><i class="fas fa-users me-2"></i> Users</span>
                 <i class="fas fa-chevron-down small"></i>
             </a>
             <div class="collapse {{ request()->is('admin/users*') ? 'show' : '' }}" id="userSubmenu">
@@ -55,7 +55,7 @@
         @canany(['view-roles', 'create-roles', 'edit-roles', 'delete-roles'])
         <div class="list-group-item p-0">
             <a href="#roleSubmenu" data-bs-toggle="collapse" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" style="background-color: #edf2f7;">
-                <span><i class="fas fa-user-shield me-2"></i> Role Management</span>
+                <span><i class="fas fa-user-shield me-2"></i> Roles</span>
                 <i class="fas fa-chevron-down small"></i>
             </a>
             <div class="collapse {{ request()->is('admin/roles*') ? 'show' : '' }}" id="roleSubmenu">

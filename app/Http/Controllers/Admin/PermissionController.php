@@ -5,14 +5,12 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Permission;
 use Illuminate\Http\Request;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class PermissionController extends Controller
 {
-    /**
-     * Display a listing of the permissions.
-     *
-     * @return \Illuminate\View\View
-     */
+    use AuthorizesRequests;
+
     public function index()
     {
         $this->authorize('view-permissions');
