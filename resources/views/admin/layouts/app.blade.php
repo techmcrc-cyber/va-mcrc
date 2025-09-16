@@ -35,64 +35,44 @@
     @stack('styles')
 </head>
 <body class="admin-layout">
-    <div class="d-flex" id="wrapper">
+    <!-- Page Wrapper -->
+    <div id="wrapper" class="d-flex">
         <!-- Sidebar -->
         @include('admin.layouts.sidebar')
         
-        <!-- Page Content -->
-        <div id="page-content-wrapper">
-            <!-- Top Navigation -->
-            @include('admin.layouts.navbar')
-            
+        <!-- Content Wrapper -->
+        <div id="content-wrapper" class="d-flex flex-column">
             <!-- Main Content -->
-            <div class="container-fluid px-4">
-                <!-- Page Header -->
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h1 class="h3 mb-0">@yield('page-title')</h1>
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb mb-0">
-                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Home</a></li>
-                            @yield('breadcrumbs')
-                        </ol>
-                    </nav>
+            <div id="content">
+                <!-- Top Navigation -->
+                @include('admin.layouts.navbar')
+                
+                <!-- Begin Page Content -->
+                <div class="container-fluid">
+                        <!-- Page Header -->
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h1 class="h3 mb-0">@yield('page-title')</h1>
+                            <nav aria-label="breadcrumb">
+                                <ol class="breadcrumb mb-0">
+                                    <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Home</a></li>
+                                    @yield('breadcrumbs')
+                                </ol>
+                            </nav>
+                        </div>
+                        
+                        <!-- Flash Messages -->
+                        @include('admin.layouts.flash')
+                        
+                        <!-- Page Content -->
+                        @yield('content')
                 </div>
-                
-                <!-- Flash Messages -->
-                @include('admin.layouts.flash')
-                
-                <!-- Page Content -->
-                @yield('content')
+                <!-- /.container-fluid -->
             </div>
-        </div>
-    
-    <!-- Page Content -->
-    <div id="page-content-wrapper" class="flex-grow-1">
-        <!-- Top Navigation -->
-        @include('admin.layouts.navbar')
-        
-        <!-- Main Content -->
-        <div class="container-fluid p-4">
-            <!-- Page Header -->
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1 class="h3 mb-0 text-gray-800">@yield('page-title')</h1>
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb mb-0">
-                        <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Home</a></li>
-                        @yield('breadcrumbs')
-                    </ol>
-                </nav>
-            </div>
+            <!-- End of Main Content -->
             
-            <!-- Flash Messages -->
-            @include('admin.layouts.flash')
-            
-            <!-- Page Content -->
-            @yield('content')
-        </div>
-        
-        <!-- Footer -->
-        <footer class="bg-white border-top p-3 text-center">
-            <div class="container">
+            <!-- Footer -->
+            <footer class="sticky-footer bg-white p-3">
+            <div class="container-fluid">
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
                     <div class="mb-2 mb-md-0">
                         <span class="text-muted">&copy; {{ date('Y') }} {{ config('app.name') }}. All rights reserved.</span>
@@ -100,10 +80,12 @@
                     <div>
                         <span class="text-muted">Version 1.0.0</span>
                     </div>
-                </div>
-            </div>
-        </footer>
+            </footer>
+            <!-- End of Footer -->
+        </div>
+        <!-- End of Content Wrapper -->
     </div>
+    <!-- End of Page Wrapper -->
     
     <!-- Scroll to Top Button-->
     <a class="scroll-to-top rounded" href="#page-top">

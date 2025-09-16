@@ -7,8 +7,9 @@
 @endsection
 
 @section('content')
-<!-- Welcome Header -->
-<div class="row mb-4">
+<div class="p-4">
+    <!-- Welcome Header -->
+    <div class="row mb-4">
     <div class="col-12">
         <div class="welcome-card bg-gradient-primary text-white rounded-3 p-4 p-md-5 position-relative overflow-hidden">
             <div class="position-absolute top-0 end-0 me-4 mt-3 d-none d-md-block">
@@ -164,23 +165,7 @@
         </div>
     </div>
 
-    <div class="col-md-6 col-xl-3 mb-4">
-        <div class="card border-0 bg-info text-white">
-            <div class="card-body">
-                <div class="d-flex align-items-center">
-                    <div class="me-3 bg-white bg-opacity-10 p-3 rounded-3">
-                        <i class="fas fa-dollar-sign fa-2x"></i>
-                    </div>
-                    <div>
-                        <h6 class="mb-1">Total Revenue</h6>
-                        <h3 class="mb-0">$12,450</h3>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Recent Users -->
+<!-- Recent Users -->
     <div class="col-12 col-xl-6 mb-4">
         <div class="card border-0 shadow-sm h-100">
             <div class="card-header bg-white">
@@ -301,16 +286,26 @@
                 </div>
             </div>
         </div>
+        </div>
     </div>
 </div>
 @endsection
 
 @push('styles')
 <style>
+    /* Welcome Card Styles */
     .welcome-card {
         background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
         box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
         overflow: hidden;
+        position: relative;
+        border: none;
+        transition: all 0.3s ease;
+    }
+    
+    .welcome-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.15);
     }
     
     .welcome-card::before {
@@ -323,21 +318,56 @@
         background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
         transform: rotate(30deg);
         pointer-events: none;
+        transition: all 0.6s ease;
+    }
+    
+    .welcome-card:hover::before {
+        transform: rotate(45deg);
+    }
+    
+    /* Stats Cards */
+    .card {
+        border: none;
+        transition: all 0.3s ease;
+        border-radius: 0.5rem;
+        overflow: hidden;
+    }
+    
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    .card .card-body {
+        padding: 1.5rem;
     }
     
     .icon-shape {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 48px;
-        height: 48px;
+        width: 56px;
+        height: 56px;
+        border-radius: 0.5rem;
+        transition: all 0.3s ease;
     }
     
+    .card:hover .icon-shape {
+        transform: scale(1.1);
+    }
+    
+    /* Activity Timeline */
     .activity-item {
         position: relative;
-        padding-left: 2rem;
+        padding-left: 1.5rem;
         padding-bottom: 1.5rem;
         border-left: 2px solid #e3e6f0;
+        transition: all 0.3s ease;
+    }
+    
+    .activity-item:hover {
+        background-color: #f8f9fc;
+        border-radius: 0.5rem;
     }
     
     .activity-item:last-child {
@@ -347,29 +377,51 @@
     .activity-item::before {
         content: '';
         position: absolute;
-        left: -7px;
-        top: 0;
-        width: 12px;
-        height: 12px;
+        left: -8px;
+        top: 0.25rem;
+        width: 14px;
+        height: 14px;
         border-radius: 50%;
         background-color: #4e73df;
-        border: 2px solid #fff;
+        border: 3px solid #fff;
+        box-shadow: 0 0 0 2px #4e73df;
+        transition: all 0.3s ease;
     }
     
-    .activity-item.activity-primary::before { background-color: #4e73df; }
-    .activity-item.activity-success::before { background-color: #1cc88a; }
-    .activity-item.activity-info::before { background-color: #36b9cc; }
-    .activity-item.activity-warning::before { background-color: #f6c23e; }
+    .activity-item:hover::before {
+        transform: scale(1.2);
+    }
     
+    .activity-item.activity-primary::before { background-color: #4e73df; box-shadow: 0 0 0 2px #4e73df; }
+    .activity-item.activity-success::before { background-color: #1cc88a; box-shadow: 0 0 0 2px #1cc88a; }
+    .activity-item.activity-info::before { background-color: #36b9cc; box-shadow: 0 0 0 2px #36b9cc; }
+    .activity-item.activity-warning::before { background-color: #f6c23e; box-shadow: 0 0 0 2px #f6c23e; }
+    
+    /* Bible Verse */
     .bible-verse {
         font-style: italic;
-        color: #6c757d;
-        border-left: 3px solid #4e73df;
-        padding: 0.5rem 1rem;
-        margin: 1rem 0;
-        background-color: #f8f9fc;
+        color: #4a6fa5;
+        border-left: 4px solid #4e73df;
+        padding: 1rem 1.5rem;
+        margin: 1.5rem 0;
+        background-color: #f8fafd;
+        border-radius: 0 0.5rem 0.5rem 0;
+        position: relative;
+        overflow: hidden;
     }
     
+    .bible-verse::before {
+        content: '""';
+        position: absolute;
+        font-size: 5rem;
+        color: rgba(78, 115, 223, 0.05);
+        top: -1.5rem;
+        left: 0.5rem;
+        line-height: 1;
+        font-family: Georgia, serif;
+    }
+    
+    /* Wave Animation */
     .wave {
         animation: wave 2s infinite;
         display: inline-block;
@@ -385,6 +437,27 @@
         50% { transform: rotate(10deg); }
         60% { transform: rotate(0deg); }
         100% { transform: rotate(0deg); }
+    }
+    
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+        .welcome-card {
+            text-align: center;
+        }
+        
+        .welcome-card .btn {
+            width: 100%;
+            margin-top: 1rem;
+        }
+        
+        .card .d-flex {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .icon-shape {
+            margin: 0 auto 1rem;
+        }
     }
 </style>
 @endpush

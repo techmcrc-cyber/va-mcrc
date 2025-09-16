@@ -1,19 +1,25 @@
 @extends('admin.layouts.auth')
 
 @section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8 col-lg-6 col-xl-5">
-            <div class="card shadow-lg border-0 rounded-lg mt-5">
-                <div class="card-header bg-primary text-white text-center py-4">
+<div class="container d-flex align-items-center" style="min-height: 100vh; padding: 1rem 0;">
+    <div class="row justify-content-center w-100 m-0">
+        <div class="col-md-8 col-lg-6 col-xl-5 px-0">
+            <div class="card shadow-lg border-0 rounded-lg">
+                <div class="card-header bg-primary text-white text-center py-3">
                     <h3 class="my-0">{{ config('app.name') }}</h3>
                     <p class="mb-0">Admin Login</p>
                 </div>
-                <div class="card-body p-5">
-                    <div class="text-center mb-4">
-                        <img src="{{ asset('images/logo.png') }}" alt="Logo" class="mb-3" style="max-height: 80px;">
-                        <h4 class="text-dark">Welcome Back!</h4>
-                        <p class="text-muted">Sign in to continue to {{ config('app.name') }} Admin</p>
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="flex-shrink-0">
+                            <img src="https://mountcarmelretreatcentre.org/wp-content/uploads/2022/02/logo_mcrc_new-1-100x118.png" 
+                                 alt="Mount Carmel Retreat Centre" 
+                                 style="width: auto; object-fit: contain;">
+                        </div>
+                        <div class="flex-grow-1 ms-4 text-center">
+                            <h3 class="text-dark mb-1">Welcome Back!</h3>
+                            <p class="text-muted mb-0">Sign in to continue</p>
+                        </div>
                     </div>
 
                     @if (session('status'))
@@ -74,25 +80,20 @@
                         </div>
 
                         <div class="d-grid">
-                            <button type="submit" class="btn btn-primary btn-lg">
+                            <button type="submit" class="btn btn-primary btn-lg" style="padding: 0.2rem 1.0rem;>
                                 <i class="fas fa-sign-in-alt me-2"></i> {{ __('Login') }}
                             </button>
                         </div>
                     </form>
                 </div>
-                <div class="card-footer text-center py-3">
-                    <div class="small">
-                        <p class="mb-0">
-                            <i class="fas fa-info-circle me-1"></i> For access, please contact system administrator.
-                        </p>
-                    </div>
+                <div class="card-footer text-center py-2">
+                    <p class="small mb-0">
+                        <i class="fas fa-info-circle me-1"></i> For access, please contact system administrator.
+                    </p>
+                    <p class="text-muted small mb-0 mt-2">
+                        &copy; {{ date('Y') }} {{ config('app.name') }}. All rights reserved.
+                    </p>
                 </div>
-            </div>
-            
-            <div class="text-center mt-4">
-                <p class="text-muted">
-                    &copy; {{ date('Y') }} {{ config('app.name') }}. All rights reserved.
-                </p>
             </div>
         </div>
     </div>

@@ -1,16 +1,12 @@
 <!-- Sidebar -->
 <div class="sidebar bg-dark text-white" id="sidebar-wrapper">
     <!-- Sidebar Header -->
-    <div class="sidebar-heading text-center py-4">
+    <div class="sidebar-heading text-center py-1>
         <a href="{{ route('admin.dashboard') }}" class="text-white text-decoration-none d-flex flex-column align-items-center">
             <div class="position-relative mb-2">
-                <img src="{{ asset('images/logo-white.png') }}" alt="Logo" class="img-fluid" style="max-height: 40px;">
-                <span class="position-absolute top-0 start-100 translate-middle p-1 bg-success border border-light rounded-circle">
-                    <span class="visually-hidden">New alerts</span>
-                </span>
+                <img src="https://mountcarmelretreatcentre.org/wp-content/uploads/2022/02/logo_mcrc_new-1-100x118.png" alt="Mount Carmel Retreat Centre" class="img-fluid" >
             </div>
             <h5 class="mb-0 mt-2">{{ config('app.name') }}</h5>
-            <small class="text-white-50">Retreat Management System</small>
         </a>
     </div>
     
@@ -22,11 +18,8 @@
                      class="img-circle elevation-2" alt="User Image" style="width: 40px; height: 40px; object-fit: cover;">
             </div>
             <div class="info">
-                <a href="{{ route('admin.profile') }}" class="d-block text-white">
+                <a href="{{ route('admin.profile') }}" class="d-block text-dark">
                     {{ Auth::user()->name }}
-                    <small class="d-block text-muted">
-                        <i class="fas fa-circle text-success"></i> Online
-                    </small>
                 </a>
             </div>
         </div>
@@ -38,8 +31,8 @@
             <!-- Dashboard -->
             <a href="{{ route('admin.dashboard') }}" 
                class="list-group-item list-group-item-action {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-            <i class="fas fa-tachometer-alt me-2"></i> Dashboard
-        </a>
+                <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+            </a>
         
         @canany(['view-users', 'create-users', 'edit-users', 'delete-users'])
         <div class="list-group-item p-0">
