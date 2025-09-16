@@ -25,14 +25,13 @@
                         <li><h6 class="dropdown-header">Notifications</h6></li>
                         <li><a class="dropdown-item" href="#">New booking received</a></li>
                         <li><a class="dropdown-item" href="#">New user registered</a></li>
-                        <li><a class="dropdown-item" href="#">System update available</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item text-center" href="#">View all notifications</a></li>
                     </ul>
                 </li>
                 
                 <!-- Messages Dropdown -->
-                <li class="nav-item dropdown">
+                <!-- <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button" 
                        data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="fas fa-envelope"></i>
@@ -49,13 +48,13 @@
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item text-center" href="#">Read all messages</a></li>
                     </ul>
-                </li>
+                </li> -->
                 
                 <!-- User Dropdown -->
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" 
                        role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <img src="{{ Auth::user()->profile_image ? asset('storage/' . Auth::user()->profile_image) : asset('images/default-avatar.png') }}" 
+                        <img src="{{ Auth::user()->profile_image ? asset('storage/' . Auth::user()->profile_image) : asset('/images/avatar.png') }}" 
                              class="rounded-circle me-2" width="32" height="32" alt="User">
                         <span class="d-none d-md-inline">{{ Auth::user()->name }}</span>
                     </a>

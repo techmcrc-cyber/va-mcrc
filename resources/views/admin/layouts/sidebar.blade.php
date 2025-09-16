@@ -13,10 +13,10 @@
     <!-- Sidebar User Panel -->
     <div class="user-panel px-3 py-3 border-bottom border-secondary">
         <div class="d-flex align-items-center">
-            <div class="me-3">
+            <!-- <div class="me-3">
                 <img src="{{ Auth::user()->profile_image ? asset('storage/' . Auth::user()->profile_image) : asset('images/default-avatar.png') }}" 
                      class="img-circle elevation-2" alt="User Image" style="width: 40px; height: 40px; object-fit: cover;">
-            </div>
+            </div> -->
             <div class="info">
                 <a href="{{ route('admin.profile') }}" class="d-block text-dark">
                     {{ Auth::user()->name }}
