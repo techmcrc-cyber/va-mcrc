@@ -50,7 +50,7 @@
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
                         <!-- Page Header -->
-                        <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
                             <h1 class="h3 mb-0">@yield('page-title')</h1>
                             <nav aria-label="breadcrumb">
                                 <ol class="breadcrumb mb-0">

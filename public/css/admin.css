@@ -178,7 +178,7 @@ body {
 /* Top Navigation */
 .navbar {
     padding: 0.5rem 1rem;
-    background: white !important;
+    background: #edf2f7 !important
     border-bottom: 1px solid #e3e6f0;
     box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
     position: fixed;

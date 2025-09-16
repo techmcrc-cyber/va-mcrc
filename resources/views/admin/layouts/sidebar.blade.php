@@ -2,7 +2,7 @@
 <div class="sidebar border-end" id="sidebar-wrapper" style="background-color: #edf2f7;">
     <!-- Sidebar Header -->
     <div class="sidebar-heading text-center py-1>
-        <a href="{{ route('admin.dashboard') }}" class="text-dark text-decoration-none d-flex flex-column align-items-center">
+        <a href="{{ route('admin.dashboard') }}" class="text-decoration-none d-flex flex-column align-items-center" style="color: #5a5c69;">
             <div class="position-relative mb-2">
                 <img src="https://mountcarmelretreatcentre.org/wp-content/uploads/2022/02/logo_mcrc_new-1-100x118.png" alt="Mount Carmel Retreat Centre" class="img-fluid" >
             </div>
@@ -11,10 +11,10 @@
     </div>
     
     <!-- Sidebar User Panel -->
-    <div class="user-panel px-3 py-3 border-bottom text-center">
+    <div class="user-panel px-3 py-1 border-bottom text-center">
         <div class="d-flex align-items-center justify-content-center">
             <div class="info">
-                <a href="{{ route('admin.profile') }}" class="d-block text-dark fw-bold">
+                <a href="{{ route('admin.profile') }}" class="d-block fw-bold" style="color: #5a5c69;">
                     {{ Auth::user()->name }}
                 </a>
             </div>
@@ -26,7 +26,7 @@
         <div class="list-group list-group-flush">
             <!-- Dashboard -->
             <a href="{{ route('admin.dashboard') }}" 
-               class="list-group-item list-group-item-action {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+               class="list-group-item list-group-item-action {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}" style="color: #5a5c69;">
                 <i class="fas fa-tachometer-alt me-2"></i> Dashboard
             </a>
         

@@ -295,7 +295,7 @@
 <style>
     /* Welcome Card Styles */
     .welcome-card {
-        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+        background: linear-gradient(136deg, #ba4165 0%, #700000 100%);        
         box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
         overflow: hidden;
         position: relative;

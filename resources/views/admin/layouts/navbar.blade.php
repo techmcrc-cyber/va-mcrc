@@ -1,6 +1,6 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary border-bottom">
+<nav class="navbar navbar-expand-lg navbar-light border-bottom" style="background-color: #edf2f7;">
     <div class="container-fluid">
-        <button class="btn btn-link text-white" id="sidebarToggle">
+        <button class="btn btn-link" id="sidebarToggle" style="color: #5a5c69;">
             <i class="fas fa-bars"></i>
         </button>
         
@@ -14,8 +14,8 @@
                 <!-- Notifications Dropdown -->
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="notificationsDropdown" role="button" 
-                       data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-bell"></i>
+                       data-bs-toggle="dropdown" aria-expanded="false" style="color: #5a5c69;">
+                        <i class="fas fa-bell" style="color: #5a5c69;"></i>
                         <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                             3
                             <span class="visually-hidden">unread notifications</span>
@@ -32,16 +32,12 @@
                 
                 <!-- Messages Dropdown -->
                 <!-- <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button" 
-                       data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-envelope"></i>
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success">
-                            5
-                            <span class="visually-hidden">unread messages</span>
-                        </span>
+                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                       data-bs-toggle="dropdown" aria-expanded="false" style="color: #5a5c69;">
+                        <span class="me-2 d-none d-lg-inline" style="color: #5a5c69;">{{ Auth::user()->name }}</span>
+                        <i class="fas fa-user-circle" style="color: #5a5c69;"></i>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="messagesDropdown">
-                        <li><h6 class="dropdown-header">Messages</h6></li>
                         <li><a class="dropdown-item" href="#">New message from John</a></li>
                         <li><a class="dropdown-item" href="#">Retreat booking confirmed</a></li>
                         <li><a class="dropdown-item" href="#">Payment received</a></li>
