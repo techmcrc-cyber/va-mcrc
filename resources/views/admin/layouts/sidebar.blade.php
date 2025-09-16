@@ -1,8 +1,8 @@
 <!-- Sidebar -->
-<div class="sidebar bg-dark text-white" id="sidebar-wrapper">
+<div class="sidebar border-end" id="sidebar-wrapper" style="background-color: #edf2f7;">
     <!-- Sidebar Header -->
     <div class="sidebar-heading text-center py-1>
-        <a href="{{ route('admin.dashboard') }}" class="text-white text-decoration-none d-flex flex-column align-items-center">
+        <a href="{{ route('admin.dashboard') }}" class="text-dark text-decoration-none d-flex flex-column align-items-center">
             <div class="position-relative mb-2">
                 <img src="https://mountcarmelretreatcentre.org/wp-content/uploads/2022/02/logo_mcrc_new-1-100x118.png" alt="Mount Carmel Retreat Centre" class="img-fluid" >
             </div>
@@ -11,14 +11,10 @@
     </div>
     
     <!-- Sidebar User Panel -->
-    <div class="user-panel px-3 py-3 border-bottom border-secondary">
-        <div class="d-flex align-items-center">
-            <!-- <div class="me-3">
-                <img src="{{ Auth::user()->profile_image ? asset('storage/' . Auth::user()->profile_image) : asset('images/default-avatar.png') }}" 
-                     class="img-circle elevation-2" alt="User Image" style="width: 40px; height: 40px; object-fit: cover;">
-            </div> -->
+    <div class="user-panel px-3 py-3 border-bottom text-center">
+        <div class="d-flex align-items-center justify-content-center">
             <div class="info">
-                <a href="{{ route('admin.profile') }}" class="d-block text-dark">
+                <a href="{{ route('admin.profile') }}" class="d-block text-dark fw-bold">
                     {{ Auth::user()->name }}
                 </a>
             </div>
@@ -36,7 +32,7 @@
         
         @canany(['view-users', 'create-users', 'edit-users', 'delete-users'])
         <div class="list-group-item p-0">
-            <a href="#userSubmenu" data-bs-toggle="collapse" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+            <a href="#userSubmenu" data-bs-toggle="collapse" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" style="background-color: #edf2f7;">
                 <span><i class="fas fa-users me-2"></i> User Management</span>
                 <i class="fas fa-chevron-down small"></i>
             </a>
@@ -59,7 +55,7 @@
         
         @canany(['view-roles', 'create-roles', 'edit-roles', 'delete-roles'])
         <div class="list-group-item p-0">
-            <a href="#roleSubmenu" data-bs-toggle="collapse" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+            <a href="#roleSubmenu" data-bs-toggle="collapse" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" style="background-color: #edf2f7;">
                 <span><i class="fas fa-user-shield me-2"></i> Role Management</span>
                 <i class="fas fa-chevron-down small"></i>
             </a>
@@ -82,7 +78,7 @@
         
         @canany(['view-permissions', 'create-permissions', 'edit-permissions', 'delete-permissions'])
         <div class="list-group-item p-0">
-            <a href="#permissionSubmenu" data-bs-toggle="collapse" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+            <a href="#permissionSubmenu" data-bs-toggle="collapse" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" style="background-color: #edf2f7;">
                 <span><i class="fas fa-key me-2"></i> Permissions</span>
                 <i class="fas fa-chevron-down small"></i>
             </a>
@@ -173,7 +169,7 @@
     </div>
     
     <!-- Sidebar Footer -->
-    <div class="sidebar-footer p-3 text-center border-top border-secondary">
+    <div class="sidebar-footer p-3 text-center border-top">
         <div class="d-flex justify-content-center gap-2 mb-2">
             <a href="#" class="text-white-50" data-bs-toggle="tooltip" title="Help Center">
                 <i class="fas fa-question-circle"></i>

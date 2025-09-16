@@ -83,7 +83,7 @@ body {
 }
 
 .sidebar-heading {
-    padding: 1.25rem 1.5rem;
+/*    padding: 1.25rem 1.5rem;*/
     background-color: #f1f5f9;
     border-bottom: 1px solid #e2e8f0;
     color: #1e293b;
@@ -419,7 +419,7 @@ body {
 }
 
 .bg-primary {
-    background-color: var(--primary) !important;
+    background-color: #edf2f7 !important;
 }
 
 .bg-success {
