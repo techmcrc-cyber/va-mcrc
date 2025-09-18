@@ -5,7 +5,7 @@
 @section('content')
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Users</h1>
+        <h1 class="h3 mb-0 " style="color:#b53d5e">Users</h1>
         @can('create-users')
         <a href="{{ route('admin.users.create') }}" class="btn btn-primary">
             <i class="fas fa-plus me-1"></i> Create New User

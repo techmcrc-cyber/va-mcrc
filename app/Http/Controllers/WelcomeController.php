@@ -38,7 +38,6 @@ class WelcomeController extends Controller
             ]
         ];
 
-        // Get a random quote
         $quote = $quotes[array_rand($quotes)];
 
         return view('welcome-original', [

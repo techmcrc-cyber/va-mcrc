@@ -5,7 +5,7 @@
     <div class="row justify-content-center w-100 m-0">
         <div class="col-md-8 col-lg-6 col-xl-5 px-0">
             <div class="card shadow-lg border-0 rounded-lg">
-                <div class="card-header bg-primary text-white text-center py-3">
+                <div class="card-header text-white text-center py-3">
                     <h3 class="my-0">{{ config('app.name') }}</h3>
                     <p class="mb-0">Admin Login</p>
                 </div>
@@ -80,7 +80,7 @@
                         </div>
 
                         <div class="d-grid">
-                            <button type="submit" class="btn btn-primary btn-lg" style="padding: 0.2rem 1.0rem;>
+                            <button type="submit" class="btn btn-lg" style="padding: 0.2rem 1.0rem; background: linear-gradient(135deg, #ba4165 0%, #700000  100%);color: #fff;>
                                 <i class="fas fa-sign-in-alt me-2"></i> {{ __('Login') }}
                             </button>
                         </div>
@@ -119,6 +119,7 @@
     .card-header {
         border-bottom: none;
         padding: 1.5rem;
+        background: linear-gradient(135deg, #ba4165 0%, #700000  100%);
     }
     .form-control, .input-group-text {
         border-radius: 0.375rem;
