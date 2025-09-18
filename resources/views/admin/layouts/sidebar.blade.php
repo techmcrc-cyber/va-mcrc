@@ -52,28 +52,12 @@
         </div>
         @endcanany
         
-        @canany(['view-roles', 'create-roles', 'edit-roles', 'delete-roles'])
-        <div class="list-group-item p-0">
-            <a href="#roleSubmenu" data-bs-toggle="collapse" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" style="background-color: #edf2f7;">
-                <span><i class="fas fa-user-shield me-2"></i> Roles</span>
-                <i class="fas fa-chevron-down small"></i>
-            </a>
-            <div class="collapse {{ request()->is('admin/roles*') ? 'show' : '' }}" id="roleSubmenu">
-                <div class="list-group list-group-flush">
-                    @can('view-roles')
-                    <a href="{{ route('admin.roles.index') }}" class="list-group-item list-group-item-action {{ request()->routeIs('admin.roles.index') ? 'active' : '' }}">
-                        <i class="fas fa-list me-2"></i> All Roles
-                    </a>
-                    @endcan
-                    @can('create-roles')
-                    <a href="{{ route('admin.roles.create') }}" class="list-group-item list-group-item-action {{ request()->routeIs('admin.roles.create') ? 'active' : '' }}">
-                        <i class="fas fa-plus-circle me-2"></i> Add New Role
-                    </a>
-                    @endcan
-                </div>
-            </div>
-        </div>
-        @endcanany
+        @can('view-roles')
+        <a href="{{ route('admin.roles.index') }}" 
+           class="list-group-item list-group-item-action {{ request()->is('admin/roles*') ? 'active' : '' }}">
+            <i class="fas fa-user-shield me-2"></i> Roles
+        </a>
+        @endcan
         
         @canany(['view-permissions', 'create-permissions', 'edit-permissions', 'delete-permissions'])
         <div class="list-group-item p-0">
