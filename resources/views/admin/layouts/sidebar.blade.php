@@ -59,28 +59,12 @@
         </a>
         @endcan
         
-        @canany(['view-permissions', 'create-permissions', 'edit-permissions', 'delete-permissions'])
-        <div class="list-group-item p-0">
-            <a href="#permissionSubmenu" data-bs-toggle="collapse" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" style="background-color: #edf2f7;">
-                <span><i class="fas fa-key me-2"></i> Permissions</span>
-                <i class="fas fa-chevron-down small"></i>
-            </a>
-            <div class="collapse {{ request()->is('admin/permissions*') ? 'show' : '' }}" id="permissionSubmenu">
-                <div class="list-group list-group-flush">
-                    @can('view-permissions')
-                    <a href="{{ route('admin.permissions.index') }}" class="list-group-item list-group-item-action {{ request()->routeIs('admin.permissions.index') ? 'active' : '' }}">
-                        <i class="fas fa-list me-2"></i> All Permissions
-                    </a>
-                    @endcan
-                    @can('create-permissions')
-                    <a href="{{ route('admin.permissions.create') }}" class="list-group-item list-group-item-action {{ request()->routeIs('admin.permissions.create') ? 'active' : '' }}">
-                        <i class="fas fa-plus-circle me-2"></i> Add New Permission
-                    </a>
-                    @endcan
-                </div>
-            </div>
-        </div>
-        @endcanany
+        @can('view-permissions')
+        <a href="{{ route('admin.permissions.index') }}" 
+           class="list-group-item list-group-item-action {{ request()->is('admin/permissions*') ? 'active' : '' }}">
+            <i class="fas fa-key me-2"></i> Permissions
+        </a>
+        @endcan
         
         <!-- Booking Management -->
         @canany(['view-bookings', 'create-bookings', 'edit-bookings', 'delete-bookings'])
