@@ -64,7 +64,7 @@ class RoleController extends Controller
             'permissions.*' => ['exists:permissions,id'],
         ]);
 
-        DB::transaction(function () use ($validated) {
+        DB::transaction(function () use ($validated, $request) {
             $role = Role::create([
                 'name' => $validated['name'],
                 'slug' => \Illuminate\Support\Str::slug($validated['name']),
@@ -131,7 +131,7 @@ class RoleController extends Controller
             'permissions.*' => ['exists:permissions,id'],
         ]);
 
-        DB::transaction(function () use ($role, $validated) {
+        DB::transaction(function () use ($role, $validated, $request) {
             $role->update([
                 'name' => $validated['name'],
                 'slug' => \Illuminate\Support\Str::slug($validated['name']),
