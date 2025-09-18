@@ -29,28 +29,12 @@
                 <i class="fas fa-tachometer-alt me-2"></i> Dashboard
             </a>
         
-        @canany(['view-users', 'create-users', 'edit-users', 'delete-users'])
-        <div class="list-group-item p-0">
-            <a href="#userSubmenu" data-bs-toggle="collapse" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" style="background-color: #edf2f7;">
-                <span><i class="fas fa-users me-2"></i> Users</span>
-                <i class="fas fa-chevron-down small"></i>
-            </a>
-            <div class="collapse {{ request()->is('admin/users*') ? 'show' : '' }}" id="userSubmenu">
-                <div class="list-group list-group-flush">
-                    @can('view-users')
-                    <a href="{{ route('admin.users.index') }}" class="list-group-item list-group-item-action {{ request()->routeIs('admin.users.index') ? 'active' : '' }}">
-                        <i class="fas fa-list me-2"></i> All Users
-                    </a>
-                    @endcan
-                    @can('create-users')
-                    <a href="{{ route('admin.users.create') }}" class="list-group-item list-group-item-action {{ request()->routeIs('admin.users.create') ? 'active' : '' }}">
-                        <i class="fas fa-plus-circle me-2"></i> Add New User
-                    </a>
-                    @endcan
-                </div>
-            </div>
-        </div>
-        @endcanany
+        @can('view-users')
+        <a href="{{ route('admin.users.index') }}" 
+           class="list-group-item list-group-item-action {{ request()->is('admin/users*') ? 'active' : '' }}">
+            <i class="fas fa-users me-2"></i> Users
+        </a>
+        @endcan
         
         @can('view-roles')
         <a href="{{ route('admin.roles.index') }}" 
