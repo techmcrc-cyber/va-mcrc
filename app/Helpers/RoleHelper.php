@@ -16,6 +16,8 @@ class RoleHelper
         $presetColors = [
             'super admin' => ['#4e73df', '#ffffff', '#224abe'],
             'admin' => ['#2c5282', '#ffffff', '#2b6cb0'],
+            'retreat admin' => ['#38a169', '#ffffff', '#2f855a'], // Green color for retreat admin
+            'booking admin' => ['#e53e3e', '#ffffff', '#c53030'], // Red color for booking admin
             'editor' => ['#2f855a', '#ffffff', '#38a169'],
             'author' => ['#b7791f', '#ffffff', '#d69e2e'],
             'subscriber' => ['#c53030', '#ffffff', '#e53e3e'],
@@ -29,21 +31,10 @@ class RoleHelper
             return $presetColors[$roleLower];
         }
 
-        // Generate a consistent color based on role name
-        $hash = md5($roleName);
-        
-        // Generate vibrant but slightly darker colors for better visibility
-        $h = hexdec(substr($hash, 0, 2)) % 360;
-        $s = 70 + (hexdec(substr($hash, 2, 2)) % 30); // 70-100%
-        $l = 40 + (hexdec(substr($hash, 4, 2)) % 30);  // 40-70%
-        
-        $bgColor = self::hslToHex($h, $s, $l);
-        
-        // Slightly darker border color
-        $borderColor = self::hslToHex($h, $s, $l - 10);
-        
-        // Determine text color based on brightness
-        $textColor = (($h > 45 && $h < 210) || $l < 40) ? '#ffffff' : '#212529';
+        // Default yellowish color for any other role
+        $bgColor = '#d69e2e';      // Yellow-600
+        $borderColor = '#b7791f';  // Yellow-700
+        $textColor = '#ffffff';    // White text for better contrast
         
         return [$bgColor, $textColor, $borderColor];
     }
