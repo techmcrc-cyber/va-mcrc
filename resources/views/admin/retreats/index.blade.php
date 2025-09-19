@@ -110,6 +110,12 @@
     #retreats-table td:first-child {
         padding-left: 15px;
     }
+     .dataTables_length select {
+        margin: 0 5px;
+        padding: 4px 20px;
+        border-radius: 4px;
+        border: 1px solid #d1d3e2;
+    }
 </style>
 @endpush
 
@@ -119,11 +125,31 @@
 <script>
     $(document).ready(function() {
         $('#retreats-table').DataTable({
-            "paging": false,
+            "pageLength": 25,
+            "paging": true,
             "searching": true,
             "ordering": true,
-            "info": false,
+            "info": true,
             "responsive": true,
+            "language": {
+                "search": "_INPUT_",
+                "searchPlaceholder": "Search retreats...",
+                "lengthMenu": "Show _MENU_ entries",
+                "zeroRecords": "No matching records found",
+                "info": "Showing _START_ to _END_ of _TOTAL_ entries",
+                "infoEmpty": "No entries available",
+                "infoFiltered": "(filtered from _MAX_ total entries)",
+                "paginate": {
+                    "first": "First",
+                    "last": "Last",
+                    "next": "Next",
+                    "previous": "Previous"
+                }
+            },
+            "dom": "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
+                   "<'row'<'col-sm-12'tr>>" +
+                   "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+            "responsive": true
         });
     });
 </script>
