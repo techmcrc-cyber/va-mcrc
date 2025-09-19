@@ -28,71 +28,58 @@
                class="list-group-item list-group-item-action {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
                 <i class="fas fa-tachometer-alt me-2"></i> Dashboard
             </a>
-        
-        @can('view-users')
-        <a href="{{ route('admin.users.index') }}" 
-           class="list-group-item list-group-item-action {{ request()->is('admin/users*') ? 'active' : '' }}">
-            <i class="fas fa-users me-2"></i> Users
-        </a>
-        @endcan
-        
-        @can('view-roles')
-        <a href="{{ route('admin.roles.index') }}" 
-           class="list-group-item list-group-item-action {{ request()->is('admin/roles*') ? 'active' : '' }}">
-            <i class="fas fa-user-shield me-2"></i> Roles
-        </a>
-        @endcan
-        
-        @can('view-permissions')
-        <a href="{{ route('admin.permissions.index') }}" 
-           class="list-group-item list-group-item-action {{ request()->is('admin/permissions*') ? 'active' : '' }}">
-            <i class="fas fa-key me-2"></i> Permissions
-        </a>
-        @endcan
-
-
-        <a href="{{ route('admin.retreats.index') }}" 
-           class="list-group-item list-group-item-action {{ request()->is('admin/retreats*') ? 'active' : '' }}">
-            <i class="fas fa-user-shield me-2"></i> Retreats
-        </a>
-        
-        <!-- Booking Management -->
-        @canany(['view-bookings', 'create-bookings', 'edit-bookings', 'delete-bookings'])
-       <!--  <div class="list-group-item p-0">
-            <a href="#bookingSubmenu" data-bs-toggle="collapse" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-                <span><i class="fas fa-calendar-check me-2"></i> Bookings</span>
-                <i class="fas fa-chevron-down small"></i>
+            @can('view-retreats')
+            <a href="{{ route('admin.retreats.index') }}" 
+               class="list-group-item list-group-item-action {{ request()->is('admin/retreats*') ? 'active' : '' }}">
+                <i class="fas fa-user-shield me-2"></i> Retreats
             </a>
-            <div class="collapse {{ request()->is('admin/bookings*') ? 'show' : '' }}" id="bookingSubmenu">
-                <div class="list-group list-group-flush">
-                    @can('view-bookings')
-                    <a href="#" class="list-group-item list-group-item-action">
-                        <i class="fas fa-list me-2"></i> All Bookings
-                    </a>
-                    @endcan
-                    @can('create-bookings')
-                    <a href="#" class="list-group-item list-group-item-action">
-                        <i class="fas fa-plus-circle me-2"></i> Create Booking
-                    </a>
-                    @endcan
+            @endcan
+        
+            @can('view-users')
+            <a href="{{ route('admin.users.index') }}" 
+               class="list-group-item list-group-item-action {{ request()->is('admin/users*') ? 'active' : '' }}">
+                <i class="fas fa-users me-2"></i> Users
+            </a>
+            @endcan
+        
+            @can('view-permissions')
+            <a href="{{ route('admin.permissions.index') }}" 
+               class="list-group-item list-group-item-action {{ request()->is('admin/permissions*') ? 'active' : '' }}">
+                <i class="fas fa-key me-2"></i> Permissions
+            </a>
+            @endcan
+
+            @can('view-roles')
+            <a href="{{ route('admin.roles.index') }}" 
+               class="list-group-item list-group-item-action {{ request()->is('admin/roles*') ? 'active' : '' }}">
+                <i class="fas fa-user-shield me-2"></i> Roles
+            </a>
+            @endcan
+        
+
+            <!-- Booking Management -->
+            @canany(['view-bookings', 'create-bookings', 'edit-bookings', 'delete-bookings'])
+           <!--  <div class="list-group-item p-0">
+                <a href="#bookingSubmenu" data-bs-toggle="collapse" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    <span><i class="fas fa-calendar-check me-2"></i> Bookings</span>
+                    <i class="fas fa-chevron-down small"></i>
+                </a>
+                <div class="collapse {{ request()->is('admin/bookings*') ? 'show' : '' }}" id="bookingSubmenu">
+                    <div class="list-group list-group-flush">
+                        @can('view-bookings')
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <i class="fas fa-list me-2"></i> All Bookings
+                        </a>
+                        @endcan
+                        @can('create-bookings')
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <i class="fas fa-plus-circle me-2"></i> Create Booking
+                        </a>
+                        @endcan
+                    </div>
                 </div>
-            </div>
-        </div> -->
-        @endcanany
-        
-        <!-- Reports -->
-        @can('view-reports')
-       <!--  <a href="#" class="list-group-item list-group-item-action">
-            <i class="fas fa-chart-bar me-2"></i> Reports
-        </a> -->
-        @endcan
-        
-        <!-- Settings -->
-        @can('manage-settings')
-      <!--   <a href="#" class="list-group-item list-group-item-action">
-            <i class="fas fa-cog me-2"></i> Settings
-        </a> -->
-        @endcan
+            </div> -->
+            @endcanany
         
         <!-- Divider -->
         <div class="sidebar-divider my-2"></div>

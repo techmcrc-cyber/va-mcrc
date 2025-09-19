@@ -18,16 +18,6 @@ return new class extends Migration
             $table->date('end_date');
             $table->string('timings');
             $table->integer('seats')->default(0);
-            $table->decimal('price', 10, 2)->default(0);
-            $table->decimal('discount_price', 10, 2)->nullable();
-            $table->string('location')->nullable();
-            $table->text('address')->nullable();
-            $table->string('city')->nullable();
-            $table->string('state')->nullable();
-            $table->string('country')->nullable();
-            $table->string('postal_code')->nullable();
-            $table->decimal('latitude', 10, 8)->nullable();
-            $table->decimal('longitude', 11, 8)->nullable();
             $table->enum('criteria', [
                 'male_only', 
                 'female_only', 
@@ -41,7 +31,6 @@ return new class extends Migration
             $table->text('instructions')->nullable();
             $table->boolean('is_featured')->default(false);
             $table->boolean('is_active')->default(true);
-            $table->foreignId('category_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();

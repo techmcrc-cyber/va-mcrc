@@ -181,14 +181,59 @@
             }
         });
 
-        // Update hidden input on form submit
+        // Function to update hidden inputs with Quill content
+        function updateHiddenInputs() {
+            const descriptionInput = document.querySelector('#description');
+            const instructionsInput = document.querySelector('#instructions');
+            
+            // Get the text content (without HTML tags) to check if it's empty
+            const descriptionText = quill.getText().trim();
+            const descriptionContent = quill.root.innerHTML;
+            
+            // Always update the hidden inputs
+            descriptionInput.value = descriptionContent;
+            instructionsInput.value = instructionsQuill.root.innerHTML;
+            
+            return descriptionText.length > 0;
+        }
+        
+        // Update hidden inputs when the form is submitted
         const form = document.querySelector('form');
-        form.onsubmit = function() {
-            const description = document.querySelector('#description');
-            const instructions = document.querySelector('#instructions');
-            description.value = quill.root.innerHTML;
-            instructions.value = instructionsQuill.root.innerHTML;
-        };
+        form.addEventListener('submit', function(e) {
+            // First, update the hidden inputs
+            const hasDescription = updateHiddenInputs();
+            
+            // Check if description is empty
+            if (!hasDescription) {
+                e.preventDefault();
+                
+                // Remove any existing error messages
+                const existingError = document.querySelector('.description-error');
+                if (existingError) {
+                    existingError.remove();
+                }
+                
+                // Create and show error message
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'alert alert-danger description-error mb-3';
+                errorDiv.textContent = 'The description field is required.';
+                
+                // Insert error message after the description field
+                const descriptionContainer = document.querySelector('.form-group:has(#editor)');
+                descriptionContainer.appendChild(errorDiv);
+                
+                // Scroll to the error
+                errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                
+                return false;
+            }
+            
+            // If we get here, the form is valid and will be submitted
+        });
+        
+        // Also update hidden inputs when the editor loses focus
+        quill.on('text-change', updateHiddenInputs);
+        instructionsQuill.on('text-change', updateHiddenInputs);
 
         // Set minimum end date based on start date
         const startDateInput = document.querySelector('#start_date');

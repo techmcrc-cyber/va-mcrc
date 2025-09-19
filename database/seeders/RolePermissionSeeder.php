@@ -18,17 +18,24 @@ class RolePermissionSeeder extends Seeder
 
         // Create permissions
         $permissions = [
-            // User Management
-            ['name' => 'View Users', 'slug' => 'view-users', 'module' => 'users'],
-            ['name' => 'Create Users', 'slug' => 'create-users', 'module' => 'users'],
-            ['name' => 'Edit Users', 'slug' => 'edit-users', 'module' => 'users'],
-            ['name' => 'Delete Users', 'slug' => 'delete-users', 'module' => 'users'],
-            
+
+            // Permission Management
+            ['name' => 'View Permissions', 'slug' => 'view-permissions', 'module' => 'permissions'],
+            ['name' => 'Create Permissions', 'slug' => 'create-permissions', 'module' => 'permissions'],
+            ['name' => 'Edit Permissions', 'slug' => 'edit-permissions', 'module' => 'permissions'],
+            ['name' => 'Delete Permissions', 'slug' => 'delete-permissions', 'module' => 'permissions'],
+
             // Role Management
             ['name' => 'View Roles', 'slug' => 'view-roles', 'module' => 'roles'],
             ['name' => 'Create Roles', 'slug' => 'create-roles', 'module' => 'roles'],
             ['name' => 'Edit Roles', 'slug' => 'edit-roles', 'module' => 'roles'],
             ['name' => 'Delete Roles', 'slug' => 'delete-roles', 'module' => 'roles'],
+
+            // User Management
+            ['name' => 'View Users', 'slug' => 'view-users', 'module' => 'users'],
+            ['name' => 'Create Users', 'slug' => 'create-users', 'module' => 'users'],
+            ['name' => 'Edit Users', 'slug' => 'edit-users', 'module' => 'users'],
+            ['name' => 'Delete Users', 'slug' => 'delete-users', 'module' => 'users'],
             
             // Retreat Management
             ['name' => 'View Retreats', 'slug' => 'view-retreats', 'module' => 'retreats'],
@@ -42,11 +49,6 @@ class RolePermissionSeeder extends Seeder
             ['name' => 'Edit Bookings', 'slug' => 'edit-bookings', 'module' => 'bookings'],
             ['name' => 'Delete Bookings', 'slug' => 'delete-bookings', 'module' => 'bookings'],
             
-            // Reports
-            ['name' => 'View Reports', 'slug' => 'view-reports', 'module' => 'reports'],
-            
-            // Settings
-            ['name' => 'Manage Settings', 'slug' => 'manage-settings', 'module' => 'settings'],
         ];
 
         foreach ($permissions as $permission) {
@@ -67,16 +69,6 @@ class RolePermissionSeeder extends Seeder
             ]
         );
 
-        $bookingAdmin = Role::firstOrCreate(
-            ['slug' => 'booking-admin'],
-            [
-                'name' => 'Booking Admin',
-                'description' => 'Manages bookings and related operations',
-                'is_super_admin' => false,
-                'is_active' => true
-            ]
-        );
-
         $retreatAdmin = Role::firstOrCreate(
             ['slug' => 'retreat-admin'],
             [
@@ -87,28 +79,40 @@ class RolePermissionSeeder extends Seeder
             ]
         );
 
+        $bookingAdmin = Role::firstOrCreate(
+            ['slug' => 'booking-admin'],
+            [
+                'name' => 'Booking Admin',
+                'description' => 'Manages bookings and related operations',
+                'is_super_admin' => false,
+                'is_active' => true
+            ]
+        );
+
+
         // Assign all permissions to super admin
         $superAdmin->permissions()->sync(Permission::pluck('id')->toArray());
 
-        // Assign permissions to booking admin
-        $bookingAdmin->permissions()->sync(
-            Permission::whereIn('module', ['bookings', 'reports'])
+        // Assign permissions to retreat admin
+        $retreatAdmin->permissions()->sync(
+            Permission::whereIn('module', ['retreats'])
                 ->orWhere('slug', 'view-users')
                 ->pluck('id')
                 ->toArray()
         );
 
-        // Assign permissions to retreat admin
-        $retreatAdmin->permissions()->sync(
-            Permission::whereIn('module', ['retreats', 'reports'])
+        // Assign permissions to booking admin
+        $bookingAdmin->permissions()->sync(
+            Permission::whereIn('module', ['bookings'])
                 ->orWhere('slug', 'view-users')
                 ->pluck('id')
                 ->toArray()
         );
+
 
         // Create a super admin user if not exists
         $user = \App\Models\User::firstOrCreate(
-            ['email' => 'superadmin@example.com'],
+            ['email' => 'superadmin@retreat.com'],
             [
                 'name' => 'Super Admin',
                 'password' => bcrypt('password'),
