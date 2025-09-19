@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Image\Manipulations;
@@ -20,8 +21,8 @@ class Retreat extends Model implements HasMedia
         'short_description',
         'start_date',
         'end_date',
-        'registration_deadline',
-        'capacity',
+        'timings',
+        'seats',
         'price',
         'discount_price',
         'location',
@@ -32,6 +33,9 @@ class Retreat extends Model implements HasMedia
         'postal_code',
         'latitude',
         'longitude',
+        'criteria',
+        'special_remarks',
+        'instructions',
         'is_featured',
         'is_active',
         'category_id',
@@ -42,15 +46,51 @@ class Retreat extends Model implements HasMedia
     protected $casts = [
         'start_date' => 'datetime',
         'end_date' => 'datetime',
-        'registration_deadline' => 'datetime',
         'is_featured' => 'boolean',
         'is_active' => 'boolean',
         'price' => 'decimal:2',
         'discount_price' => 'decimal:2',
-        'capacity' => 'integer',
+        'seats' => 'integer',
     ];
 
     protected $appends = ['featured_image_url', 'is_available'];
+
+    /**
+     * Boot the model.
+     */
+    protected static function booted()
+    {
+        static::creating(function ($retreat) {
+            if (auth()->check()) {
+                $retreat->created_by = auth()->id();
+                $retreat->updated_by = auth()->id();
+            }
+
+            if (!$retreat->slug) {
+                $retreat->slug = Str::slug($retreat->title . ' ' . now()->format('Y-m-d'));
+            }
+        });
+
+        static::updating(function ($retreat) {
+            if (auth()->check()) {
+                $retreat->updated_by = auth()->id();
+            }
+        });
+
+        static::saving(function ($retreat) {
+            if ($retreat->end_date <= $retreat->start_date) {
+                throw new \Exception('End date must be after start date');
+            }
+
+            if ($retreat->seats < 0) {
+                throw new \Exception('Seats cannot be negative');
+            }
+
+            if ($retreat->discount_price !== null && $retreat->discount_price >= $retreat->price) {
+                throw new \Exception('Discount price must be less than the regular price');
+            }
+        });
+    }
 
     /**
      * Get the category that owns the retreat.
@@ -102,15 +142,33 @@ class Retreat extends Model implements HasMedia
             return false;
         }
 
-        if ($this->registration_deadline && $this->registration_deadline->isPast()) {
+        if ($this->start_date->isPast()) {
             return false;
         }
 
-        if ($this->capacity <= $this->bookings()->whereIn('status', ['confirmed', 'pending'])->count()) {
+        if ($this->seats <= $this->bookings()->whereIn('status', ['confirmed', 'pending'])->count()) {
             return false;
         }
 
         return true;
+    }
+
+    /**
+     * Get the criteria label.
+     */
+    public function getCriteriaLabelAttribute()
+    {
+        $criteriaLabels = [
+            'male_only' => 'Male Only',
+            'female_only' => 'Female Only',
+            'priests_only' => 'Priests Only',
+            'sisters_only' => 'Sisters Only',
+            'youth_only' => 'Youth Only (Age 16-30)',
+            'children' => 'Children (Age 15 or below)',
+            'no_criteria' => 'No Criteria'
+        ];
+
+        return $criteriaLabels[$this->criteria] ?? $this->criteria;
     }
 
     /**

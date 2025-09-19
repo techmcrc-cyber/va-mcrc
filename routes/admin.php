@@ -52,6 +52,17 @@ Route::middleware(['auth:web'])->group(function () {
         Route::put('/{user}', [\App\Http\Controllers\Admin\UserController::class, 'update'])->name('update');
         Route::delete('/{user}', [\App\Http\Controllers\Admin\UserController::class, 'destroy'])->name('destroy');
     });
+    
+    // Retreats Management
+    Route::prefix('retreats')->name('admin.retreats.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\RetreatController::class, 'index'])->name('index');
+        Route::get('/create', [\App\Http\Controllers\Admin\RetreatController::class, 'create'])->name('create');
+        Route::post('/', [\App\Http\Controllers\Admin\RetreatController::class, 'store'])->name('store');
+        Route::get('/{retreat}', [\App\Http\Controllers\Admin\RetreatController::class, 'show'])->name('show');
+        Route::get('/{retreat}/edit', [\App\Http\Controllers\Admin\RetreatController::class, 'edit'])->name('edit');
+        Route::put('/{retreat}', [\App\Http\Controllers\Admin\RetreatController::class, 'update'])->name('update');
+        Route::delete('/{retreat}', [\App\Http\Controllers\Admin\RetreatController::class, 'destroy'])->name('destroy');
+    });
 
     // Roles Management
     Route::prefix('roles')->name('admin.roles.')->group(function () {

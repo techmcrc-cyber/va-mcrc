@@ -49,6 +49,12 @@
             <i class="fas fa-key me-2"></i> Permissions
         </a>
         @endcan
+
+
+        <a href="{{ route('admin.retreats.index') }}" 
+           class="list-group-item list-group-item-action {{ request()->is('admin/retreats*') ? 'active' : '' }}">
+            <i class="fas fa-user-shield me-2"></i> Retreats
+        </a>
         
         <!-- Booking Management -->
         @canany(['view-bookings', 'create-bookings', 'edit-bookings', 'delete-bookings'])
