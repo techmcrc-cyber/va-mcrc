@@ -42,7 +42,7 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <h6 class="text-uppercase text-muted mb-2">Total Activities</h6>
+                        <h6 class="text-uppercase text-muted mb-2">Total Users</h6>
                         <h2 class="mb-0">12</h2>
                     </div>
                     <div class="icon-shape icon-lg bg-primary bg-opacity-10 text-primary rounded-3">
@@ -52,7 +52,7 @@
                 <div class="mt-3">
                     <span class="text-success"><i class="fas fa-arrow-up"></i> 12%</span>
                     <span class="text-muted">from last month</span>
-                </div>
+                </div> 
             </div>
         </div>
     </div>
@@ -62,7 +62,7 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <h6 class="text-uppercase text-muted mb-2">Total Events</h6>
+                        <h6 class="text-uppercase text-muted mb-2">Total Retreats</h6>
                         <h2 class="mb-0">15</h2>
                     </div>
                     <div class="icon-shape icon-lg bg-success bg-opacity-10 text-success rounded-3">
@@ -82,7 +82,7 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <h6 class="text-uppercase text-muted mb-2">Total Members</h6>
+                        <h6 class="text-uppercase text-muted mb-2">Total Bookings</h6>
                         <h2 class="mb-0">{{ $stats['total_members'] ?? 0 }}</h2>
                     </div>
                     <div class="icon-shape icon-lg bg-info bg-opacity-10 text-info rounded-3">
