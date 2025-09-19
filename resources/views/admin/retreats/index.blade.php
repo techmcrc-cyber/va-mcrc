@@ -4,22 +4,25 @@
 
 @section('content')
 <div class="container-fluid">
+    <div class="card mb-2">
+        <div class="card-header d-flex justify-content-between align-items-center" style="background-color: #f8f9fc; border-bottom: 1px solid #e3e6f0;">
+            <h4 class="m-0 fw-bold" style="color: #b53d5e; font-size: 1.5rem;">Retreats</h4>
+            <a href="{{ route('admin.retreats.create') }}" class="btn btn-sm btn-primary">
+                <i class="fas fa-plus me-1"></i> Create New Retreat
+            </a>
+        </div>
+    </div>
+
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h3 class="card-title">Retreats List</h3>
-                    <a href="{{ route('admin.retreats.create') }}" class="btn btn-primary">
-                        <i class="fas fa-plus"></i> Add New Retreat
-                    </a>
-                </div>
                 <div class="card-body">
                     @if(session('success'))
                         <div class="alert alert-success">{{ session('success') }}</div>
                     @endif
                     
                     <div class="table-responsive">
-                        <table class="table table-bordered table-striped" id="retreats-table">
+                        <table class="table table-bordered table-hover" id="retreats-table" width="100%" cellspacing="0">
                             <thead>
                                 <tr>
                                     <th>Title</th>
@@ -94,9 +97,18 @@
 @push('styles')
 <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
 <style>
-    .btn-sm {
-        padding: 0.25rem 0.5rem;
-        font-size: 0.75rem;
+    /* Style all table headers */
+    #retreats-table th {
+        font-weight: bold !important;
+        background-color: #f8f9fc !important;
+        padding-top: 1rem !important;
+        padding-bottom: 1rem !important;
+    }
+    
+    /* Compact ID column styling */
+    #retreats-table th:first-child,
+    #retreats-table td:first-child {
+        padding-left: 15px;
     }
 </style>
 @endpush
