@@ -52,7 +52,7 @@
         
         <!-- Booking Management -->
         @canany(['view-bookings', 'create-bookings', 'edit-bookings', 'delete-bookings'])
-        <div class="list-group-item p-0">
+       <!--  <div class="list-group-item p-0">
             <a href="#bookingSubmenu" data-bs-toggle="collapse" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                 <span><i class="fas fa-calendar-check me-2"></i> Bookings</span>
                 <i class="fas fa-chevron-down small"></i>
@@ -71,28 +71,28 @@
                     @endcan
                 </div>
             </div>
-        </div>
+        </div> -->
         @endcanany
         
         <!-- Reports -->
         @can('view-reports')
-        <a href="#" class="list-group-item list-group-item-action">
+       <!--  <a href="#" class="list-group-item list-group-item-action">
             <i class="fas fa-chart-bar me-2"></i> Reports
-        </a>
+        </a> -->
         @endcan
         
         <!-- Settings -->
         @can('manage-settings')
-        <a href="#" class="list-group-item list-group-item-action">
+      <!--   <a href="#" class="list-group-item list-group-item-action">
             <i class="fas fa-cog me-2"></i> Settings
-        </a>
+        </a> -->
         @endcan
         
         <!-- Divider -->
         <div class="sidebar-divider my-2"></div>
         
         <!-- Settings -->
-        <a href="#settingsSubmenu" data-bs-toggle="collapse" class="list-group-item list-group-item-action">
+<!--         <a href="#settingsSubmenu" data-bs-toggle="collapse" class="list-group-item list-group-item-action">
             <i class="fas fa-cog me-2"></i> Settings
             <i class="fas fa-chevron-right float-end mt-1"></i>
         </a>
@@ -111,12 +111,12 @@
                     <i class="fas fa-bell me-2"></i> Notifications
                 </a>
             </div>
-        </div>
+        </div> -->
         
         <!-- Support -->
-        <a href="{{ route('admin.support') }}" class="list-group-item list-group-item-action {{ request()->routeIs('admin.support') ? 'active' : '' }}">
+      <!--   <a href="{{ route('admin.support') }}" class="list-group-item list-group-item-action {{ request()->routeIs('admin.support') ? 'active' : '' }}">
             <i class="fas fa-life-ring me-2"></i> Support
-        </a>
+        </a> -->
     </div>
     
     <!-- Sidebar Footer -->
