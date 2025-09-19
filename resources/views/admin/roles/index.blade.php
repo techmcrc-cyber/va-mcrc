@@ -4,13 +4,15 @@
 
 @section('content')
 <div class="container-fluid">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Roles</h1>
-        @can('create-roles')
-        <a href="{{ route('admin.roles.create') }}" class="btn btn-primary">
-            <i class="fas fa-plus me-1"></i> Create New Role
-        </a>
-        @endcan
+    <div class="card mb-2">
+        <div class="card-header d-flex justify-content-between align-items-center" style="background-color: #f8f9fc; border-bottom: 1px solid #e3e6f0;">
+            <h4 class="m-0 fw-bold" style="color: #b53d5e; font-size: 1.5rem;">Roles</h4>
+            @can('create-roles')
+            <a href="{{ route('admin.roles.create') }}" class="btn btn-sm btn-primary">
+                <i class="fas fa-plus me-1"></i> Create New Role
+            </a>
+            @endcan
+        </div>
     </div>
 
     @if(session('success'))
@@ -90,6 +92,14 @@
 
 @push('styles')
 <style>
+    /* Style all table headers */
+    #rolesTable th {
+        font-weight: bold !important;
+        background-color: #f8f9fc !important;
+        padding-top: 1rem !important;
+        padding-bottom: 1rem !important;
+    }
+    
     /* Compact ID column styling */
     #rolesTable th:first-child,
     #rolesTable td:first-child {
