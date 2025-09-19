@@ -4,15 +4,18 @@
 
 @section('content')
 <div class="container-fluid">
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Create New Role</h1>
-        <a href="{{ route('admin.roles.index') }}" class="d-none d-sm-inline-block btn btn-sm btn-secondary shadow-sm">
-            <i class="fas fa-arrow-left fa-sm text-white-50"></i> Back to Roles
-        </a>
-    </div>
-
-    <div class="card shadow mb-4">
-        <div class="card-body">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Create New Role</h3>
+                    <div class="card-tools">
+                        <a href="{{ route('admin.roles.index') }}" class="btn btn-secondary btn-sm">
+                            <i class="fas fa-arrow-left me-1"></i> Back to Roles
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
             <form action="{{ route('admin.roles.store') }}" method="POST">
                 @csrf
                 

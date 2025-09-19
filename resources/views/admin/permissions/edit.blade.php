@@ -4,27 +4,28 @@
 
 @section('content')
 <div class="container-fluid">
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Edit Permission: {{ $permission->name }}</h1>
-        <div>
-            <a href="{{ route('admin.permissions.index') }}" class="btn btn-secondary me-2">
-                <i class="fas fa-arrow-left me-1"></i> Back to Permissions
-            </a>
-            @if($permission->is_deletable)
-                <form action="{{ route('admin.permissions.destroy', $permission) }}" method="POST" class="d-inline">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="btn btn-danger" 
-                            onclick="return confirm('Are you sure you want to delete this permission? This action cannot be undone.')">
-                        <i class="fas fa-trash me-1"></i> Delete
-                    </button>
-                </form>
-            @endif
-        </div>
-    </div>
-
-    <div class="card shadow mb-4">
-        <div class="card-body">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Edit Permission: {{ $permission->name }}</h3>
+                    <div class="card-tools">
+                        <a href="{{ route('admin.permissions.index') }}" class="btn btn-secondary btn-sm me-2">
+                            <i class="fas fa-arrow-left me-1"></i> Back to Permissions
+                        </a>
+                        @if($permission->is_deletable)
+                            <form action="{{ route('admin.permissions.destroy', $permission) }}" method="POST" class="d-inline">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger btn-sm" 
+                                        onclick="return confirm('Are you sure you want to delete this permission? This action cannot be undone.')">
+                                    <i class="fas fa-trash me-1"></i> Delete
+                                </button>
+                            </form>
+                        @endif
+                    </div>
+                </div>
+                <div class="card-body">
             <form action="{{ route('admin.permissions.update', $permission) }}" method="POST">
                 @csrf
                 @method('PUT')

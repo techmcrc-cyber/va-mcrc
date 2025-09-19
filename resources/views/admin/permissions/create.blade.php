@@ -4,15 +4,18 @@
 
 @section('content')
 <div class="container-fluid">
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Create New Permission</h1>
-        <a href="{{ route('admin.permissions.index') }}" class="btn btn-secondary">
-            <i class="fas fa-arrow-left me-1"></i> Back to Permissions
-        </a>
-    </div>
-
-    <div class="card shadow mb-4">
-        <div class="card-body">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Create New Permission</h3>
+                    <div class="card-tools">
+                        <a href="{{ route('admin.permissions.index') }}" class="btn btn-secondary btn-sm">
+                            <i class="fas fa-arrow-left me-1"></i> Back to Permissions
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
             <form action="{{ route('admin.permissions.store') }}" method="POST">
                 @csrf
                 
