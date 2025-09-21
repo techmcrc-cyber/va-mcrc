@@ -264,7 +264,7 @@
                                 <div class="card card-info">
                                     <div class="card-body">
                                         <div class="d-flex justify-content-between align-items-center">
-                                            <p class="mb-0">Would you like to add additional members to this booking? (Maximum 3 additional members allowed)</p>
+                                            <p class="mb-0">Would you like to add additional members to this booking? (Maximum {{ config('bookings.max_additional_members', 3) }} additional members allowed)</p>
                                             <button type="button" class="btn btn-primary" id="btn-yes-add-members">
                                                 <i class="fas fa-plus"></i> Yes, Add Members
                                             </button>
@@ -386,11 +386,10 @@
         
         // Add participant
         let participantCount = 0;
-        const maxParticipants = 3;
+        const maxParticipants = {{ config('bookings.max_additional_members', 3) }};
         
         // Show/hide add more members section - using event delegation for dynamically added elements
         $(document).on('click', '#btn-yes-add-members', function(e) {
-            alert("mjmm")
             e.preventDefault();
             $('#add-more-members-prompt').addClass('d-none');
             $('#additional-participants-section').removeClass('d-none');

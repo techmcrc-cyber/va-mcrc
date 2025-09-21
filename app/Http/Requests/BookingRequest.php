@@ -21,6 +21,8 @@ class BookingRequest extends FormRequest
      */
     public function rules(): array
     {
+        $maxAdditionalMembers = config('bookings.max_additional_members', 3);
+        
         $rules = [
             'retreat_id' => 'required|exists:retreats,id',
             'firstname' => 'required|string|max:255',
@@ -37,9 +39,9 @@ class BookingRequest extends FormRequest
             'congregation' => 'nullable|string|max:255',
             'emergency_contact_name' => 'required|string|max:255',
             'emergency_contact_phone' => 'required|string|max:20',
-            'additional_participants' => 'required|integer|min:0|max:3',
+            'additional_participants' => 'required|integer|min:0|max:' . $maxAdditionalMembers,
             'special_remarks' => 'nullable|string',
-            'participants' => 'sometimes|array|max:3',
+            'participants' => 'sometimes|array|max:' . $maxAdditionalMembers,
             'participants.*.firstname' => 'required_with:participants|string|max:255',
             'participants.*.lastname' => 'required_with:participants|string|max:255',
             'participants.*.whatsapp_number' => 'required_with:participants|string|max:20',

@@ -266,7 +266,7 @@
                         <div class="row mt-4">
                             <div class="col-md-12">
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <h4>Additional Participants <small class="text-muted">(Maximum 3)</small></h4>
+                                    <h4>Additional Participants <small class="text-muted">(Maximum {{ config('bookings.max_additional_members', 3) }})</small></h4>
                                     <button type="button" class="btn btn-sm btn-primary add-participant" id="add-participant">
                                         <i class="fas fa-plus"></i> Add Participant
                                     </button>
@@ -436,9 +436,9 @@
         });
         
         // Initialize participant count and get the highest participant number
-        let participantCount = {{ $allParticipants->count() - 1 }}; // Subtract 1 for primary participant
-        let nextParticipantNumber = participantCount + 1; // Next available participant number
-        const maxParticipants = 3; // Maximum 3 additional participants
+        let participantCount = {{ $allParticipants->count() - 1 > 0 ? $allParticipants->count() - 1 : 0 }};
+        let nextParticipantNumber = participantCount + 1;
+        const maxParticipants = {{ config('bookings.max_additional_members', 3) }};
         
         // Update the additional_participants hidden input
         $('#additional_participants').val(participantCount);
