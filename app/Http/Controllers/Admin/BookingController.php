@@ -83,54 +83,47 @@ class BookingController extends Controller
         }
         
         // Create additional participants if any
-        if (isset($bookingData['participants']) && is_array($bookingData['participants'])) {
-            $participantNumber = 2; // Start from 2 for additional participants
-            
-            foreach ($bookingData['participants'] as $participant) {
-                $participantFlag = null;
-                
-                if (Booking::hasAttendedInPastYear(
-                    $participant['whatsapp_number'],
-                    "{$participant['firstname']} {$participant['lastname']}"
-                )) {
-                    $participantFlag = 'RECURRENT_BOOKING';
-                }
-                
-                $participantBooking = Booking::create([
-                    'booking_id' => $bookingId,
-                    'retreat_id' => $bookingData['retreat_id'],
-                    'firstname' => $participant['firstname'],
-                    'lastname' => $participant['lastname'],
-                    'whatsapp_number' => $participant['whatsapp_number'],
-                    'age' => $participant['age'],
-                    'email' => $participant['email'],
-                    'address' => $bookingData['address'], // Same as primary
-                    'gender' => $participant['gender'],
-                    'city' => $bookingData['city'],
-                    'state' => $bookingData['state'],
-                    'diocese' => $bookingData['diocese'] ?? null,
-                    'parish' => $bookingData['parish'] ?? null,
-                    'congregation' => $bookingData['congregation'] ?? null,
-                    'emergency_contact_name' => $bookingData['emergency_contact_name'],
-                    'emergency_contact_phone' => $bookingData['emergency_contact_phone'],
-                    'additional_participants' => 0, // Only primary booking has this count
-                    'special_remarks' => $bookingData['special_remarks'] ?? null,
-                    'flag' => $participantFlag,
-                    'participant_number' => $participantNumber,
-                    'created_by' => $userId,
-                    'updated_by' => $userId,
-                ]);
-                
-                // Check criteria for participant
-                if (!$participantBooking->meetsRetreatCriteria()) {
-                    $participantBooking->flag = $participantBooking->flag 
-                        ? $participantBooking->flag . ',CRITERIA_FAILED' 
-                        : 'CRITERIA_FAILED';
-                    $participantBooking->save();
-                }
-                
-                $participantNumber++;
+        $participants = $bookingData['participants'] ?? [];
+        $participantNumber = 2; // Start from 2 for additional participants
+        
+        foreach ($participants as $participant) {
+            if (empty($participant['firstname']) && empty($participant['lastname'])) {
+                continue; // Skip empty participant entries
             }
+            
+            $participantFlag = null;
+            
+            if (Booking::hasAttendedInPastYear(
+                $participant['whatsapp_number'] ?? '',
+                "{$participant['firstname']} {$participant['lastname']}"
+            )) {
+                $participantFlag = 'RECURRENT_BOOKING';
+            }
+            
+            $participantBooking = Booking::create([
+                'booking_id' => $bookingId,
+                'retreat_id' => $bookingData['retreat_id'],
+                'firstname' => $participant['firstname'] ?? '',
+                'lastname' => $participant['lastname'] ?? '',
+                'whatsapp_number' => $participant['whatsapp_number'] ?? '',
+                'age' => $participant['age'] ?? null,
+                'email' => $participant['email'] ?? null,
+                'gender' => $participant['gender'] ?? 'other',
+                'participant_number' => $participantNumber,
+                'flag' => $participantFlag,
+                'created_by' => $userId,
+                'updated_by' => $userId,
+            ]);
+            
+            // Check criteria for participant
+            if (!$participantBooking->meetsRetreatCriteria()) {
+                $participantBooking->flag = $participantBooking->flag 
+                    ? $participantBooking->flag . ',CRITERIA_FAILED' 
+                    : 'CRITERIA_FAILED';
+                $participantBooking->save();
+            }
+            
+            $participantNumber++;
         }
         
         return redirect()
@@ -196,6 +189,11 @@ class BookingController extends Controller
             'updated_by' => $userId,
         ]);
         
+        // Handle deleted participants
+        if (isset($bookingData['deleted_participants']) && is_array($bookingData['deleted_participants'])) {
+            Booking::whereIn('id', $bookingData['deleted_participants'])->delete();
+        }
+        
         // Update or create additional participants
         if (isset($bookingData['participants']) && is_array($bookingData['participants'])) {
             $existingParticipantIds = $booking->allParticipants()
@@ -230,13 +228,17 @@ class BookingController extends Controller
                     'updated_by' => $userId,
                 ];
                 
-                if ($participantId && in_array($participantId, $existingParticipantIds)) {
+                if ($participantId && is_numeric($participantId) && in_array($participantId, $existingParticipantIds)) {
                     // Update existing participant
-                    Booking::where('id', $participantId)->update($participantData);
-                    $updatedParticipantIds[] = $participantId;
+                    $participant = Booking::find($participantId);
+                    if ($participant) {
+                        $participant->update($participantData);
+                        $updatedParticipantIds[] = $participantId;
+                    }
                 } else {
                     // Create new participant
                     $participantData['booking_id'] = $booking->booking_id;
+                    $participantData['participant_number'] = $participantNumber;
                     $participantData['created_by'] = $userId;
                     $newParticipant = Booking::create($participantData);
                     $updatedParticipantIds[] = $newParticipant->id;

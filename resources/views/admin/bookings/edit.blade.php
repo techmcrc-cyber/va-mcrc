@@ -118,45 +118,30 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="retreat_id">Select Retreat <span class="text-danger">*</span></label>
-                                    <select name="retreat_id" id="retreat_id" class="form-control select2" style="width: 100%;" required>
+                                    <select name="retreat_id" id="retreat_id" class="form-control custom-select" style="width: 100%;" required>
                                         <option value="">-- Select Retreat --</option>
                                         @foreach($retreats as $retreat)
+                                            @php
+                                                $startDate = $retreat->start_date->format('M d, Y');
+                                                $endDate = $retreat->end_date->format('M d, Y');
+                                                $dateRange = "($startDate - $endDate)";
+                                                $selected = old('retreat_id', $booking->retreat_id) == $retreat->id ? 'selected' : '';
+                                            @endphp
                                             <option value="{{ $retreat->id }}" 
-                                                {{ $booking->retreat_id == $retreat->id ? 'selected' : '' }}
                                                 data-criteria="{{ $retreat->criteria }}"
-                                                data-start-date="{{ $retreat->start_date->format('Y-m-d') }}"
-                                                data-end-date="{{ $retreat->end_date->format('Y-m-d') }}">
-                                                <div class="d-flex justify-content-between">
-                                                    <span>{{ $retreat->title }}</span>
-                                                    <span class="text-muted ml-2">
-                                                        {{ $retreat->start_date->format('M d, Y') }} - {{ $retreat->end_date->format('M d, Y') }}
-                                                    </span>
-                                                </div>
+                                                {{ $selected }}>
+                                                {{ $retreat->title }} {{ $dateRange }}
                                             </option>
                                         @endforeach
                                     </select>
-                                    <small class="form-text text-muted" id="retreat-criteria">
-                                        @php
-                                            $criteriaMap = [
-                                                'male_only' => 'Only for Males',
-                                                'female_only' => 'Only for Females',
-                                                'priests_only' => 'Only for Priests',
-                                                'sisters_only' => 'Only for Sisters',
-                                                'youth_only' => 'Only for Youth (18-35 years)',
-                                                'children' => 'Only for Children (below 18 years)',
-                                                'no_criteria' => 'Open to All'
-                                            ];
-                                            $currentRetreat = $retreats->firstWhere('id', $booking->retreat_id);
-                                            echo 'Criteria: ' . ($currentRetreat ? ($criteriaMap[$currentRetreat->criteria] ?? 'Not specified') : 'N/A');
-                                        @endphp
-                                    </small>
+                                    <small class="form-text text-muted" id="retreat-criteria"></small>
                                 </div>
                             </div>
                             
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="special_remarks">Special Remarks</label>
-                                    <textarea name="special_remarks" id="special_remarks" class="form-control" rows="2" placeholder="Any special instructions or remarks">{{ $booking->special_remarks }}</textarea>
+                                    <textarea name="special_remarks" id="special_remarks" class="form-control" rows="2" placeholder="Any special instructions or remarks">{{ old('special_remarks', $booking->special_remarks) }}</textarea>
                                 </div>
                             </div>
                         </div>
@@ -171,14 +156,14 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="firstname">First Name <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="firstname" name="firstname" value="{{ $booking->firstname }}" required>
+                                    <input type="text" class="form-control" id="firstname" name="firstname" value="{{ old('firstname', $booking->firstname) }}" required>
                                 </div>
                             </div>
                             
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="lastname">Last Name <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="lastname" name="lastname" value="{{ $booking->lastname }}" required>
+                                    <input type="text" class="form-control" id="lastname" name="lastname" value="{{ old('lastname', $booking->lastname) }}" required>
                                 </div>
                             </div>
                             
@@ -189,7 +174,7 @@
                                         <div class="input-group-prepend">
                                             <span class="input-group-text">+91</span>
                                         </div>
-                                        <input type="text" class="form-control" id="whatsapp_number" name="whatsapp_number" value="{{ $booking->whatsapp_number }}" required>
+                                        <input type="text" class="form-control" id="whatsapp_number" name="whatsapp_number" value="{{ old('whatsapp_number', $booking->whatsapp_number) }}" required>
                                     </div>
                                 </div>
                             </div>
@@ -197,7 +182,7 @@
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="age">Age <span class="text-danger">*</span></label>
-                                    <input type="number" class="form-control" id="age" name="age" min="1" max="120" value="{{ $booking->age }}" required>
+                                    <input type="number" class="form-control" id="age" name="age" value="{{ old('age', $booking->age) }}" min="1" max="120" required>
                                 </div>
                             </div>
                             
@@ -206,9 +191,9 @@
                                     <label for="gender">Gender <span class="text-danger">*</span></label>
                                     <select class="form-control" id="gender" name="gender" required>
                                         <option value="">-- Select Gender --</option>
-                                        <option value="male" {{ $booking->gender == 'male' ? 'selected' : '' }}>Male</option>
-                                        <option value="female" {{ $booking->gender == 'female' ? 'selected' : '' }}>Female</option>
-                                        <option value="other" {{ $booking->gender == 'other' ? 'selected' : '' }}>Other</option>
+                                        <option value="male" {{ old('gender', $booking->gender) == 'male' ? 'selected' : '' }}>Male</option>
+                                        <option value="female" {{ old('gender', $booking->gender) == 'female' ? 'selected' : '' }}>Female</option>
+                                        <option value="other" {{ old('gender', $booking->gender) == 'other' ? 'selected' : '' }}>Other</option>
                                     </select>
                                 </div>
                             </div>
@@ -216,63 +201,63 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="email">Email Address <span class="text-danger">*</span></label>
-                                    <input type="email" class="form-control" id="email" name="email" value="{{ $booking->email }}" required>
+                                    <input type="email" class="form-control" id="email" name="email" value="{{ old('email', $booking->email) }}" required>
                                 </div>
                             </div>
                             
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="address">Address <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="address" name="address" value="{{ $booking->address }}" required>
+                                    <input type="text" class="form-control" id="address" name="address" value="{{ old('address', $booking->address) }}" required>
                                 </div>
                             </div>
                             
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="city">City <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="city" name="city" value="{{ $booking->city }}" required>
+                                    <input type="text" class="form-control" id="city" name="city" value="{{ old('city', $booking->city) }}" required>
                                 </div>
                             </div>
                             
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="state">State <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="state" name="state" value="{{ $booking->state }}" required>
+                                    <input type="text" class="form-control" id="state" name="state" value="{{ old('state', $booking->state) }}" required>
                                 </div>
                             </div>
                             
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="diocese">Diocese</label>
-                                    <input type="text" class="form-control" id="diocese" name="diocese" value="{{ $booking->diocese }}">
+                                    <input type="text" class="form-control" id="diocese" name="diocese" value="{{ old('diocese', $booking->diocese) }}">
                                 </div>
                             </div>
                             
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="parish">Parish</label>
-                                    <input type="text" class="form-control" id="parish" name="parish" value="{{ $booking->parish }}">
+                                    <input type="text" class="form-control" id="parish" name="parish" value="{{ old('parish', $booking->parish) }}">
                                 </div>
                             </div>
                             
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="congregation">Congregation (For Priests/Sisters)</label>
-                                    <input type="text" class="form-control" id="congregation" name="congregation" value="{{ $booking->congregation }}">
+                                    <input type="text" class="form-control" id="congregation" name="congregation" value="{{ old('congregation', $booking->congregation) }}">
                                 </div>
                             </div>
                             
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="emergency_contact_name">Emergency Contact Name <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="emergency_contact_name" name="emergency_contact_name" value="{{ $booking->emergency_contact_name }}" required>
+                                    <input type="text" class="form-control" id="emergency_contact_name" name="emergency_contact_name" value="{{ old('emergency_contact_name', $booking->emergency_contact_name) }}" required>
                                 </div>
                             </div>
                             
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="emergency_contact_phone">Emergency Contact Phone <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="emergency_contact_phone" name="emergency_contact_phone" value="{{ $booking->emergency_contact_phone }}" required>
+                                    <input type="text" class="form-control" id="emergency_contact_phone" name="emergency_contact_phone" value="{{ old('emergency_contact_phone', $booking->emergency_contact_phone) }}" required>
                                 </div>
                             </div>
                         </div>
@@ -292,25 +277,25 @@
                                     @php $participantCount = 1; @endphp
                                     @foreach($allParticipants as $participant)
                                         @if($participant->id !== $booking->id)
-                                            <div class="participant-section" id="participant-{{ $participantCount }}">
-                                                <div class="participant-header">
-                                                    <h5 class="participant-title">Participant #{{ $participantCount }}</h5>
-                                                    <span class="remove-participant" data-participant="{{ $participantCount }}">
-                                                        <i class="fas fa-times"></i> Remove
-                                                    </span>
-                                                </div>
+                                            <div class="participant-section mb-4" id="participant-{{ $participantCount }}">
                                                 <input type="hidden" name="participants[{{ $participantCount }}][id]" value="{{ $participant->id }}">
-                                                <div class="row">
+                                                <div class="participant-header d-flex justify-content-between align-items-center mb-3">
+                                        <h5 class="participant-title m-0">Participant #{{ $participantCount }}</h5>
+                                        <button type="button" class="btn btn-sm btn-danger remove-participant" data-participant="{{ $participantCount }}">
+                                            <i class="fas fa-times"></i> Remove
+                                        </button>
+                                    </div>
+                                                            <div class="row">
                                                     <div class="col-md-6">
                                                         <div class="form-group">
                                                             <label>First Name <span class="text-danger">*</span></label>
-                                                            <input type="text" class="form-control" name="participants[{{ $participantCount }}][firstname]" value="{{ $participant->firstname }}" required>
+                                                            <input type="text" class="form-control" name="participants[{{ $participantCount }}][firstname]" value="{{ old('participants.' . $participantCount . '.firstname', $participant->firstname) }}" required>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-6">
                                                         <div class="form-group">
                                                             <label>Last Name <span class="text-danger">*</span></label>
-                                                            <input type="text" class="form-control" name="participants[{{ $participantCount }}][lastname]" value="{{ $participant->lastname }}" required>
+                                                            <input type="text" class="form-control" name="participants[{{ $participantCount }}][lastname]" value="{{ old('participants.' . $participantCount . '.lastname', $participant->lastname) }}" required>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-4">
@@ -320,14 +305,14 @@
                                                                 <div class="input-group-prepend">
                                                                     <span class="input-group-text">+91</span>
                                                                 </div>
-                                                                <input type="text" class="form-control" name="participants[{{ $participantCount }}][whatsapp_number]" value="{{ $participant->whatsapp_number }}" required>
+                                                                <input type="text" class="form-control" name="participants[{{ $participantCount }}][whatsapp_number]" value="{{ old('participants.' . $participantCount . '.whatsapp_number', $participant->whatsapp_number) }}" required>
                                                             </div>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-4">
                                                         <div class="form-group">
                                                             <label>Age <span class="text-danger">*</span></label>
-                                                            <input type="number" class="form-control" name="participants[{{ $participantCount }}][age]" min="1" max="120" value="{{ $participant->age }}" required>
+                                                            <input type="number" class="form-control" name="participants[{{ $participantCount }}][age]" value="{{ old('participants.' . $participantCount . '.age', $participant->age) }}" min="1" max="120" required>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-4">
@@ -335,16 +320,16 @@
                                                             <label>Gender <span class="text-danger">*</span></label>
                                                             <select class="form-control" name="participants[{{ $participantCount }}][gender]" required>
                                                                 <option value="">-- Select Gender --</option>
-                                                                <option value="male" {{ $participant->gender == 'male' ? 'selected' : '' }}>Male</option>
-                                                                <option value="female" {{ $participant->gender == 'female' ? 'selected' : '' }}>Female</option>
-                                                                <option value="other" {{ $participant->gender == 'other' ? 'selected' : '' }}>Other</option>
+                                                                <option value="male" {{ old('participants.' . $participantCount . '.gender', $participant->gender) === 'male' ? 'selected' : '' }}>Male</option>
+                                                                <option value="female" {{ old('participants.' . $participantCount . '.gender', $participant->gender) === 'female' ? 'selected' : '' }}>Female</option>
+                                                                <option value="other" {{ old('participants.' . $participantCount . '.gender', $participant->gender) === 'other' ? 'selected' : '' }}>Other</option>
                                                             </select>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-12">
                                                         <div class="form-group">
                                                             <label>Email Address <span class="text-danger">*</span></label>
-                                                            <input type="email" class="form-control" name="participants[{{ $participantCount }}][email]" value="{{ $participant->email }}" required>
+                                                            <input type="email" class="form-control" name="participants[{{ $participantCount }}][email]" value="{{ old('participants.' . $participantCount . '.email', $participant->email) }}" required>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -395,15 +380,16 @@
 
 <script>
     $(function () {
-        // Initialize Select2 with better configuration
+        // Initialize Select2
         $('.select2').select2({
             theme: 'bootstrap4',
             width: '100%',
-            placeholder: '-- Select Retreat --',
-            allowClear: true,
-            templateResult: formatRetreatOption,
-            templateSelection: formatRetreatSelection
+            placeholder: '-- Select --',
+            allowClear: true
         });
+        
+        // Style the select element
+        $('#retreat_id').addClass('form-control-lg');
         
         // Format how options are displayed in the dropdown
         function formatRetreatOption(retreat) {
@@ -449,23 +435,32 @@
             $('#retreat-criteria').text('Criteria: ' + (criteriaMap[criteria] || 'Not specified'));
         });
         
-        // Add participant
-        let participantCount = {{ $allParticipants->count() - 1 }};
-        const maxParticipants = 3;
+        // Initialize participant count and get the highest participant number
+        let participantCount = {{ $allParticipants->count() - 1 }}; // Subtract 1 for primary participant
+        let nextParticipantNumber = participantCount + 1; // Next available participant number
+        const maxParticipants = 3; // Maximum 3 additional participants
         
-        $('#add-participant').on('click', function(e) {
-            e.preventDefault();
-            
+        // Update the additional_participants hidden input
+        $('#additional_participants').val(participantCount);
+        
+        // Show/hide the add participant button
+        if (participantCount >= maxParticipants) {
+            $('#add-participant').hide();
+        }
+        
+        // Add participant function
+        function addParticipant(participantData = null, index = null) {
             if (participantCount >= maxParticipants) {
                 alert('Maximum of ' + maxParticipants + ' additional participants allowed.');
                 return;
             }
             
-            participantCount++;
-            $('#additional_participants').val(participantCount);
+            // Use the provided index or the next available participant number
+            const partIndex = index !== null ? index : nextParticipantNumber;
+            const partId = 'new-' + partIndex; // Prefix with 'new-' for new participants
             
             const participantHtml = `
-                <div class="participant-section" id="participant-${participantCount}">
+                <div class="participant-section mb-4" id="participant-${partId}">
                     <div class="participant-header">
                         <h5 class="participant-title">Participant #${participantCount}</h5>
                         <span class="remove-participant" data-participant="${participantCount}">
@@ -476,13 +471,13 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>First Name <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" name="participants[${participantCount}][firstname]" required>
+                                <input type="text" class="form-control" name="participants[${partIndex}][firstname]" value="${participantData ? participantData.firstname : ''}" required>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>Last Name <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" name="participants[${participantCount}][lastname]" required>
+                                <input type="text" class="form-control" name="participants[${partIndex}][lastname]" value="${participantData ? participantData.lastname : ''}" required>
                             </div>
                         </div>
                         <div class="col-md-4">
@@ -492,79 +487,132 @@
                                     <div class="input-group-prepend">
                                         <span class="input-group-text">+91</span>
                                     </div>
-                                    <input type="text" class="form-control" name="participants[${participantCount}][whatsapp_number]" required>
+                                    <input type="text" class="form-control" name="participants[${partIndex}][whatsapp_number]" value="${participantData ? participantData.whatsapp_number : ''}" required>
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label>Age <span class="text-danger">*</span></label>
-                                <input type="number" class="form-control" name="participants[${participantCount}][age]" min="1" max="120" required>
+                                <input type="number" class="form-control" name="participants[${partIndex}][age]" value="${participantData ? participantData.age : ''}" min="1" max="120" required>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label>Gender <span class="text-danger">*</span></label>
-                                <select class="form-control" name="participants[${participantCount}][gender]" required>
+                                <select class="form-control" name="participants[${partIndex}][gender]" required>
                                     <option value="">-- Select Gender --</option>
-                                    <option value="male">Male</option>
-                                    <option value="female">Female</option>
-                                    <option value="other">Other</option>
+                                    <option value="male" ${participantData && participantData.gender === 'male' ? 'selected' : ''}>Male</option>
+                                    <option value="female" ${participantData && participantData.gender === 'female' ? 'selected' : ''}>Female</option>
+                                    <option value="other" ${!participantData || participantData.gender === 'other' ? 'selected' : ''}>Other</option>
                                 </select>
                             </div>
                         </div>
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label>Email Address <span class="text-danger">*</span></label>
-                                <input type="email" class="form-control" name="participants[${participantCount}][email]" required>
+                                <input type="email" class="form-control" name="participants[${partIndex}][email]" value="${participantData ? participantData.email : ''}" required>
                             </div>
                         </div>
                     </div>
                 </div>
             `;
             
-            $('#participants-container').append(participantHtml);
-            
-            // Update add button state
-            if (participantCount >= maxParticipants) {
-                $('#add-participant').prop('disabled', true);
+            if (participantData) {
+                // If we're loading existing data, just add it
+                $('#participants-container').append(participantHtml);
+            } else {
+                // If adding a new participant, increment the counter
+                participantCount++;
+                nextParticipantNumber++;
+                $('#additional_participants').val(participantCount);
+                $('#participants-container').append(participantHtml);
+                
+                // Update add button state
+                if (participantCount >= maxParticipants) {
+                    $('#add-participant').hide();
+                }
             }
-        });
+        }
         
-        // Remove participant
-        $(document).on('click', '.remove-participant', function() {
+        // Handle remove participant
+        // Handle remove participant
+        $(document).on('click', '.remove-participant', function(e) {
+            e.preventDefault();
             if (confirm('Are you sure you want to remove this participant? This action cannot be undone.')) {
                 const participantNum = $(this).data('participant');
-                $(`#participant-${participantNum}`).remove();
+                const $participant = $(`#participant-${participantNum}`);
                 
-                // Rename remaining participants
-                let currentCount = 0;
-                $('.participant-section').each(function(index) {
-                    currentCount++;
-                    const $section = $(this);
-                    const newId = `participant-${currentCount}`;
+                // If it's a new participant (not saved yet), just remove it
+                if (participantNum.startsWith('new-')) {
+                    $participant.remove();
+                    participantCount--;
+                    $('#additional_participants').val(participantCount);
                     
-                    // Update IDs and data attributes
-                    $section.attr('id', newId);
-                    $section.find('.participant-title').text(`Participant #${currentCount}`);
-                    $section.find('.remove-participant').data('participant', currentCount);
+                    // Show add button if under max
+                    if (participantCount < maxParticipants) {
+                        $('#add-participant').show();
+                    }
+                    return;
+                }
+                
+                // For existing participants, mark as deleted
+                $participant.find('input, select, textarea').prop('disabled', true);
+                $participant.addClass('bg-light');
+                $participant.prepend('<input type="hidden" name="deleted_participants[]" value="' + participantNum + '">');
+                $participant.hide('slow', function() {
+                    // After hiding, update counters
+                    participantCount--;
+                    $('#additional_participants').val(participantCount);
                     
-                    // Update input names
-                    $section.find('input, select').each(function() {
-                        const name = $(this).attr('name').replace(/\[\d+\]/, `[${currentCount}]`);
-                        $(this).attr('name', name);
-                    });
+                    // Show add button if under max
+                    if (participantCount < maxParticipants) {
+                        $('#add-participant').show();
+                    }
                 });
                 
-                participantCount = currentCount;
+                // Decrement participant count
+                participantCount--;
                 $('#additional_participants').val(participantCount);
                 
-                // Re-enable add button if needed
+                // Renumber remaining participants
+                $('.participant-title').each(function(i) {
+                    $(this).text(`Participant #${i + 1}`);
+                });
+                
+                // Show add button if under max
                 if (participantCount < maxParticipants) {
+                    $('#add-participant').show();
+                }
                     $('#add-participant').prop('disabled', false);
                 }
             }
         });
+        
+        // Initialize retreat criteria display
+        function updateRetreatCriteria() {
+            const selectedOption = $('#retreat_id').find('option:selected');
+            const criteria = selectedOption.data('criteria');
+            const criteriaMap = {
+                'male_only': 'Only for Males',
+                'female_only': 'Only for Females',
+                'priests_only': 'Only for Priests',
+                'sisters_only': 'Only for Sisters',
+                'youth_only': 'Only for Youth (18-35 years)',
+                'children': 'Only for Children (below 18 years)',
+                'no_criteria': 'Open to All'
+            };
+            
+            $('#retreat-criteria').text('Criteria: ' + (criteriaMap[criteria] || 'Not specified'));
+        }
+        
+        // Update criteria on page load if retreat is selected
+        if ($('#retreat_id').val()) {
+            updateRetreatCriteria();
+        }
+        
+        // Update criteria when retreat changes
+        $('#retreat_id').on('change', updateRetreatCriteria);
         
         // Form validation
         $('#booking-form').validate({

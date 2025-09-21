@@ -121,9 +121,11 @@
                                                 $startDate = $retreat->start_date->format('M d, Y');
                                                 $endDate = $retreat->end_date->format('M d, Y');
                                                 $dateRange = "($startDate - $endDate)";
+                                                $selected = old('retreat_id') == $retreat->id ? 'selected' : '';
                                             @endphp
                                             <option value="{{ $retreat->id }}" 
-                                                data-criteria="{{ $retreat->criteria }}">
+                                                data-criteria="{{ $retreat->criteria }}"
+                                                {{ $selected }}>
                                                 {{ $retreat->title }} {{ $dateRange }}
                                             </option>
                                         @endforeach
@@ -135,7 +137,7 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="special_remarks">Special Remarks</label>
-                                    <textarea name="special_remarks" id="special_remarks" class="form-control" rows="2" placeholder="Any special instructions or remarks"></textarea>
+                                    <textarea class="form-control" id="special_remarks" name="special_remarks" rows="3">{{ old('special_remarks') }}</textarea>
                                 </div>
                             </div>
                         </div>
@@ -150,14 +152,14 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="firstname">First Name <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="firstname" name="firstname" required>
+                                    <input type="text" class="form-control" id="firstname" name="firstname" value="{{ old('firstname') }}" required>
                                 </div>
                             </div>
                             
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="lastname">Last Name <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="lastname" name="lastname" required>
+                                    <input type="text" class="form-control" id="lastname" name="lastname" value="{{ old('lastname') }}" required>
                                 </div>
                             </div>
                             
@@ -168,7 +170,7 @@
                                         <div class="input-group-prepend">
                                             <span class="input-group-text">+91</span>
                                         </div>
-                                        <input type="text" class="form-control" id="whatsapp_number" name="whatsapp_number" required>
+                                        <input type="text" class="form-control" id="whatsapp_number" name="whatsapp_number" value="{{ old('whatsapp_number') }}" required>
                                     </div>
                                 </div>
                             </div>
@@ -176,7 +178,7 @@
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="age">Age <span class="text-danger">*</span></label>
-                                    <input type="number" class="form-control" id="age" name="age" min="1" max="120" required>
+                                    <input type="number" class="form-control" id="age" name="age" min="1" max="120" value="{{ old('age') }}" required>
                                 </div>
                             </div>
                             
@@ -185,9 +187,9 @@
                                     <label for="gender">Gender <span class="text-danger">*</span></label>
                                     <select class="form-control" id="gender" name="gender" required>
                                         <option value="">-- Select Gender --</option>
-                                        <option value="male">Male</option>
-                                        <option value="female">Female</option>
-                                        <option value="other">Other</option>
+                                        <option value="male" {{ old('gender') == 'male' ? 'selected' : '' }}>Male</option>
+                                        <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>Female</option>
+                                        <option value="other" {{ old('gender') == 'other' ? 'selected' : '' }}>Other</option>
                                     </select>
                                 </div>
                             </div>
@@ -195,63 +197,63 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="email">Email Address <span class="text-danger">*</span></label>
-                                    <input type="email" class="form-control" id="email" name="email" required>
+                                    <input type="email" class="form-control" id="email" name="email" value="{{ old('email') }}" required>
                                 </div>
                             </div>
                             
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="address">Address <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="address" name="address" required>
+                                    <textarea class="form-control" id="address" name="address" rows="3" required>{{ old('address') }}</textarea>
                                 </div>
                             </div>
                             
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="city">City <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="city" name="city" required>
+                                    <input type="text" class="form-control" id="city" name="city" value="{{ old('city') }}" required>
                                 </div>
                             </div>
                             
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="state">State <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="state" name="state" required>
+                                    <input type="text" class="form-control" id="state" name="state" value="{{ old('state') }}" required>
                                 </div>
                             </div>
                             
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="diocese">Diocese</label>
-                                    <input type="text" class="form-control" id="diocese" name="diocese">
+                                    <input type="text" class="form-control" id="diocese" name="diocese" value="{{ old('diocese') }}">
                                 </div>
                             </div>
                             
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="parish">Parish</label>
-                                    <input type="text" class="form-control" id="parish" name="parish">
+                                    <input type="text" class="form-control" id="parish" name="parish" value="{{ old('parish') }}">
                                 </div>
                             </div>
                             
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="congregation">Congregation (For Priests/Sisters)</label>
-                                    <input type="text" class="form-control" id="congregation" name="congregation">
+                                    <input type="text" class="form-control" id="congregation" name="congregation" value="{{ old('congregation') }}">
                                 </div>
                             </div>
                             
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="emergency_contact_name">Emergency Contact Name <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="emergency_contact_name" name="emergency_contact_name" required>
+                                    <input type="text" class="form-control" id="emergency_contact_name" name="emergency_contact_name" value="{{ old('emergency_contact_name') }}" required>
                                 </div>
                             </div>
                             
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="emergency_contact_phone">Emergency Contact Phone <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="emergency_contact_phone" name="emergency_contact_phone" required>
+                                    <input type="text" class="form-control" id="emergency_contact_phone" name="emergency_contact_phone" value="{{ old('emergency_contact_phone') }}" required>
                                 </div>
                             </div>
                         </div>
@@ -351,6 +353,19 @@
             $('#retreat-criteria').text('Criteria: ' + (criteriaMap[criteria] || 'Not specified'));
         });
         
+        // Repopulate form with old input if validation fails
+        @if(old('additional_participants', 0) > 0)
+            // Show the participants container
+            $('#participants-container').show();
+            $('#add-more-members-prompt').hide();
+            
+            // Add participants based on old input
+            const oldParticipants = @json(old('participants', []));
+            oldParticipants.forEach(function(participant, index) {
+                addParticipant(participant, index);
+            });
+        @endif
+        
         // Initialize datepicker
         $('.datepicker').datepicker({
             autoclose: true,
@@ -390,11 +405,13 @@
             $('#add-more-members-prompt').addClass('d-none');
         });
         
-        function addParticipant() {
+        function addParticipant(participantData = null, index = null) {
             if (participantCount >= maxParticipants) {
                 alert('Maximum of ' + maxParticipants + ' additional participants allowed.');
                 return;
             }
+            
+            const partIndex = index !== null ? index : participantCount;
             
             participantCount++;
             $('#additional_participants').val(participantCount);
@@ -472,8 +489,13 @@
                 $('#participants-container').append(participantHtml);
             }
             
-            // Update add button state
-            if (participantCount >= maxParticipants) {
+            if (index === null) {
+                // Only increment if this is a new participant, not from old input
+                participantCount++;
+                $('#additional_participants').val(participantCount - 1);
+            }
+            
+            if (participantCount > maxParticipants) {
                 $('#add-participant').prop('disabled', true);
             }
         }
@@ -496,12 +518,12 @@
             $('#additional_participants').val(participantCount);
             
             const participantHtml = `
-                <div class="participant-section" id="participant-${participantCount}">
-                    <div class="participant-header">
-                        <h5 class="participant-title">Participant #${participantCount}</h5>
-                        <span class="remove-participant" data-participant="${participantCount}">
+                <div class="participant-card card mb-3" id="participant-${participantCount}">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5>Participant #${participantCount}</h5>
+                        <button type="button" class="btn btn-sm btn-danger remove-participant" data-participant="${participantCount}">
                             <i class="fas fa-times"></i> Remove
-                        </span>
+                        </button>
                     </div>
                     <div class="row">
                         <div class="col-md-6">
