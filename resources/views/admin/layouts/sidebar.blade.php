@@ -34,6 +34,12 @@
                 <i class="fas fa-user-shield me-2"></i> Retreats
             </a>
             @endcan
+            @can('view-bookings')
+            <a href="{{ route('admin.bookings.index') }}" 
+               class="list-group-item list-group-item-action {{ request()->is('admin/bookings*') ? 'active' : '' }}">
+                <i class="fas fa-user-shield me-2"></i> Bookings
+            </a>
+            @endcan
         
             @can('view-users')
             <a href="{{ route('admin.users.index') }}" 

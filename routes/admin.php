@@ -43,6 +43,18 @@ Route::middleware(['auth:web'])->group(function () {
     Route::get('/support', [\App\Http\Controllers\Admin\SupportController::class, 'index'])->name('admin.support');
     Route::post('/support', [\App\Http\Controllers\Admin\SupportController::class, 'submit'])->name('admin.support.submit');
 
+    // Bookings Management
+    Route::prefix('bookings')->name('admin.bookings.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\BookingController::class, 'index'])->name('index');
+        Route::get('/create', [\App\Http\Controllers\Admin\BookingController::class, 'create'])->name('create');
+        Route::post('/', [\App\Http\Controllers\Admin\BookingController::class, 'store'])->name('store');
+        Route::get('/{booking}', [\App\Http\Controllers\Admin\BookingController::class, 'show'])->name('show');
+        Route::get('/{booking}/edit', [\App\Http\Controllers\Admin\BookingController::class, 'edit'])->name('edit');
+        Route::put('/{booking}', [\App\Http\Controllers\Admin\BookingController::class, 'update'])->name('update');
+        Route::delete('/{booking}', [\App\Http\Controllers\Admin\BookingController::class, 'destroy'])->name('destroy');
+        Route::post('/{booking}/send-confirmation', [\App\Http\Controllers\Admin\BookingController::class, 'sendConfirmation'])->name('send-confirmation');
+    });
+    
     // Users Management
     Route::prefix('users')->name('admin.users.')->group(function () {
         Route::get('/', [\App\Http\Controllers\Admin\UserController::class, 'index'])->name('index');
