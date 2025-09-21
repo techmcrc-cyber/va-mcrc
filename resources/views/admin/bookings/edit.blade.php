@@ -9,6 +9,53 @@
 <!-- Datepicker -->
 <link rel="stylesheet" href="{{ asset('adminlte/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}">
 <style>
+    /* Improved Select2 Styling */
+    .select2-container--bootstrap4 .select2-selection--single {
+        height: calc(2.25rem + 2px);
+        padding: 0.375rem 0.75rem;
+        font-size: 1rem;
+        line-height: 1.5;
+        border: 1px solid #ced4da;
+        border-radius: 0.25rem;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
+    
+    .select2-container--bootstrap4 .select2-selection--single:focus {
+        border-color: #80bdff;
+        outline: 0;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+    
+    .select2-container--bootstrap4 .select2-selection--single .select2-selection__arrow {
+        height: 2.25rem;
+    }
+    
+    .select2-container--bootstrap4 .select2-selection--single .select2-selection__rendered {
+        color: #495057;
+        padding-left: 0;
+    }
+    
+    .select2-container--bootstrap4 .select2-dropdown {
+        border: 1px solid #ced4da;
+        border-radius: 0.25rem;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    }
+    
+    .select2-container--bootstrap4 .select2-results__option {
+        padding: 0.5rem 1rem;
+    }
+    
+    .select2-container--bootstrap4 .select2-results__option--highlighted[aria-selected] {
+        background-color: #007bff;
+        color: white;
+    }
+    
+    .select2-container--bootstrap4 .select2-search--dropdown .select2-search__field {
+        border: 1px solid #ced4da;
+        border-radius: 0.25rem;
+    }
+    
+    /* Participant Section Styling */
     .participant-section {
         border: 1px solid #dee2e6;
         border-radius: 5px;
@@ -71,15 +118,20 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="retreat_id">Select Retreat <span class="text-danger">*</span></label>
-                                    <select name="retreat_id" id="retreat_id" class="form-control select2" required>
+                                    <select name="retreat_id" id="retreat_id" class="form-control select2" style="width: 100%;" required>
                                         <option value="">-- Select Retreat --</option>
                                         @foreach($retreats as $retreat)
                                             <option value="{{ $retreat->id }}" 
-                                                {{ $retreat->id == $booking->retreat_id ? 'selected' : '' }}
+                                                {{ $booking->retreat_id == $retreat->id ? 'selected' : '' }}
                                                 data-criteria="{{ $retreat->criteria }}"
                                                 data-start-date="{{ $retreat->start_date->format('Y-m-d') }}"
                                                 data-end-date="{{ $retreat->end_date->format('Y-m-d') }}">
-                                                {{ $retreat->title }} ({{ $retreat->start_date->format('M d, Y') }} - {{ $retreat->end_date->format('M d, Y') }})
+                                                <div class="d-flex justify-content-between">
+                                                    <span>{{ $retreat->title }}</span>
+                                                    <span class="text-muted ml-2">
+                                                        {{ $retreat->start_date->format('M d, Y') }} - {{ $retreat->end_date->format('M d, Y') }}
+                                                    </span>
+                                                </div>
                                             </option>
                                         @endforeach
                                     </select>
@@ -343,10 +395,35 @@
 
 <script>
     $(function () {
-        // Initialize Select2
+        // Initialize Select2 with better configuration
         $('.select2').select2({
-            theme: 'bootstrap4'
+            theme: 'bootstrap4',
+            width: '100%',
+            placeholder: '-- Select Retreat --',
+            allowClear: true,
+            templateResult: formatRetreatOption,
+            templateSelection: formatRetreatSelection
         });
+        
+        // Format how options are displayed in the dropdown
+        function formatRetreatOption(retreat) {
+            if (!retreat.id) { return retreat.text; }
+            
+            var $container = $(
+                '<div class="d-flex justify-content-between align-items-center">' +
+                '   <span>' + retreat.text + '</span>' +
+                '   <span class="badge badge-info ml-2">' + $(retreat.element).data('start-date') + ' to ' + $(retreat.element).data('end-date') + '</span>' +
+                '</div>'
+            );
+            
+            return $container;
+        }
+        
+        // Format how the selected option is displayed
+        function formatRetreatSelection(retreat) {
+            if (!retreat.id) { return retreat.text; }
+            return $('<span>').text(retreat.text).addClass('text-truncate d-inline-block');
+        }
         
         // Initialize datepicker
         $('.datepicker').datepicker({
