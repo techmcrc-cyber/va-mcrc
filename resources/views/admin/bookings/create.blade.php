@@ -319,14 +319,11 @@
 @push('scripts')
 <!-- Select2 -->
 <script src="{{ asset('adminlte/plugins/select2/js/select2.full.min.js') }}"></script>
-<!-- Datepicker -->
+<!-- Bootstrap Datepicker -->
 <script src="{{ asset('adminlte/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
-<!-- jquery-validation -->
-<script src="{{ asset('adminlte/plugins/jquery-validation/jquery.validate.min.js') }}"></script>
-<script src="{{ asset('adminlte/plugins/jquery-validation/additional-methods.min.js') }}"></script>
 
 <script>
-    $(function () {
+    $(document).ready(function() {
         // Style the select element
         $('#retreat_id').addClass('form-control-lg');
         
@@ -360,11 +357,14 @@
             });
         @endif
         
-        // Initialize datepicker
-        $('.datepicker').datepicker({
-            autoclose: true,
-            format: 'yyyy-mm-dd',
-            todayHighlight: true
+        // Initialize datepicker after all scripts are loaded
+        $(window).on('load', function() {
+            $('.datepicker').datepicker({
+                autoclose: true,
+                format: 'yyyy-mm-dd',
+                todayHighlight: true,
+                orientation: 'bottom auto'
+            });
         });
         
         // Show retreat criteria when selected
@@ -388,8 +388,10 @@
         let participantCount = 0;
         const maxParticipants = 3;
         
-        // Show/hide add more members section
-        $('#btn-yes-add-members').on('click', function() {
+        // Show/hide add more members section - using event delegation for dynamically added elements
+        $(document).on('click', '#btn-yes-add-members', function(e) {
+            alert("mjmm")
+            e.preventDefault();
             $('#add-more-members-prompt').addClass('d-none');
             $('#additional-participants-section').removeClass('d-none');
             addParticipant(); // Add first participant
