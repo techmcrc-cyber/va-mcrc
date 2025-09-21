@@ -387,6 +387,7 @@
         // Add participant
         let participantCount = 0;
         const maxParticipants = {{ config('bookings.max_additional_members', 3) }};
+        let nextParticipantNumber = 1;
         
         // Show/hide add more members section - using event delegation for dynamically added elements
         $(document).on('click', '#btn-yes-add-members', function(e) {
@@ -401,20 +402,24 @@
         });
         
         function addParticipant(participantData = null, index = null) {
-            if (participantCount >= maxParticipants) {
+            const currentCount = $('.participant-section').length;
+            if (currentCount >= maxParticipants) {
                 alert('Maximum of ' + maxParticipants + ' additional participants allowed.');
                 return;
             }
             
-            const partIndex = index !== null ? index : participantCount;
+            const partIndex = index !== null ? index : nextParticipantNumber;
             
-            participantCount++;
-            $('#additional_participants').val(participantCount);
+            // Only increment counters if this is a new participant
+            if (index === null) {
+                participantCount++;
+                nextParticipantNumber++;
+            }
             
             const participantHtml = `
-                <div class="participant-section mb-4" id="participant-${participantCount}">
+                <div class="participant-section mb-4" id="participant-${partIndex}">
                     <div class="participant-header">
-                        <h5 class="participant-title">Participant #${participantCount}</h5>
+                        <h5 class="participant-title">Participant #${partIndex}</h5>
                         <span class="remove-participant text-danger" style="cursor: pointer;" data-participant="${participantCount}">
                             <i class="fas fa-times"></i> Remove
                         </span>
@@ -470,33 +475,33 @@
                 </div>
                 ${participantCount < maxParticipants ? `
                 <div class="text-center mb-4">
-                    <button type="button" class="btn btn-outline-primary" id="add-another-participant">
+                    <button type="button" class="btn btn-outline-primary add-another-participant">
                         <i class="fas fa-plus"></i> Add Another Participant
                     </button>
                 </div>
                 ` : ''}
             `;
             
-            if (participantCount === 1) {
+            // Handle adding the participant section
+            if (currentCount === 0) {
                 $('#participants-container').html(participantHtml);
             } else {
                 $('#add-another-participant').parent().remove();
                 $('#participants-container').append(participantHtml);
             }
             
-            if (index === null) {
-                // Only increment if this is a new participant, not from old input
-                participantCount++;
-                $('#additional_participants').val(participantCount - 1);
-            }
+            // No need to increment participantCount here as it's already incremented at the start
+            // Just update the hidden field with the current count
+            $('#additional_participants').val(participantCount);
             
-            if (participantCount > maxParticipants) {
-                $('#add-participant').prop('disabled', true);
+            // Disable add buttons if we've reached the maximum
+            if ($('.participant-section').length >= maxParticipants) {
+                $('#add-participant, .add-another-participant').prop('disabled', true);
             }
         }
         
         // Handle add another participant
-        $(document).on('click', '#add-another-participant', function() {
+        $(document).on('click', '.add-another-participant', function() {
             addParticipant();
         });
         
@@ -581,34 +586,48 @@
         
         // Remove participant
         $(document).on('click', '.remove-participant', function() {
-            const participantNum = $(this).data('participant');
-            $(`#participant-${participantNum}`).remove();
+            const participantDiv = $(this).closest('.participant-section');
+            const participantId = participantDiv.attr('id').replace('participant-', '');
             
-            // Rename remaining participants
-            let currentCount = 0;
+            // Remove the participant section and the add button after it
+            participantDiv.next('.text-center').remove();
+            participantDiv.remove();
+            
+            // Update the count based on actual DOM elements
+            const currentCount = $('.participant-section').length;
+            participantCount = currentCount;
+            $('#additional_participants').val(participantCount);
+            
+            // Update the numbering of remaining participants
             $('.participant-section').each(function(index) {
-                currentCount++;
-                const $section = $(this);
-                const newId = `participant-${currentCount}`;
+                const newNumber = index + 1;
+                $(this).attr('id', 'participant-' + newNumber);
+                $(this).find('.participant-title').text('Participant #' + newNumber);
                 
-                // Update IDs and data attributes
-                $section.attr('id', newId);
-                $section.find('.participant-title').text(`Participant #${currentCount}`);
-                $section.find('.remove-participant').data('participant', currentCount);
-                
-                // Update input names
-                $section.find('input, select').each(function() {
-                    const name = $(this).attr('name').replace(/\[\d+\]/, `[${currentCount}]`);
+                // Update the data attributes and input names
+                $(this).find('[name^="participants["]').each(function() {
+                    const name = $(this).attr('name').replace(/participants\[\d+\]/, 'participants[' + newNumber + ']');
                     $(this).attr('name', name);
                 });
             });
             
-            participantCount = currentCount;
-            $('#additional_participants').val(participantCount);
+            // Update nextParticipantNumber
+            nextParticipantNumber = currentCount + 1;
             
-            // Re-enable add button if needed
-            if (participantCount < maxParticipants) {
-                $('#add-participant').prop('disabled', false);
+            // Re-enable add buttons if we're below max
+            if (currentCount < maxParticipants) {
+                $('#add-participant, .add-another-participant').prop('disabled', false);
+            }
+            
+            // If we removed the last "Add Another" button, add it back if we're below max
+            if (currentCount < maxParticipants && $('.add-another-participant').length === 0) {
+                const addButtonHtml = `
+                    <div class="text-center mb-4">
+                        <button type="button" class="btn btn-outline-primary add-another-participant">
+                            <i class="fas fa-plus"></i> Add Another Participant
+                        </button>
+                    </div>`;
+                $('#participants-container').append(addButtonHtml);
             }
         });
         
