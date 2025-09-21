@@ -145,7 +145,7 @@
                         <!-- Primary Participant -->
                         <div class="row mt-4">
                             <div class="col-md-12">
-                                <h4>Primary Participant <small class="text-muted">(Main Contact Person)</small></h4>
+                                <h4>Primary Participant</h4>
                                 <hr>
                             </div>
                             
@@ -262,17 +262,11 @@
                         <div class="row mt-4" id="add-more-members-prompt">
                             <div class="col-md-12">
                                 <div class="card card-info">
-                                    <div class="card-header">
-                                        <h3 class="card-title">Add More Members?</h3>
-                                    </div>
                                     <div class="card-body">
-                                        <p>Would you like to add additional members to this booking? (Maximum 3 additional members allowed)</p>
-                                        <div class="mt-3">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <p class="mb-0">Would you like to add additional members to this booking? (Maximum 3 additional members allowed)</p>
                                             <button type="button" class="btn btn-primary" id="btn-yes-add-members">
                                                 <i class="fas fa-plus"></i> Yes, Add Members
-                                            </button>
-                                            <button type="button" class="btn btn-secondary" id="btn-no-thanks">
-                                                <i class="fas fa-times"></i> No Thanks, Just Me
                                             </button>
                                         </div>
                                     </div>

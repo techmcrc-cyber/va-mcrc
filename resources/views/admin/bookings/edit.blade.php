@@ -149,7 +149,7 @@
                         <!-- Primary Participant -->
                         <div class="row mt-4">
                             <div class="col-md-12">
-                                <h4>Primary Participant <small class="text-muted">(Main Contact Person)</small></h4>
+                                <h4>Primary Participant</h4>
                                 <hr>
                             </div>
                             
