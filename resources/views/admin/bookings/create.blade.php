@@ -258,14 +258,33 @@
                             </div>
                         </div>
                         
-                        <!-- Additional Participants -->
-                        <div class="row mt-4">
+                        <!-- Add More Members Prompt -->
+                        <div class="row mt-4" id="add-more-members-prompt">
+                            <div class="col-md-12">
+                                <div class="card card-info">
+                                    <div class="card-header">
+                                        <h3 class="card-title">Add More Members?</h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <p>Would you like to add additional members to this booking? (Maximum 3 additional members allowed)</p>
+                                        <div class="mt-3">
+                                            <button type="button" class="btn btn-primary" id="btn-yes-add-members">
+                                                <i class="fas fa-plus"></i> Yes, Add Members
+                                            </button>
+                                            <button type="button" class="btn btn-secondary" id="btn-no-thanks">
+                                                <i class="fas fa-times"></i> No Thanks, Just Me
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Additional Participants Section (Initially Hidden) -->
+                        <div class="row mt-4 d-none" id="additional-participants-section">
                             <div class="col-md-12">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <h4>Additional Participants <small class="text-muted">(Maximum 3)</small></h4>
-                                    <button type="button" class="btn btn-sm btn-primary add-participant" id="add-participant">
-                                        <i class="fas fa-plus"></i> Add Participant
-                                    </button>
                                 </div>
                                 <hr>
                                 <input type="hidden" name="additional_participants" id="additional_participants" value="0">
@@ -372,6 +391,111 @@
         let participantCount = 0;
         const maxParticipants = 3;
         
+        // Show/hide add more members section
+        $('#btn-yes-add-members').on('click', function() {
+            $('#add-more-members-prompt').addClass('d-none');
+            $('#additional-participants-section').removeClass('d-none');
+            addParticipant(); // Add first participant
+        });
+        
+        $('#btn-no-thanks').on('click', function() {
+            $('#add-more-members-prompt').addClass('d-none');
+        });
+        
+        function addParticipant() {
+            if (participantCount >= maxParticipants) {
+                alert('Maximum of ' + maxParticipants + ' additional participants allowed.');
+                return;
+            }
+            
+            participantCount++;
+            $('#additional_participants').val(participantCount);
+            
+            const participantHtml = `
+                <div class="participant-section mb-4" id="participant-${participantCount}">
+                    <div class="participant-header">
+                        <h5 class="participant-title">Participant #${participantCount}</h5>
+                        <span class="remove-participant text-danger" style="cursor: pointer;" data-participant="${participantCount}">
+                            <i class="fas fa-times"></i> Remove
+                        </span>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>First Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="participants[${participantCount}][firstname]" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Last Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="participants[${participantCount}][lastname]" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>WhatsApp Number <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">+91</span>
+                                    </div>
+                                    <input type="text" class="form-control" name="participants[${participantCount}][whatsapp_number]" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Age <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" name="participants[${participantCount}][age]" min="1" max="120" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Gender <span class="text-danger">*</span></label>
+                                <select class="form-control" name="participants[${participantCount}][gender]" required>
+                                    <option value="">-- Select Gender --</option>
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label>Email Address <span class="text-danger">*</span></label>
+                                <input type="email" class="form-control" name="participants[${participantCount}][email]" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                ${participantCount < maxParticipants ? `
+                <div class="text-center mb-4">
+                    <button type="button" class="btn btn-outline-primary" id="add-another-participant">
+                        <i class="fas fa-plus"></i> Add Another Participant
+                    </button>
+                </div>
+                ` : ''}
+            `;
+            
+            if (participantCount === 1) {
+                $('#participants-container').html(participantHtml);
+            } else {
+                $('#add-another-participant').parent().remove();
+                $('#participants-container').append(participantHtml);
+            }
+            
+            // Update add button state
+            if (participantCount >= maxParticipants) {
+                $('#add-participant').prop('disabled', true);
+            }
+        }
+        
+        // Handle add another participant
+        $(document).on('click', '#add-another-participant', function() {
+            addParticipant();
+        });
+        
+        // Original add participant handler (kept for compatibility)
         $('#add-participant').on('click', function(e) {
             e.preventDefault();
             
