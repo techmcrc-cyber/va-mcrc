@@ -114,19 +114,17 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="retreat_id">Select Retreat <span class="text-danger">*</span></label>
-                                    <select name="retreat_id" id="retreat_id" class="form-control select2" style="width: 100%;" required>
+                                    <select name="retreat_id" id="retreat_id" class="form-control custom-select" style="width: 100%;" required>
                                         <option value="">-- Select Retreat --</option>
                                         @foreach($retreats as $retreat)
+                                            @php
+                                                $startDate = $retreat->start_date->format('M d, Y');
+                                                $endDate = $retreat->end_date->format('M d, Y');
+                                                $dateRange = "($startDate - $endDate)";
+                                            @endphp
                                             <option value="{{ $retreat->id }}" 
-                                                data-criteria="{{ $retreat->criteria }}"
-                                                data-start-date="{{ $retreat->start_date->format('Y-m-d') }}"
-                                                data-end-date="{{ $retreat->end_date->format('Y-m-d') }}">
-                                                <div class="d-flex justify-content-between">
-                                                    <span>{{ $retreat->title }}</span>
-                                                    <span class="text-muted ml-2">
-                                                        {{ $retreat->start_date->format('M d, Y') }} - {{ $retreat->end_date->format('M d, Y') }}
-                                                    </span>
-                                                </div>
+                                                data-criteria="{{ $retreat->criteria }}">
+                                                {{ $retreat->title }} {{ $dateRange }}
                                             </option>
                                         @endforeach
                                     </select>
@@ -333,35 +331,25 @@
 
 <script>
     $(function () {
-        // Initialize Select2 with better configuration
-        $('.select2').select2({
-            theme: 'bootstrap4',
-            width: '100%',
-            placeholder: '-- Select Retreat --',
-            allowClear: true,
-            templateResult: formatRetreatOption,
-            templateSelection: formatRetreatSelection
+        // Style the select element
+        $('#retreat_id').addClass('form-control-lg');
+        
+        // Update criteria display when retreat is selected
+        $('#retreat_id').on('change', function() {
+            var selectedOption = $(this).find('option:selected');
+            var criteria = selectedOption.data('criteria');
+            var criteriaMap = {
+                'male_only': 'Only for Males',
+                'female_only': 'Only for Females',
+                'priests_only': 'Only for Priests',
+                'sisters_only': 'Only for Sisters',
+                'youth_only': 'Only for Youth (18-35 years)',
+                'children': 'Only for Children (below 18 years)',
+                'no_criteria': 'Open to All'
+            };
+            
+            $('#retreat-criteria').text('Criteria: ' + (criteriaMap[criteria] || 'Not specified'));
         });
-        
-        // Format how options are displayed in the dropdown
-        function formatRetreatOption(retreat) {
-            if (!retreat.id) { return retreat.text; }
-            
-            var $container = $(
-                '<div class="d-flex justify-content-between align-items-center">' +
-                '   <span>' + retreat.text + '</span>' +
-                '   <span class="badge badge-info ml-2">' + $(retreat.element).data('start-date') + ' to ' + $(retreat.element).data('end-date') + '</span>' +
-                '</div>'
-            );
-            
-            return $container;
-        }
-        
-        // Format how the selected option is displayed
-        function formatRetreatSelection(retreat) {
-            if (!retreat.id) { return retreat.text; }
-            return $('<span>').text(retreat.text).addClass('text-truncate d-inline-block');
-        }
         
         // Initialize datepicker
         $('.datepicker').datepicker({
