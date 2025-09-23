@@ -261,6 +261,7 @@
                         <!-- Add More Members Prompt -->
                         <div class="row mt-4" id="add-more-members-prompt">
                             <div class="col-md-12">
+                                <input type="hidden" id="max-additional-members" value="{{ config('bookings.max_additional_members', 3) }}">
                                 <div class="card card-info">
                                     <div class="card-body">
                                         <div class="d-flex justify-content-between align-items-center">
@@ -278,7 +279,7 @@
                         <div class="row mt-4 d-none" id="additional-participants-section">
                             <div class="col-md-12">
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <h4>Additional Participants <small class="text-muted">(Maximum 3)</small></h4>
+                                    <h4>Additional Participants <small class="text-muted">(Maximum {{ config('bookings.max_additional_members', 3) }})</small></h4>
                                 </div>
                                 <hr>
                                 <input type="hidden" name="additional_participants" id="additional_participants" value="0">
@@ -386,7 +387,7 @@
         
         // Add participant
         let participantCount = 0;
-        const maxParticipants = {{ config('bookings.max_additional_members', 3) }};
+        const maxParticipants = parseInt($('#max-additional-members').val()); // Use dynamic value from config
         let nextParticipantNumber = 1;
         
         // Show/hide add more members section - using event delegation for dynamically added elements

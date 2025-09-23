@@ -265,6 +265,7 @@
                         <!-- Additional Participants -->
                         <div class="row mt-4">
                             <div class="col-md-12">
+                                <input type="hidden" id="max-additional-members" value="{{ config('bookings.max_additional_members', 3) }}">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <h4>Additional Participants <small class="text-muted">(Maximum {{ config('bookings.max_additional_members', 3) }})</small></h4>
                                     <button type="button" class="btn btn-sm btn-primary add-participant" id="add-participant">
@@ -436,7 +437,7 @@
         });
         
         // Initialize participant counter and max participants
-        const maxParticipants = {{ config('bookings.max_additional_members', 3) }};
+        const maxParticipants = parseInt($('#max-additional-members').val());
         let participantCount = 0;
         let nextParticipantNumber = 1;
         
