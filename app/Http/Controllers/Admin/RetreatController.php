@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\RetreatRequest;
 use App\Models\Retreat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -40,21 +41,9 @@ class RetreatController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(RetreatRequest $request)
     {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'start_date' => 'required|date',
-            'end_date' => 'required|date|after:start_date',
-            'timings' => 'required|string|max:255',
-            'seats' => 'required|integer|min:0',
-            'criteria' => 'required|in:male_only,female_only,priests_only,sisters_only,youth_only,children,no_criteria',
-            'special_remarks' => 'nullable|string',
-            'instructions' => 'nullable|string',
-            'is_active' => 'boolean',
-            'is_featured' => 'boolean',
-        ]);
+        $validated = $request->validated();
 
         $validated['slug'] = Str::slug($validated['title'] . ' ' . now()->format('Y-m-d'));
         $validated['created_by'] = Auth::id();
@@ -95,21 +84,9 @@ class RetreatController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Retreat $retreat)
+    public function update(RetreatRequest $request, Retreat $retreat)
     {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'start_date' => 'required|date',
-            'end_date' => 'required|date|after:start_date',
-            'timings' => 'required|string|max:255',
-            'seats' => 'required|integer|min:0',
-            'criteria' => 'required|in:male_only,female_only,priests_only,sisters_only,youth_only,children,no_criteria',
-            'special_remarks' => 'nullable|string',
-            'instructions' => 'nullable|string',
-            'is_active' => 'boolean',
-            'is_featured' => 'boolean',
-        ]);
+        $validated = $request->validated();
 
         $validated['updated_by'] = Auth::id();
         $retreat->update($validated);

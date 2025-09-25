@@ -239,10 +239,50 @@
         const startDateInput = document.querySelector('#start_date');
         const endDateInput = document.querySelector('#end_date');
         
+        function validateDates() {
+            const startDate = new Date(startDateInput.value);
+            const endDate = new Date(endDateInput.value);
+            
+            // Remove any existing custom error messages
+            const existingError = endDateInput.parentNode.querySelector('.date-error');
+            if (existingError) {
+                existingError.remove();
+            }
+            endDateInput.classList.remove('is-invalid');
+            
+            if (startDateInput.value && endDateInput.value && endDate <= startDate) {
+                // Add error styling
+                endDateInput.classList.add('is-invalid');
+                
+                // Create error message
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'invalid-feedback date-error';
+                errorDiv.textContent = 'The end date must be after the start date.';
+                endDateInput.parentNode.appendChild(errorDiv);
+                
+                return false;
+            }
+            return true;
+        }
+        
         startDateInput.addEventListener('change', function() {
             endDateInput.min = this.value;
             if (new Date(endDateInput.value) < new Date(this.value)) {
                 endDateInput.value = this.value;
+            }
+            validateDates();
+        });
+        
+        endDateInput.addEventListener('change', function() {
+            validateDates();
+        });
+        
+        // Enhanced form validation
+        form.addEventListener('submit', function(e) {
+            if (!validateDates()) {
+                e.preventDefault();
+                endDateInput.focus();
+                return false;
             }
         });
     });
