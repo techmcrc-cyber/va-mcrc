@@ -25,7 +25,7 @@ class BookingController extends Controller
     public function create()
     {
         $retreats = Retreat::where('is_active', true)
-            ->where('start_date', '>=', now())
+            ->where('end_date', '>=', now())
             ->orderBy('start_date')
             ->get();
             
@@ -151,7 +151,10 @@ class BookingController extends Controller
                 ->with('warning', 'Please edit the primary booking to modify all participants.');
         }
         
-        $retreats = Retreat::where('is_active', true)
+        $retreats = Retreat::where(function ($query) {
+                $query->where('is_active', true)
+                      ->where('end_date', '>=', now());
+            })
             ->orWhere('id', $booking->retreat_id) // Include current retreat even if inactive
             ->orderBy('start_date')
             ->get();
