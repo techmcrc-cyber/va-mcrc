@@ -17,7 +17,7 @@ class BookingController extends Controller
         $bookings = Booking::with(['retreat', 'creator'])
             ->where('participant_number', 1) // Only show primary bookings in the list
             ->latest()
-            ->paginate(20);
+            ->get();
             
         return view('admin.bookings.index', compact('bookings'));
     }

@@ -4,20 +4,24 @@
 
 @section('content')
 <div class="container-fluid">
+    <div class="card mb-2">
+        <div class="card-header d-flex justify-content-between align-items-center" style="background-color: #f8f9fc; border-bottom: 1px solid #e3e6f0;">
+            <h4 class="m-0 fw-bold" style="color: #b53d5e; font-size: 1.5rem;">Retreat Bookings</h4>
+            <a href="{{ route('admin.bookings.create') }}" class="btn btn-sm btn-primary">
+                <i class="fas fa-plus me-1"></i> Create New Booking
+            </a>
+        </div>
+    </div>
+
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h3 class="card-title">Retreat Bookings</h3>
-                    <div>
-                        <a href="{{ route('admin.bookings.create') }}" class="btn btn-primary">
-                            <i class="fas fa-plus"></i> Create Booking
-                        </a>
-                    </div>
-                </div>
-                <!-- /.card-header -->
                 <div class="card-body">
-                    <table id="bookings-table" class="table table-bordered table-striped">
+                    @if(session('success'))
+                        <div class="alert alert-success">{{ session('success') }}</div>
+                    @endif
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover" id="bookings-table" width="100%" cellspacing="0">
                         <thead>
                             <tr>
                                 <th style="width: 12%;">Booking ID</th>
@@ -116,26 +120,38 @@
                                 </tr>
                             @endforelse
                         </tbody>
-                    </table>
-                </div>
-                <!-- /.card-body -->
-                <div class="card-footer">
-                    {{ $bookings->links() }}
+                        </table>
+                    </div>
                 </div>
             </div>
-            <!-- /.card -->
         </div>
-        <!-- /.col -->
     </div>
-    <!-- /.row -->
 </div>
 @endsection
 
 @push('styles')
-<!-- DataTables -->
-<link rel="stylesheet" href="{{ asset('adminlte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
-<link rel="stylesheet" href="{{ asset('adminlte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
 <style>
+    /* Style all table headers */
+    #bookings-table th {
+        font-weight: bold !important;
+        background-color: #f8f9fc !important;
+        padding-top: 1rem !important;
+        padding-bottom: 1rem !important;
+    }
+    
+    /* Compact ID column styling */
+    #bookings-table th:first-child,
+    #bookings-table td:first-child {
+        padding-left: 15px;
+    }
+    
+    .dataTables_length select {
+        margin: 0 5px;
+        padding: 4px 20px;
+        border-radius: 4px;
+        border: 1px solid #d1d3e2;
+    }
     /* Custom styling for bookings table */
     #bookings-table {
         table-layout: fixed;
@@ -235,21 +251,35 @@
 @endpush
 
 @push('scripts')
-<!-- DataTables  & Plugins -->
-<script src="{{ asset('adminlte/plugins/datatables/jquery.dataTables.min.js') }}"></script>
-<script src="{{ asset('adminlte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
-<script src="{{ asset('adminlte/plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
-<script src="{{ asset('adminlte/plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
-
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
 <script>
-    $(function () {
+    $(document).ready(function() {
         $('#bookings-table').DataTable({
-            "paging": false,
-            "lengthChange": false,
+            "pageLength": 25,
+            "paging": true,
             "searching": true,
             "ordering": true,
-            "info": false,
-            "autoWidth": false,
+            "info": true,
+            "responsive": true,
+            "language": {
+                "search": "_INPUT_",
+                "searchPlaceholder": "Search bookings...",
+                "lengthMenu": "Show _MENU_ entries",
+                "zeroRecords": "No matching records found",
+                "info": "Showing _START_ to _END_ of _TOTAL_ entries",
+                "infoEmpty": "No entries available",
+                "infoFiltered": "(filtered from _MAX_ total entries)",
+                "paginate": {
+                    "first": "First",
+                    "last": "Last",
+                    "next": "Next",
+                    "previous": "Previous"
+                }
+            },
+            "dom": "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
+                   "<'row'<'col-sm-12'tr>>" +
+                   "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
             "responsive": true,
             "order": [[0, 'desc']]
         });
