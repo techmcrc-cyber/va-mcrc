@@ -136,10 +136,10 @@ class Booking extends Model
         $criteriaCheck = [
             'male_only' => $this->gender === 'male',
             'female_only' => $this->gender === 'female',
-            'priests_only' => $this->congregation !== null,
-            'sisters_only' => $this->gender === 'female' && $this->congregation !== null,
-            'youth_only' => $this->age >= 18 && $this->age <= 35,
-            'children' => $this->age < 18,
+            'priests_only' => $this->congregation !== null && !empty(trim($this->congregation)),
+            'sisters_only' => $this->gender === 'female' && $this->congregation !== null && !empty(trim($this->congregation)),
+            'youth_only' => $this->age >= 16 && $this->age <= 30, // Youth: Age 16-30
+            'children' => $this->age <= 15, // Children: Age 15 or below
         ];
 
         return $criteriaCheck[$retreat->criteria] ?? false;

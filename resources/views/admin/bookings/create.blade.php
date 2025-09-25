@@ -343,8 +343,8 @@
                 'female_only': 'Only for Females',
                 'priests_only': 'Only for Priests',
                 'sisters_only': 'Only for Sisters',
-                'youth_only': 'Only for Youth (18-35 years)',
-                'children': 'Only for Children (below 18 years)',
+                'youth_only': 'Only for Youth (16-30 years)',
+                'children': 'Only for Children (15 years or below)',
                 'no_criteria': 'Open to All'
             };
             
@@ -408,8 +408,8 @@
                 'female_only': 'Only for Females',
                 'priests_only': 'Only for Priests',
                 'sisters_only': 'Only for Sisters',
-                'youth_only': 'Only for Youth (18-35 years)',
-                'children': 'Only for Children (below 18 years)',
+                'youth_only': 'Only for Youth (16-30 years)',
+                'children': 'Only for Children (15 years or below)',
                 'no_criteria': 'Open to All'
             };
             
@@ -835,16 +835,16 @@
                             meetsCriteria = gender === 'female';
                             break;
                         case 'priests_only':
-                            meetsCriteria = congregation !== '';
+                            meetsCriteria = congregation !== '' && congregation.trim() !== '';
                             break;
                         case 'sisters_only':
-                            meetsCriteria = gender === 'female' && congregation !== '';
+                            meetsCriteria = gender === 'female' && congregation !== '' && congregation.trim() !== '';
                             break;
                         case 'youth_only':
-                            meetsCriteria = age >= 18 && age <= 35;
+                            meetsCriteria = age >= 16 && age <= 30; // Youth: Age 16-30
                             break;
                         case 'children':
-                            meetsCriteria = age < 18;
+                            meetsCriteria = age <= 15; // Children: Age 15 or below
                             break;
                         case 'no_criteria':
                         default:

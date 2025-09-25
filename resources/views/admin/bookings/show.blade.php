@@ -56,8 +56,8 @@
                                                 'female_only' => 'Only for Females',
                                                 'priests_only' => 'Only for Priests',
                                                 'sisters_only' => 'Only for Sisters',
-                                                'youth_only' => 'Only for Youth (18-35 years)',
-                                                'children' => 'Only for Children (below 18 years)',
+                                                'youth_only' => 'Only for Youth (16-30 years)',
+                                                'children' => 'Only for Children (15 years or below)',
                                                 'no_criteria' => 'Open to All'
                                             ];
                                             echo $criteriaMap[$booking->retreat->criteria] ?? 'Not specified';
