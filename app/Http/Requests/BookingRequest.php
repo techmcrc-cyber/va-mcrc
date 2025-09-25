@@ -23,11 +23,23 @@ class BookingRequest extends FormRequest
     {
         $maxAdditionalMembers = config('bookings.max_additional_members', 3);
         
+        // Get the selected retreat to check criteria
+        $retreat = null;
+        if ($this->has('retreat_id')) {
+            $retreat = \App\Models\Retreat::find($this->input('retreat_id'));
+        }
+        
+        // Determine if congregation is required based on retreat criteria
+        $congregationRule = 'nullable|string|max:255';
+        if ($retreat && in_array($retreat->criteria, ['priests_only', 'sisters_only'])) {
+            $congregationRule = 'required|string|max:255';
+        }
+        
         $rules = [
             'retreat_id' => 'required|exists:retreats,id',
             'firstname' => 'required|string|max:255',
             'lastname' => 'required|string|max:255',
-            'whatsapp_number' => 'required|string|max:20',
+            'whatsapp_number' => 'required|string|min:10|max:10|regex:/^[0-9]+$/',
             'age' => 'required|integer|min:1|max:120',
             'email' => 'required|email|max:255',
             'address' => 'required|string',
@@ -36,7 +48,7 @@ class BookingRequest extends FormRequest
             'state' => 'required|string|max:255',
             'diocese' => 'nullable|string|max:255',
             'parish' => 'nullable|string|max:255',
-            'congregation' => 'nullable|string|max:255',
+            'congregation' => $congregationRule,
             'emergency_contact_name' => 'required|string|max:255',
             'emergency_contact_phone' => 'required|string|max:20',
             'additional_participants' => 'required|integer|min:0|max:' . $maxAdditionalMembers,
@@ -52,7 +64,7 @@ class BookingRequest extends FormRequest
             foreach ($this->input('participants', []) as $index => $participant) {
                 $rules["participants.{$index}.firstname"] = 'required|string|max:255';
                 $rules["participants.{$index}.lastname"] = 'required|string|max:255';
-                $rules["participants.{$index}.whatsapp_number"] = 'required|string|max:20';
+                $rules["participants.{$index}.whatsapp_number"] = 'required|string|min:10|max:10|regex:/^[0-9]+$/';
                 $rules["participants.{$index}.age"] = 'required|integer|min:1|max:120';
                 $rules["participants.{$index}.email"] = 'required|email|max:255';
                 $rules["participants.{$index}.gender"] = 'required|in:male,female,other';
@@ -60,6 +72,24 @@ class BookingRequest extends FormRequest
         }
 
         return $rules;
+    }
+
+    /**
+     * Get custom messages for validator errors.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'congregation.required' => 'The congregation field is required for Priests and Sisters retreats.',
+            'whatsapp_number.min' => 'WhatsApp number must be exactly 10 digits.',
+            'whatsapp_number.max' => 'WhatsApp number must be exactly 10 digits.',
+            'whatsapp_number.regex' => 'WhatsApp number must contain only digits.',
+            'participants.*.whatsapp_number.min' => 'WhatsApp number must be exactly 10 digits.',
+            'participants.*.whatsapp_number.max' => 'WhatsApp number must be exactly 10 digits.',
+            'participants.*.whatsapp_number.regex' => 'WhatsApp number must contain only digits.',
+        ];
     }
 
     /**

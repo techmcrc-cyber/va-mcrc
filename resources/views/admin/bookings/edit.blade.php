@@ -242,8 +242,11 @@
                             
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="congregation">Congregation (For Priests/Sisters)</label>
-                                    <input type="text" class="form-control" id="congregation" name="congregation" value="{{ old('congregation', $booking->congregation) }}">
+                                    <label for="congregation">Congregation (For Priests/Sisters) <span class="text-danger d-none" id="congregation-required">*</span></label>
+                                    <input type="text" class="form-control @error('congregation') is-invalid @enderror" id="congregation" name="congregation" value="{{ old('congregation', $booking->congregation) }}">
+                                    @error('congregation')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                 </div>
                             </div>
                             
@@ -306,7 +309,10 @@
                                                                 <div class="input-group-prepend">
                                                                     <span class="input-group-text">+91</span>
                                                                 </div>
-                                                                <input type="text" class="form-control" name="participants[{{ $participantCount }}][whatsapp_number]" value="{{ old('participants.' . $participantCount . '.whatsapp_number', $participant->whatsapp_number) }}" required>
+                                                                <input type="text" class="form-control participant-whatsapp @error('participants.' . $participantCount . '.whatsapp_number') is-invalid @enderror" name="participants[{{ $participantCount }}][whatsapp_number]" value="{{ old('participants.' . $participantCount . '.whatsapp_number', $participant->whatsapp_number) }}" minlength="10" maxlength="10" pattern="[0-9]{10}" required>
+                                                                @error('participants.' . $participantCount . '.whatsapp_number')
+                                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                                @enderror
                                                             </div>
                                                         </div>
                                                     </div>
@@ -434,7 +440,32 @@
             };
             
             $('#retreat-criteria').text('Criteria: ' + (criteriaMap[criteria] || 'Not specified'));
+            
+            // Handle congregation field requirement
+            updateCongregationRequirement(criteria);
         });
+        
+        // Function to update congregation field requirement
+        function updateCongregationRequirement(criteria) {
+            const congregationField = $('#congregation');
+            const congregationLabel = $('#congregation-required');
+            
+            if (criteria === 'priests_only' || criteria === 'sisters_only') {
+                // Make congregation field required
+                congregationField.attr('required', true);
+                congregationLabel.removeClass('d-none');
+                congregationField.closest('.form-group').addClass('required-field');
+            } else {
+                // Make congregation field optional
+                congregationField.removeAttr('required');
+                congregationLabel.addClass('d-none');
+                congregationField.closest('.form-group').removeClass('required-field');
+                
+                // Remove any validation errors
+                congregationField.removeClass('is-invalid');
+                congregationField.next('.invalid-feedback').hide();
+            }
+        }
         
         // Initialize participant counter and max participants
         const maxParticipants = parseInt($('#max-additional-members').val());
@@ -581,7 +612,7 @@
                                     <div class="input-group-prepend">
                                         <span class="input-group-text">+91</span>
                                     </div>
-                                    <input type="text" class="form-control" name="participants[${partIndex}][whatsapp_number]" value="${participantData ? participantData.whatsapp_number : ''}" required>
+                                    <input type="text" class="form-control participant-whatsapp" name="participants[${partIndex}][whatsapp_number]" value="${participantData ? participantData.whatsapp_number : ''}" minlength="10" maxlength="10" pattern="[0-9]{10}" required>
                                 </div>
                             </div>
                         </div>
@@ -670,6 +701,31 @@
         // Update criteria when retreat changes
         $('#retreat_id').on('change', updateRetreatCriteria);
         
+        // Initialize congregation field requirement on page load
+        const initialCriteria = $('#retreat_id option:selected').data('criteria');
+        if (initialCriteria) {
+            updateCongregationRequirement(initialCriteria);
+        }
+        
+        // Add validation rules for dynamically added participant WhatsApp fields
+        $(document).on('focus', '.participant-whatsapp', function() {
+            const fieldName = $(this).attr('name');
+            if (!$('#booking-form').validate().settings.rules[fieldName]) {
+                $(this).rules('add', {
+                    required: true,
+                    minlength: 10,
+                    maxlength: 10,
+                    digits: true,
+                    messages: {
+                        required: 'Please enter WhatsApp number',
+                        minlength: 'Please enter a valid 10-digit number',
+                        maxlength: 'Please enter a valid 10-digit number',
+                        digits: 'Please enter numbers only'
+                    }
+                });
+            }
+        });
+        
         // Form validation
         $('#booking-form').validate({
             rules: {
@@ -754,11 +810,17 @@
                     warnings.push('Please select a retreat');
                 }
                 
+                // Check congregation field requirement
+                const criteria = $('#retreat_id option:selected').data('criteria');
+                const congregation = $('#congregation').val();
+                
+                if ((criteria === 'priests_only' || criteria === 'sisters_only') && !congregation.trim()) {
+                    warnings.push('Congregation field is required for Priests and Sisters retreats.');
+                }
+                
                 // Check if primary participant meets criteria
                 const gender = $('#gender').val();
                 const age = parseInt($('#age').val());
-                const congregation = $('#congregation').val();
-                const criteria = $('#retreat_id option:selected').data('criteria');
                 
                 if (criteria) {
                     let meetsCriteria = false;

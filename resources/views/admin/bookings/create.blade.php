@@ -170,8 +170,11 @@
                                         <div class="input-group-prepend">
                                             <span class="input-group-text">+91</span>
                                         </div>
-                                        <input type="text" class="form-control" id="whatsapp_number" name="whatsapp_number" value="{{ old('whatsapp_number') }}" required>
+                                        <input type="text" class="form-control @error('whatsapp_number') is-invalid @enderror" id="whatsapp_number" name="whatsapp_number" value="{{ old('whatsapp_number') }}" minlength="10" maxlength="10" pattern="[0-9]{10}" required>
                                     </div>
+                                    @error('whatsapp_number')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                 </div>
                             </div>
                             
@@ -238,8 +241,11 @@
                             
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="congregation">Congregation (For Priests/Sisters)</label>
-                                    <input type="text" class="form-control" id="congregation" name="congregation" value="{{ old('congregation') }}">
+                                    <label for="congregation">Congregation (For Priests/Sisters) <span class="text-danger d-none" id="congregation-required">*</span></label>
+                                    <input type="text" class="form-control @error('congregation') is-invalid @enderror" id="congregation" name="congregation" value="{{ old('congregation') }}">
+                                    @error('congregation')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                 </div>
                             </div>
                             
@@ -343,7 +349,32 @@
             };
             
             $('#retreat-criteria').text('Criteria: ' + (criteriaMap[criteria] || 'Not specified'));
+            
+            // Handle congregation field requirement
+            updateCongregationRequirement(criteria);
         });
+        
+        // Function to update congregation field requirement
+        function updateCongregationRequirement(criteria) {
+            const congregationField = $('#congregation');
+            const congregationLabel = $('#congregation-required');
+            
+            if (criteria === 'priests_only' || criteria === 'sisters_only') {
+                // Make congregation field required
+                congregationField.attr('required', true);
+                congregationLabel.removeClass('d-none');
+                congregationField.closest('.form-group').addClass('required-field');
+            } else {
+                // Make congregation field optional
+                congregationField.removeAttr('required');
+                congregationLabel.addClass('d-none');
+                congregationField.closest('.form-group').removeClass('required-field');
+                
+                // Remove any validation errors
+                congregationField.removeClass('is-invalid');
+                congregationField.next('.invalid-feedback').hide();
+            }
+        }
         
         // Repopulate form with old input if validation fails
         @if(old('additional_participants', 0) > 0)
@@ -383,6 +414,14 @@
             };
             
             $('#retreat-criteria').text('Criteria: ' + (criteriaMap[criteria] || 'Not specified'));
+        });
+        
+        // Initialize congregation field requirement on page load
+        $(document).ready(function() {
+            const initialCriteria = $('#retreat_id option:selected').data('criteria');
+            if (initialCriteria) {
+                updateCongregationRequirement(initialCriteria);
+            }
         });
         
         // Add participant
@@ -445,7 +484,7 @@
                                     <div class="input-group-prepend">
                                         <span class="input-group-text">+91</span>
                                     </div>
-                                    <input type="text" class="form-control" name="participants[${participantCount}][whatsapp_number]" required>
+                                    <input type="text" class="form-control participant-whatsapp" name="participants[${participantCount}][whatsapp_number]" minlength="10" maxlength="10" pattern="[0-9]{10}" required>
                                 </div>
                             </div>
                         </div>
@@ -495,6 +534,11 @@
             // Just update the hidden field with the current count
             $('#additional_participants').val(participantCount);
             
+            // Add validation rules to the new participant fields
+            setTimeout(function() {
+                addParticipantValidation(participantCount);
+            }, 100);
+            
             // Disable add buttons if we've reached the maximum
             if ($('.participant-section').length >= maxParticipants) {
                 $('#add-participant, .add-another-participant').prop('disabled', true);
@@ -505,6 +549,58 @@
         $(document).on('click', '.add-another-participant', function() {
             addParticipant();
         });
+        
+        // Add validation rules for dynamically added participants
+        function addParticipantValidation(participantIndex) {
+            // Add rules for each participant field
+            $(`input[name="participants[${participantIndex}][firstname]"]`).rules('add', {
+                required: true,
+                messages: { required: 'Please enter first name' }
+            });
+            
+            $(`input[name="participants[${participantIndex}][lastname]"]`).rules('add', {
+                required: true,
+                messages: { required: 'Please enter last name' }
+            });
+            
+            $(`input[name="participants[${participantIndex}][whatsapp_number]"]`).rules('add', {
+                required: true,
+                minlength: 10,
+                maxlength: 10,
+                digits: true,
+                messages: {
+                    required: 'Please enter WhatsApp number',
+                    minlength: 'Please enter a valid 10-digit number',
+                    maxlength: 'Please enter a valid 10-digit number',
+                    digits: 'Please enter numbers only'
+                }
+            });
+            
+            $(`input[name="participants[${participantIndex}][age]"]`).rules('add', {
+                required: true,
+                min: 1,
+                max: 120,
+                messages: {
+                    required: 'Please enter age',
+                    min: 'Please enter a valid age',
+                    max: 'Please enter a valid age'
+                }
+            });
+            
+            $(`select[name="participants[${participantIndex}][gender]"]`).rules('add', {
+                required: true,
+                messages: { required: 'Please select gender' }
+            });
+            
+            $(`input[name="participants[${participantIndex}][email]"]`).rules('add', {
+                required: true,
+                email: true,
+                messages: {
+                    required: 'Please enter email address',
+                    email: 'Please enter a valid email address'
+                }
+            });
+        }
         
         // Original add participant handler (kept for compatibility)
         $('#add-participant').on('click', function(e) {
@@ -546,7 +642,7 @@
                                     <div class="input-group-prepend">
                                         <span class="input-group-text">+91</span>
                                     </div>
-                                    <input type="text" class="form-control" name="participants[${participantCount}][whatsapp_number]" required>
+                                    <input type="text" class="form-control participant-whatsapp" name="participants[${participantCount}][whatsapp_number]" minlength="10" maxlength="10" pattern="[0-9]{10}" required>
                                 </div>
                             </div>
                         </div>
@@ -716,11 +812,17 @@
                     warnings.push('Please select a retreat');
                 }
                 
+                // Check congregation field requirement
+                const criteria = $('#retreat_id option:selected').data('criteria');
+                const congregation = $('#congregation').val();
+                
+                if ((criteria === 'priests_only' || criteria === 'sisters_only') && !congregation.trim()) {
+                    warnings.push('Congregation field is required for Priests and Sisters retreats.');
+                }
+                
                 // Check if primary participant meets criteria
                 const gender = $('#gender').val();
                 const age = parseInt($('#age').val());
-                const congregation = $('#congregation').val();
-                const criteria = $('#retreat_id option:selected').data('criteria');
                 
                 if (criteria) {
                     let meetsCriteria = false;
