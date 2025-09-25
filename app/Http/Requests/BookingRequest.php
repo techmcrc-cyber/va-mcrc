@@ -41,27 +41,21 @@ class BookingRequest extends FormRequest
             'emergency_contact_phone' => 'required|string|max:20',
             'additional_participants' => 'required|integer|min:0|max:' . $maxAdditionalMembers,
             'special_remarks' => 'nullable|string',
-            'participants' => 'sometimes|array|max:' . $maxAdditionalMembers,
-            'participants.*.firstname' => 'required_with:participants|string|max:255',
-            'participants.*.lastname' => 'required_with:participants|string|max:255',
-            'participants.*.whatsapp_number' => 'required_with:participants|string|max:20',
-            'participants.*.age' => 'required_with:participants|integer|min:1|max:120',
-            'participants.*.email' => 'required_with:participants|email|max:255',
-            'participants.*.gender' => 'required_with:participants|in:male,female,other',
         ];
 
         // Add validation for additional participants if any
         $additionalParticipants = (int) $this->input('additional_participants', 0);
+        
         if ($additionalParticipants > 0) {
-            $rules['participants'] = 'required|array|size:' . $additionalParticipants;
+            $rules['participants'] = 'required|array|min:1|max:' . $maxAdditionalMembers;
             
-            for ($i = 0; $i < $additionalParticipants; $i++) {
-                $rules["participants.{$i}.firstname"] = 'required|string|max:255';
-                $rules["participants.{$i}.lastname"] = 'required|string|max:255';
-                $rules["participants.{$i}.whatsapp_number"] = 'required|string|max:20';
-                $rules["participants.{$i}.age"] = 'required|integer|min:1|max:120';
-                $rules["participants.{$i}.email"] = 'required|email|max:255';
-                $rules["participants.{$i}.gender"] = 'required|in:male,female,other';
+            foreach ($this->input('participants', []) as $index => $participant) {
+                $rules["participants.{$index}.firstname"] = 'required|string|max:255';
+                $rules["participants.{$index}.lastname"] = 'required|string|max:255';
+                $rules["participants.{$index}.whatsapp_number"] = 'required|string|max:20';
+                $rules["participants.{$index}.age"] = 'required|integer|min:1|max:120';
+                $rules["participants.{$index}.email"] = 'required|email|max:255';
+                $rules["participants.{$index}.gender"] = 'required|in:male,female,other';
             }
         }
 

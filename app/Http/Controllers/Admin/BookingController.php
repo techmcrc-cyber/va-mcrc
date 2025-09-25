@@ -113,6 +113,11 @@ class BookingController extends Controller
                 'flag' => $participantFlag,
                 'created_by' => $userId,
                 'updated_by' => $userId,
+                'address' => $participant['address'] ?? '',
+                'city' => $participant['city'] ?? '',
+                'state' => $participant['state'] ?? '',
+                'emergency_contact_name' => $bookingData['emergency_contact_name'] ?? '',
+                'emergency_contact_phone' => $bookingData['emergency_contact_phone'] ?? '',
             ]);
             
             // Check criteria for participant
