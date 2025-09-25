@@ -3,12 +3,10 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Booking extends Model
 {
-    use SoftDeletes;
 
     protected $fillable = [
         'booking_id',
@@ -33,12 +31,14 @@ class Booking extends Model
         'participant_number',
         'created_by',
         'updated_by',
+        'is_active',
     ];
 
     protected $casts = [
         'age' => 'integer',
         'additional_participants' => 'integer',
         'participant_number' => 'integer',
+        'is_active' => 'boolean',
     ];
 
     /**
@@ -66,11 +66,12 @@ class Booking extends Model
     }
 
     /**
-     * Get all bookings with the same booking ID (primary + additional participants).
+     * Get all active bookings with the same booking ID (primary + additional participants).
      */
     public function allParticipants()
     {
         return self::where('booking_id', $this->booking_id)
+            ->where('is_active', true)
             ->orderBy('participant_number')
             ->get();
     }
@@ -80,8 +81,7 @@ class Booking extends Model
      */
     public static function generateBookingId(): string
     {
-        $lastBooking = self::withTrashed()
-            ->where('booking_id', 'like', 'RB%')
+        $lastBooking = self::where('booking_id', 'like', 'RB%')
             ->orderBy('id', 'desc')
             ->first();
 
@@ -91,6 +91,14 @@ class Booking extends Model
 
         $lastNumber = (int) preg_replace('/[^0-9]/', '', $lastBooking->booking_id);
         return 'RB' . ($lastNumber + 1);
+    }
+    
+    /**
+     * Scope to get only active bookings.
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
     }
 
     /**

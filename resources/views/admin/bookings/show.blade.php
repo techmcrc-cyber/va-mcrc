@@ -181,6 +181,7 @@
                                                 <th>Email</th>
                                                 <th>WhatsApp</th>
                                                 <th>Status</th>
+                                                <th>Actions</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -203,6 +204,15 @@
                                                                 <span class="badge bg-success">Confirmed</span>
                                                             @endif
                                                         </td>
+                                                        <td>
+                                                            <form action="{{ route('admin.bookings.cancel-participant', $participant->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to cancel this participant?');">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Cancel Participant">
+                                                                    <i class="fas fa-user-times"></i>
+                                                                </button>
+                                                            </form>
+                                                        </td>
                                                     </tr>
                                                 @endif
                                             @endforeach
@@ -224,11 +234,11 @@
                                         <a href="{{ route('admin.bookings.edit', $booking->id) }}" class="btn btn-primary me-2">
                                             <i class="fas fa-edit"></i> Edit Booking
                                         </a>
-                                        <form action="{{ route('admin.bookings.destroy', $booking->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to cancel this booking? This action cannot be undone.');">
+                                        <form action="{{ route('admin.bookings.destroy', $booking->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to cancel this entire booking? This will deactivate all participants in this booking.');">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn btn-danger">
-                                                <i class="fas fa-times"></i> Cancel Booking
+                                                <i class="fas fa-ban"></i> Cancel Booking
                                             </button>
                                         </form>
                                     </div>

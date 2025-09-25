@@ -52,6 +52,7 @@ Route::middleware(['auth:web'])->group(function () {
         Route::get('/{booking}/edit', [\App\Http\Controllers\Admin\BookingController::class, 'edit'])->name('edit');
         Route::put('/{booking}', [\App\Http\Controllers\Admin\BookingController::class, 'update'])->name('update');
         Route::delete('/{booking}', [\App\Http\Controllers\Admin\BookingController::class, 'destroy'])->name('destroy');
+        Route::delete('/participant/{participant}', [\App\Http\Controllers\Admin\BookingController::class, 'cancelParticipant'])->name('cancel-participant');
         Route::post('/{booking}/send-confirmation', [\App\Http\Controllers\Admin\BookingController::class, 'sendConfirmation'])->name('send-confirmation');
     });
     

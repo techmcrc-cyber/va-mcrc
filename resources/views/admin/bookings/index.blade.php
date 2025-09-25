@@ -104,11 +104,11 @@
                                             <form action="{{ route('admin.bookings.destroy', $booking->id) }}" 
                                                   method="POST" 
                                                   class="d-inline"
-                                                  onsubmit="return confirm('Are you sure you want to delete this booking? This action cannot be undone.');">
+                                                  onsubmit="return confirm('Are you sure you want to cancel this booking? This will deactivate all participants in this booking.');">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-danger" title="Delete">
-                                                    <i class="fas fa-trash"></i>
+                                                <button type="submit" class="btn btn-sm btn-danger" title="Cancel Booking">
+                                                    <i class="fas fa-ban"></i>
                                                 </button>
                                             </form>
                                         </div>
