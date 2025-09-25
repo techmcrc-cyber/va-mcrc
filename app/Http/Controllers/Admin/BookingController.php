@@ -20,7 +20,15 @@ class BookingController extends Controller
             ->latest()
             ->get();
             
-        return view('admin.bookings.index', compact('bookings'));
+        // Get all retreats that have bookings for the filter dropdown
+        $retreats = Retreat::whereHas('bookings', function($query) {
+                $query->where('participant_number', 1)
+                      ->where('is_active', true);
+            })
+            ->orderBy('title')
+            ->get();
+            
+        return view('admin.bookings.index', compact('bookings', 'retreats'));
     }
 
     public function create()

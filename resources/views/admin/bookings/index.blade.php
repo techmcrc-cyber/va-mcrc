@@ -20,6 +20,7 @@
                     @if(session('success'))
                         <div class="alert alert-success">{{ session('success') }}</div>
                     @endif
+                    
                     <div class="table-responsive">
                         <table class="table table-bordered table-hover" id="bookings-table" width="100%" cellspacing="0">
                         <thead>
@@ -134,10 +135,11 @@
 <style>
     /* Style all table headers */
     #bookings-table th {
-        font-weight: bold !important;
+        font-weight: normal !important;
         background-color: #f8f9fc !important;
         padding-top: 1rem !important;
         padding-bottom: 1rem !important;
+        font-size: 13px !important; /* Further reduced header font size */
     }
     
     /* Compact ID column styling */
@@ -156,6 +158,7 @@
     #bookings-table {
         table-layout: fixed;
         width: 100%;
+        font-size: 15px; /* Base font size increased */
     }
     
     #bookings-table th,
@@ -163,6 +166,7 @@
         vertical-align: middle;
         word-wrap: break-word;
         padding: 12px 8px;
+        font-size: 15px; /* Increased from default */
     }
     
     .guest-info {
@@ -170,12 +174,13 @@
     }
     
     .guest-info strong {
-        font-size: 14px;
+        font-size: 16px; /* Increased from 14px */
         color: #333;
+        font-weight: 600;
     }
     
     .guest-info small {
-        font-size: 11px;
+        font-size: 13px; /* Increased from 11px */
         display: block;
         margin: 2px 0;
     }
@@ -186,15 +191,17 @@
     }
     
     .date-info strong {
-        font-size: 12px;
+        font-size: 15px; /* Increased from 12px */
         color: #333;
+        font-weight: normal; /* Removed bold formatting */
     }
     
     .status-info .badge {
-        font-size: 10px;
-        padding: 4px 8px;
+        font-size: 12px; /* Increased from 10px */
+        padding: 6px 10px; /* Increased padding */
         display: inline-block;
-        min-width: 70px;
+        min-width: 75px;
+        font-weight: 500;
     }
     
     .btn-group-vertical .btn {
@@ -211,20 +218,24 @@
         #bookings-table th,
         #bookings-table td {
             padding: 8px 4px;
-            font-size: 12px;
+            font-size: 14px; /* Increased from 12px */
         }
         
         .guest-info strong {
-            font-size: 12px;
+            font-size: 15px; /* Increased from 12px */
         }
         
         .guest-info small {
-            font-size: 10px;
+            font-size: 12px; /* Increased from 10px */
         }
         
         .btn-group-vertical .btn {
             padding: 2px 6px;
-            font-size: 11px;
+            font-size: 12px; /* Increased from 11px */
+        }
+        
+        .status-info .badge {
+            font-size: 11px; /* Increased for mobile */
         }
     }
     
@@ -247,6 +258,65 @@
         background-color: #007bff !important;
         color: white;
     }
+    
+    /* Filter section styling */
+    #retreat-filter {
+        border: 1px solid #d1d3e2;
+        border-radius: 0.35rem;
+        padding: 0.5rem 0.75rem;
+        font-size: 14px;
+        background-color: white;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
+    
+    #retreat-filter:focus {
+        border-color: #80bdff;
+        outline: 0;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+    
+    .form-label {
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        color: #495057;
+    }
+    
+    /* DataTables controls alignment */
+    .dataTables_wrapper .row:first-child {
+        margin-bottom: 1rem;
+    }
+    
+    .dataTables_wrapper .row:first-child > div {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        min-height: 70px;
+    }
+    
+    .dataTables_length {
+        margin-bottom: 0;
+    }
+    
+    .dataTables_filter {
+        margin-bottom: 0;
+        text-align: right;
+    }
+    
+    .retreat-filter-container {
+        margin-bottom: 0;
+    }
+    
+    /* Ensure consistent spacing on mobile */
+    @media (max-width: 767px) {
+        .dataTables_wrapper .row:first-child > div {
+            min-height: auto;
+            margin-bottom: 0.5rem;
+        }
+        
+        .dataTables_filter {
+            text-align: left;
+        }
+    }
 </style>
 @endpush
 
@@ -255,7 +325,8 @@
 <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
 <script>
     $(document).ready(function() {
-        $('#bookings-table').DataTable({
+        // Initialize DataTable
+        var table = $('#bookings-table').DataTable({
             "pageLength": 25,
             "paging": true,
             "searching": true,
@@ -277,11 +348,37 @@
                     "previous": "Previous"
                 }
             },
-            "dom": "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
+            "dom": "<'row'<'col-md-4'l><'col-md-4'<'retreat-filter-container'>><'col-md-4'f>>" +
                    "<'row'<'col-sm-12'tr>>" +
                    "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
             "responsive": true,
-            "order": [[0, 'desc']]
+            "order": [[0, 'desc']],
+            "initComplete": function() {
+                // Add retreat filter to custom container
+                var retreatFilterHtml = `
+                    <div class="form-group mb-0">
+                        <select id="retreat-filter" class="form-control">
+                            <option value="">All Retreats</option>
+                            @foreach($retreats as $retreat)
+                                <option value="{{ $retreat->title }}">
+                                    {{ $retreat->title }} ({{ $retreat->start_date->format('M Y') }})
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                `;
+                $('.retreat-filter-container').html(retreatFilterHtml);
+                
+                // Initialize retreat filter functionality
+                $('#retreat-filter').on('change', function() {
+                    var selectedRetreat = this.value;
+                    if (selectedRetreat === '') {
+                        table.column(1).search('').draw(); // Clear filter if "All Retreats" selected
+                    } else {
+                        table.column(1).search(selectedRetreat).draw(); // Filter by retreat name (column index 1)
+                    }
+                });
+            }
         });
         
         // Initialize tooltips
