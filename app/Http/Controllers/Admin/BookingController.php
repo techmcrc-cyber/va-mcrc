@@ -313,7 +313,7 @@ class BookingController extends Controller
             }
         } else {
             // No participants in the request, mark all additional participants as inactive
-            $booking->allParticipants()
+            Booking::where('booking_id', $booking->booking_id)
                 ->where('participant_number', '>', 1)
                 ->update(['is_active' => false]);
         }
