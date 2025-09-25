@@ -70,22 +70,7 @@
                                 </tr>
                             </table>
                             
-                            <h4 class="mt-4">Emergency Contact</h4>
-                            <hr>
-                            <table class="table table-bordered">
-                                <tr>
-                                    <th style="width: 30%;">Name</th>
-                                    <td>{{ $booking->emergency_contact_name }}</td>
-                                </tr>
-                                <tr>
-                                    <th>Phone</th>
-                                    <td>{{ $booking->emergency_contact_phone }}</td>
-                                </tr>
-                            </table>
-                        </div>
-                        
-                        <div class="col-md-6">
-                            <h4>Primary Participant Details</h4>
+                            <h4 class="mt-4">Primary Participant Details</h4>
                             <hr>
                             <table class="table table-bordered">
                                 <tr>
@@ -131,8 +116,10 @@
                                     </tr>
                                 @endif
                             </table>
-                            
-                            <h4 class="mt-4">Booking Information</h4>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <h4>Booking Information</h4>
                             <hr>
                             <table class="table table-bordered">
                                 <tr>
@@ -161,6 +148,19 @@
                                         </td>
                                     </tr>
                                 @endif
+                            </table>
+                            
+                            <h4 class="mt-4">Emergency Contact</h4>
+                            <hr>
+                            <table class="table table-bordered">
+                                <tr>
+                                    <th style="width: 30%;">Name</th>
+                                    <td>{{ $booking->emergency_contact_name }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Phone</th>
+                                    <td>{{ $booking->emergency_contact_phone }}</td>
+                                </tr>
                             </table>
                         </div>
                     </div>
@@ -220,16 +220,10 @@
                                     <h3 class="card-title">Booking Actions</h3>
                                 </div>
                                 <div class="card-body">
-                                    <div class="btn-group">
-                                        <a href="{{ route('admin.bookings.edit', $booking->id) }}" class="btn btn-primary">
+                                    <div>
+                                        <a href="{{ route('admin.bookings.edit', $booking->id) }}" class="btn btn-primary me-2">
                                             <i class="fas fa-edit"></i> Edit Booking
                                         </a>
-                                        <a href="#" class="btn btn-info" onclick="window.print()">
-                                            <i class="fas fa-print"></i> Print Booking
-                                        </a>
-                                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#sendConfirmationModal">
-                                            <i class="fas fa-envelope"></i> Send Confirmation
-                                        </button>
                                         <form action="{{ route('admin.bookings.destroy', $booking->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to cancel this booking? This action cannot be undone.');">
                                             @csrf
                                             @method('DELETE')
@@ -270,38 +264,6 @@
     <!-- /.row -->
 </div>
 
-<!-- Send Confirmation Modal -->
-<div class="modal fade" id="sendConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="sendConfirmationModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="sendConfirmationModalLabel">Send Booking Confirmation</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <form action="{{ route('admin.bookings.send-confirmation', $booking->id) }}" method="POST">
-                @csrf
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="email">Email Address</label>
-                        <input type="email" class="form-control" id="email" name="email" value="{{ $booking->email }}" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="message">Additional Message (Optional)</label>
-                        <textarea class="form-control" id="message" name="message" rows="3" placeholder="Add any additional information or instructions"></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-paper-plane"></i> Send Confirmation
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
 @endsection
 
 @push('scripts')
