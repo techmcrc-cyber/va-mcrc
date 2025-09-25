@@ -285,7 +285,7 @@
                                                 <input type="hidden" name="participants[{{ $participantCount }}][id]" value="{{ $participant->id }}">
                                                 <div class="participant-header d-flex justify-content-between align-items-center mb-3">
                                         <h5 class="participant-title m-0">Participant #{{ $participantCount }}</h5>
-                                        <button type="button" class="btn btn-sm btn-danger remove-participant" data-participant="{{ $participantCount }}">
+                                        <button type="button" class="btn btn-sm btn-danger remove-participant text-white" data-participant="{{ $participantCount }}">
                                             <i class="fas fa-times"></i> Remove
                                         </button>
                                     </div>
@@ -588,7 +588,7 @@
                     <input type="hidden" name="participants[${partIndex}][id]" value="${participantData ? participantData.id : ''}">
                     <div class="participant-header d-flex justify-content-between align-items-center mb-3">
                         <h5 class="participant-title m-0">Participant #${partIndex}</h5>
-                        <button type="button" class="btn btn-sm btn-danger remove-participant" data-participant="${partIndex}">
+                        <button type="button" class="btn btn-sm btn-danger remove-participant text-white" data-participant="${partIndex}">
                             <i class="fas fa-times"></i> Remove
                         </button>
                     </div>
