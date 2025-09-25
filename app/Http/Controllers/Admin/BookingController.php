@@ -44,7 +44,8 @@ class BookingController extends Controller
         // Check for past bookings
         if (Booking::hasAttendedInPastYear(
             $bookingData['whatsapp_number'],
-            "{$bookingData['firstname']} {$bookingData['lastname']}"
+            $bookingData['firstname'],
+            $bookingData['lastname']
         )) {
             $flag = 'RECURRENT_BOOKING';
         }
@@ -97,7 +98,8 @@ class BookingController extends Controller
             
             if (Booking::hasAttendedInPastYear(
                 $participant['whatsapp_number'] ?? '',
-                "{$participant['firstname']} {$participant['lastname']}"
+                $participant['firstname'] ?? '',
+                $participant['lastname'] ?? ''
             )) {
                 $participantFlag = 'RECURRENT_BOOKING';
             }
@@ -206,10 +208,12 @@ class BookingController extends Controller
         // Re-evaluate flags for primary booking after update
         $flag = null;
         
-        // Check for recurrent booking
+        // Check for recurrent booking (exclude current booking from check)
         if (Booking::hasAttendedInPastYear(
             $bookingData['whatsapp_number'],
-            "{$bookingData['firstname']} {$bookingData['lastname']}"
+            $bookingData['firstname'],
+            $bookingData['lastname'],
+            $booking->booking_id
         )) {
             $flag = 'RECURRENT_BOOKING';
         }
@@ -227,24 +231,21 @@ class BookingController extends Controller
             Booking::whereIn('id', $bookingData['deleted_participants'])->delete();
         }
         
-        // Update or create additional participants
+        // Update or create additional participants using booking_id and participant_number
         if (isset($bookingData['participants']) && is_array($bookingData['participants'])) {
-            $existingParticipants = $booking->allParticipants()
+            // First, mark all current additional participants as inactive
+            // We'll reactivate the ones that are still in the form
+            Booking::where('booking_id', $booking->booking_id)
                 ->where('participant_number', '>', 1)
-                ->where('is_active', true)
-                ->keyBy('id');
-            $existingParticipantIds = $existingParticipants->pluck('id')->toArray();
-                
-            $updatedParticipantIds = [];
-            $participantNumber = 2;
+                ->update(['is_active' => false]);
+            
+            $participantNumber = 2; // Start from 2 for additional participants
             
             foreach ($bookingData['participants'] as $index => $participant) {
                 // Skip empty participant entries
                 if (empty($participant['firstname']) && empty($participant['lastname'])) {
                     continue;
                 }
-                
-                $participantId = isset($participant['id']) && !empty($participant['id']) ? (int)$participant['id'] : null;
                 
                 $participantData = [
                     'retreat_id' => $bookingData['retreat_id'],
@@ -263,35 +264,20 @@ class BookingController extends Controller
                     'emergency_contact_name' => $bookingData['emergency_contact_name'],
                     'emergency_contact_phone' => $bookingData['emergency_contact_phone'],
                     'special_remarks' => $bookingData['special_remarks'] ?? null,
-                    'participant_number' => $participantNumber,
                     'updated_by' => $userId,
                 ];
                 
-                if ($participantId && $existingParticipants->has($participantId)) {
+                // Check if participant with this booking_id and participant_number exists
+                $existingParticipant = Booking::where('booking_id', $booking->booking_id)
+                    ->where('participant_number', $participantNumber)
+                    ->first();
+                
+                if ($existingParticipant) {
                     // Update existing participant
-                    $participantBooking = $existingParticipants[$participantId];
-                    $participantBooking->update($participantData);
+                    $existingParticipant->update($participantData);
+                    $existingParticipant->update(['is_active' => true]); // Reactivate
                     
-                    // Re-evaluate flags for participant after update
-                    $participantFlag = null;
-                    
-                    // Check for recurrent booking
-                    if (Booking::hasAttendedInPastYear(
-                        $participant['whatsapp_number'],
-                        "{$participant['firstname']} {$participant['lastname']}"
-                    )) {
-                        $participantFlag = 'RECURRENT_BOOKING';
-                    }
-                    
-                    // Check criteria for participant
-                    if (!$participantBooking->fresh()->meetsRetreatCriteria()) {
-                        $participantFlag = $participantFlag ? $participantFlag . ',CRITERIA_FAILED' : 'CRITERIA_FAILED';
-                    }
-                    
-                    // Update flag for participant
-                    $participantBooking->update(['flag' => $participantFlag]);
-                    
-                    $updatedParticipantIds[] = $participantId;
+                    $participantBooking = $existingParticipant;
                 } else {
                     // Create new participant
                     $participantData['booking_id'] = $booking->booking_id;
@@ -299,37 +285,31 @@ class BookingController extends Controller
                     $participantData['created_by'] = $userId;
                     $participantData['is_active'] = true;
                     
-                    $newParticipant = Booking::create($participantData);
-                    
-                    // Check flags for new participant
-                    $participantFlag = null;
-                    
-                    // Check for recurrent booking
-                    if (Booking::hasAttendedInPastYear(
-                        $participant['whatsapp_number'],
-                        "{$participant['firstname']} {$participant['lastname']}"
-                    )) {
-                        $participantFlag = 'RECURRENT_BOOKING';
-                    }
-                    
-                    // Check criteria for participant
-                    if (!$newParticipant->meetsRetreatCriteria()) {
-                        $participantFlag = $participantFlag ? $participantFlag . ',CRITERIA_FAILED' : 'CRITERIA_FAILED';
-                    }
-                    
-                    // Update flag for new participant
-                    $newParticipant->update(['flag' => $participantFlag]);
-                    
-                    $updatedParticipantIds[] = $newParticipant->id;
+                    $participantBooking = Booking::create($participantData);
                 }
                 
+                // Re-evaluate flags for participant after update/create
+                $participantFlag = null;
+                
+                // Check for recurrent booking (exclude current booking from check)
+                if (Booking::hasAttendedInPastYear(
+                    $participant['whatsapp_number'],
+                    $participant['firstname'],
+                    $participant['lastname'],
+                    $booking->booking_id
+                )) {
+                    $participantFlag = 'RECURRENT_BOOKING';
+                }
+                
+                // Check criteria for participant
+                if (!$participantBooking->fresh()->meetsRetreatCriteria()) {
+                    $participantFlag = $participantFlag ? $participantFlag . ',CRITERIA_FAILED' : 'CRITERIA_FAILED';
+                }
+                
+                // Update flag for participant
+                $participantBooking->update(['flag' => $participantFlag]);
+                
                 $participantNumber++;
-            }
-            
-            // Mark removed participants as inactive
-            $removedParticipants = array_diff($existingParticipantIds, $updatedParticipantIds);
-            if (!empty($removedParticipants)) {
-                Booking::whereIn('id', $removedParticipants)->update(['is_active' => false]);
             }
         } else {
             // No participants in the request, mark all additional participants as inactive
