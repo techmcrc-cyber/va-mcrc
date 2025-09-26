@@ -98,6 +98,8 @@ return [
     'cipher' => 'AES-256-CBC',
 
     'key' => env('APP_KEY'),
+    
+    'api_key' => env('API_KEY', 'retreat_api_key_2024'),
 
     'previous_keys' => [
         ...array_filter(
