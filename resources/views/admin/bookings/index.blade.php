@@ -97,27 +97,31 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <div class="btn-group-vertical" role="group">
-                                            <a href="{{ route('admin.bookings.show', $booking->id) }}" 
-                                               class="btn btn-sm btn-info mb-1" 
-                                               title="View">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                            <a href="{{ route('admin.bookings.edit', $booking->id) }}" 
-                                               class="btn btn-sm btn-primary mb-1" 
-                                               title="Edit">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                            <form action="{{ route('admin.bookings.destroy', $booking->id) }}" 
-                                                  method="POST" 
-                                                  class="d-inline"
-                                                  onsubmit="return confirm('Are you sure you want to cancel this booking? This will deactivate all participants in this booking.');">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-danger" title="Cancel Booking">
-                                                    <i class="fas fa-ban"></i>
-                                                </button>
-                                            </form>
+                                        <div class="action-buttons">
+                                            <div class="btn-row mb-1">
+                                                <a href="{{ route('admin.bookings.show', $booking->id) }}" 
+                                                   class="btn btn-sm btn-info me-1" 
+                                                   title="View">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a href="{{ route('admin.bookings.edit', $booking->id) }}" 
+                                                   class="btn btn-sm btn-primary" 
+                                                   title="Edit">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                            </div>
+                                            <div class="btn-row">
+                                                <form action="{{ route('admin.bookings.destroy', $booking->id) }}" 
+                                                      method="POST" 
+                                                      class="d-inline w-100"
+                                                      onsubmit="return confirm('Are you sure you want to cancel this booking? This will deactivate all participants in this booking.');">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-sm btn-danger w-100" title="Cancel Booking">
+                                                        <i class="fas fa-ban"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
                                         </div>
                                     </td>
                                 </tr>
@@ -230,13 +234,28 @@
         font-weight: 500;
     }
     
-    .btn-group-vertical .btn {
-        margin-bottom: 3px;
-        min-width: 35px;
+    .action-buttons {
+        width: 100%;
+        max-width: 80px;
     }
     
-    .btn-group-vertical .btn:last-child {
-        margin-bottom: 0;
+    .btn-row {
+        display: flex;
+        justify-content: center;
+        gap: 2px;
+    }
+    
+    .action-buttons .btn {
+        padding: 5px 6px;
+        min-width: 32px;
+        font-size: 12px;
+        line-height: 1.2;
+        border-radius: 3px;
+    }
+    
+    .action-buttons .btn-sm {
+        padding: 4px 5px;
+        font-size: 11px;
     }
     
     /* Responsive adjustments */
@@ -255,9 +274,14 @@
             font-size: 11px;
         }
         
-        .btn-group-vertical .btn {
-            padding: 2px 6px;
-            font-size: 12px; /* Increased from 11px */
+        .action-buttons .btn {
+            padding: 3px 4px;
+            font-size: 10px;
+            min-width: 28px;
+        }
+        
+        .action-buttons {
+            max-width: 70px;
         }
         
         .status-info .badge {
