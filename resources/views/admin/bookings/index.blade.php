@@ -25,11 +25,11 @@
                         <table class="table table-bordered table-hover" id="bookings-table" width="100%" cellspacing="0">
                         <thead>
                             <tr>
-                                <th style="width: 12%;">Booking ID</th>
-                                <th style="width: 18%;">Retreat</th>
-                                <th style="width: 20%;">Primary Guest & Contact</th>
-                                <th style="width: 18%;">Dates</th>
-                                <th style="width: 10%;">Participants</th>
+                                <th style="width: 10%;">Booking ID</th>
+                                <th style="width: 20%;">Retreat</th>
+                                <th style="width: 25%;">Primary Guest & Contact</th>
+                                <th style="width: 15%;">Dates</th>
+                                <th style="width: 8%;">Participants</th>
                                 <th style="width: 12%;">Status</th>
                                 <th style="width: 10%;">Actions</th>
                             </tr>
@@ -41,29 +41,35 @@
                                     <td>{{ $booking->retreat->title }}</td>
                                     <td>
                                         <div class="guest-info">
-                                            <strong>{{ $booking->firstname }} {{ $booking->lastname }}</strong>
-                                            @if($booking->flag)
-                                                <span class="badge bg-warning ml-1" data-toggle="tooltip" title="{{ $booking->flag }}">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                </span>
-                                            @endif
-                                            <br>
-                                            <small class="text-muted">
-                                                <i class="fas fa-phone-alt"></i> {{ $booking->whatsapp_number }}
-                                            </small>
-                                            <br>
-                                            <small class="text-muted">
-                                                <i class="fas fa-envelope"></i> {{ $booking->email }}
-                                            </small>
+                                            <div class="guest-name">
+                                                <strong>{{ $booking->firstname }} {{ $booking->lastname }}</strong>
+                                                @if($booking->flag)
+                                                    <span class="badge bg-warning ms-1" data-toggle="tooltip" title="{{ $booking->flag }}">
+                                                        <i class="fas fa-exclamation-triangle"></i>
+                                                    </span>
+                                                @endif
+                                            </div>
+                                            <div class="guest-contact mt-1">
+                                                @if($booking->whatsapp_number)
+                                                    <small class="text-muted d-block">
+                                                        <i class="fas fa-phone-alt me-1"></i>{{ $booking->whatsapp_number }}
+                                                    </small>
+                                                @endif
+                                                @if($booking->email)
+                                                    <small class="text-muted d-block">
+                                                        <i class="fas fa-envelope me-1"></i>{{ $booking->email }}
+                                                    </small>
+                                                @endif
+                                            </div>
                                         </div>
                                     </td>
                                     <td>
                                         <div class="date-info">
-                                            <strong>{{ $booking->retreat->start_date->format('M d, Y') }}</strong>
-                                            <br>
-                                            <small class="text-muted">to</small>
-                                            <br>
-                                            <strong>{{ $booking->retreat->end_date->format('M d, Y') }}</strong>
+                                            <div class="text-center">
+                                                <strong>{{ $booking->retreat->start_date->format('M d, Y') }}</strong>
+                                                <small class="text-muted d-block">to</small>
+                                                <strong>{{ $booking->retreat->end_date->format('M d, Y') }}</strong>
+                                            </div>
                                         </div>
                                     </td>
                                     <td class="text-center">
@@ -165,35 +171,55 @@
     #bookings-table td {
         vertical-align: middle;
         word-wrap: break-word;
-        padding: 12px 8px;
-        font-size: 15px; /* Increased from default */
+        padding: 8px 6px;
+        font-size: 14px;
     }
     
     .guest-info {
-        line-height: 1.4;
+        line-height: 1.3;
+        padding: 0;
+    }
+    
+    .guest-name {
+        margin-bottom: 4px;
     }
     
     .guest-info strong {
-        font-size: 16px; /* Increased from 14px */
+        font-size: 15px;
         color: #333;
         font-weight: 600;
+        line-height: 1.2;
     }
     
-    .guest-info small {
-        font-size: 13px; /* Increased from 11px */
-        display: block;
-        margin: 2px 0;
+    .guest-contact {
+        margin-top: 3px;
+    }
+    
+    .guest-contact small {
+        font-size: 12px;
+        line-height: 1.3;
+        margin: 1px 0;
+    }
+    
+    .guest-contact small.d-block {
+        margin-bottom: 2px;
     }
     
     .date-info {
         text-align: center;
-        line-height: 1.3;
+        line-height: 1.2;
     }
     
     .date-info strong {
-        font-size: 15px; /* Increased from 12px */
+        font-size: 13px;
         color: #333;
-        font-weight: normal; /* Removed bold formatting */
+        font-weight: 500;
+        display: block;
+    }
+    
+    .date-info small {
+        font-size: 11px;
+        margin: 2px 0;
     }
     
     .status-info .badge {
@@ -217,16 +243,16 @@
     @media (max-width: 768px) {
         #bookings-table th,
         #bookings-table td {
-            padding: 8px 4px;
-            font-size: 14px; /* Increased from 12px */
+            padding: 6px 4px;
+            font-size: 13px;
         }
         
         .guest-info strong {
-            font-size: 15px; /* Increased from 12px */
+            font-size: 14px;
         }
         
-        .guest-info small {
-            font-size: 12px; /* Increased from 10px */
+        .guest-contact small {
+            font-size: 11px;
         }
         
         .btn-group-vertical .btn {
