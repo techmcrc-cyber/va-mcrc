@@ -43,14 +43,18 @@
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <h6 class="text-uppercase text-muted mb-2">Total Users</h6>
-                        <h2 class="mb-0">12</h2>
+                        <h2 class="mb-0 counter-number">{{ $stats['total_users'] }}</h2>
                     </div>
                     <div class="icon-shape icon-lg bg-primary bg-opacity-10 text-primary rounded-3">
-                        <i class="fas fa-calendar-check"></i>
+                        <i class="fas fa-users"></i>
                     </div>
                 </div>
                 <div class="mt-3">
-                    <span class="text-success"><i class="fas fa-arrow-up"></i> 12%</span>
+                    @if($stats['user_growth'] >= 0)
+                        <span class="text-success"><i class="fas fa-arrow-up"></i> {{ $stats['user_growth'] }}%</span>
+                    @else
+                        <span class="text-danger"><i class="fas fa-arrow-down"></i> {{ abs($stats['user_growth']) }}%</span>
+                    @endif
                     <span class="text-muted">from last month</span>
                 </div> 
             </div>
@@ -63,14 +67,18 @@
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <h6 class="text-uppercase text-muted mb-2">Total Retreats</h6>
-                        <h2 class="mb-0">15</h2>
+                        <h2 class="mb-0 counter-number">{{ $stats['total_retreats'] }}</h2>
                     </div>
                     <div class="icon-shape icon-lg bg-success bg-opacity-10 text-success rounded-3">
                         <i class="fas fa-calendar-alt"></i>
                     </div>
                 </div>
                 <div class="mt-3">
-                    <span class="text-success"><i class="fas fa-arrow-up"></i> 8%</span>
+                    @if($stats['retreat_growth'] >= 0)
+                        <span class="text-success"><i class="fas fa-arrow-up"></i> {{ $stats['retreat_growth'] }}%</span>
+                    @else
+                        <span class="text-danger"><i class="fas fa-arrow-down"></i> {{ abs($stats['retreat_growth']) }}%</span>
+                    @endif
                     <span class="text-muted">from last month</span>
                 </div>
             </div>
@@ -83,14 +91,18 @@
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <h6 class="text-uppercase text-muted mb-2">Total Bookings</h6>
-                        <h2 class="mb-0">{{ $stats['total_members'] ?? 0 }}</h2>
+                        <h2 class="mb-0 counter-number">{{ $stats['total_bookings'] }}</h2>
                     </div>
                     <div class="icon-shape icon-lg bg-info bg-opacity-10 text-info rounded-3">
-                        <i class="fas fa-users"></i>
+                        <i class="fas fa-calendar-check"></i>
                     </div>
                 </div>
                 <div class="mt-3">
-                    <span class="text-success"><i class="fas fa-arrow-up"></i> 5%</span>
+                    @if($stats['booking_growth'] >= 0)
+                        <span class="text-success"><i class="fas fa-arrow-up"></i> {{ $stats['booking_growth'] }}%</span>
+                    @else
+                        <span class="text-danger"><i class="fas fa-arrow-down"></i> {{ abs($stats['booking_growth']) }}%</span>
+                    @endif
                     <span class="text-muted">from last month</span>
                 </div>
             </div>
@@ -102,15 +114,19 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <h6 class="text-uppercase text-muted mb-2">Total Users</h6>
-                        <h2 class="mb-0">{{ $stats['total_users'] ?? 0 }}</h2>
+                        <h6 class="text-uppercase text-muted mb-2">Admin Users</h6>
+                        <h2 class="mb-0 counter-number">{{ $stats['total_admin_users'] }}</h2>
                     </div>
                     <div class="icon-shape icon-lg bg-warning bg-opacity-10 text-warning rounded-3">
-                        <i class="fas fa-user"></i>
+                        <i class="fas fa-user-shield"></i>
                     </div>
                 </div>
                 <div class="mt-3">
-                    <span class="text-success"><i class="fas fa-arrow-up"></i> 15%</span>
+                    @if($stats['admin_user_growth'] >= 0)
+                        <span class="text-success"><i class="fas fa-arrow-up"></i> {{ $stats['admin_user_growth'] }}%</span>
+                    @else
+                        <span class="text-danger"><i class="fas fa-arrow-down"></i> {{ abs($stats['admin_user_growth']) }}%</span>
+                    @endif
                     <span class="text-muted">from last month</span>
                 </div>
             </div>
@@ -118,46 +134,143 @@
     </div>
 </div>
 
+<!-- Dashboard Statistics Summary -->
+<div class="row g-4 mb-4">
+    <div class="col-lg-3 col-md-6">
+        <div class="card border-0 shadow-sm text-center h-100">
+            <div class="card-body">
+                <div class="icon-shape icon-lg bg-success bg-opacity-10 text-success rounded-circle mx-auto mb-3">
+                    <i class="fas fa-mountain"></i>
+                </div>
+                <h3 class="mb-1">{{ $retreatStats['upcoming'] }}</h3>
+                <p class="text-muted mb-0">Upcoming Retreats</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6">
+        <div class="card border-0 shadow-sm text-center h-100">
+            <div class="card-body">
+                <div class="icon-shape icon-lg bg-info bg-opacity-10 text-info rounded-circle mx-auto mb-3">
+                    <i class="fas fa-play-circle"></i>
+                </div>
+                <h3 class="mb-1">{{ $retreatStats['ongoing'] }}</h3>
+                <p class="text-muted mb-0">Ongoing Retreats</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6">
+        <div class="card border-0 shadow-sm text-center h-100">
+            <div class="card-body">
+                <div class="icon-shape icon-lg bg-warning bg-opacity-10 text-warning rounded-circle mx-auto mb-3">
+                    <i class="fas fa-star"></i>
+                </div>
+                <h3 class="mb-1">{{ $retreatStats['featured'] }}</h3>
+                <p class="text-muted mb-0">Featured Retreats</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6">
+        <div class="card border-0 shadow-sm text-center h-100">
+            <div class="card-body">
+                <div class="icon-shape icon-lg bg-primary bg-opacity-10 text-primary rounded-circle mx-auto mb-3">
+                    <i class="fas fa-user-plus"></i>
+                </div>
+                <h3 class="mb-1">{{ $bookingStats['primary_participants'] }}</h3>
+                <p class="text-muted mb-0">Primary Participants</p>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="row g-4">
+    <!-- Recent Activities -->
     <div class="col-12">
         <div class="card border-0 shadow-sm">
             <div class="card-body">
                 <h5 class="card-title mb-4">Recent Activities</h5>
                 <div class="list-group list-group-flush">
-                    <div class="list-group-item border-0 px-0">
-                        <div class="d-flex align-items-center">
-                            <div class="bg-primary bg-opacity-10 p-3 rounded-3 me-3">
-                                <i class="fas fa-calendar-check text-primary"></i>
+                    @forelse($activities as $activity)
+                        <div class="list-group-item border-0 px-0">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-{{ $activity['color'] }} bg-opacity-10 p-3 rounded-3 me-3">
+                                    <i class="{{ $activity['icon'] }} text-{{ $activity['color'] }}"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1">{{ $activity['description'] }}</h6>
+                                    <p class="mb-0 text-muted small">
+                                        by {{ $activity['user'] }} • {{ $activity['created_at']->diffForHumans() }}
+                                    </p>
+                                </div>
+                                <span class="badge bg-{{ $activity['color'] }}">{{ ucfirst($activity['type']) }}</span>
                             </div>
-                            <div class="flex-grow-1">
-                                <h6 class="mb-1">Sunday Service</h6>
-                                <p class="mb-0 text-muted small">Sep 15, 2024 - 10:00 AM</p>
+                        </div>
+                    @empty
+                        <div class="list-group-item border-0 px-0">
+                            <div class="text-center py-4">
+                                <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                                <p class="text-muted mb-0">No recent activities found.</p>
                             </div>
-                            <span class="badge bg-primary">Upcoming</span>
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- Booking Trends Chart -->
+    <div class="col-12 col-xl-8 mb-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0">Monthly Booking Trends</h6>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-chart-line me-1"></i> Last 6 Months
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#">Last 3 Months</a></li>
+                            <li><a class="dropdown-item" href="#">Last 6 Months</a></li>
+                            <li><a class="dropdown-item" href="#">Last 12 Months</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div style="height: 300px; position: relative;">
+                    <canvas id="bookingsChart"></canvas>
+                </div>
+                
+                <!-- Chart Summary Stats -->
+                <div class="row mt-4 pt-3 border-top">
+                    <div class="col-md-3 text-center">
+                        <div class="d-flex flex-column">
+                            <span class="h4 mb-0 text-primary counter-number">{{ $bookingStats['new_this_month'] }}</span>
+                            <span class="text-muted small">This Month</span>
                         </div>
                     </div>
-                    <div class="list-group-item border-0 px-0">
-                        <div class="d-flex align-items-center">
-                            <div class="bg-success bg-opacity-10 p-3 rounded-3 me-3">
-                                <i class="fas fa-book text-success"></i>
-                            </div>
-                            <div class="flex-grow-1">
-                                <h6 class="mb-1">Bible Study</h6>
-                                <p class="mb-0 text-muted small">Sep 17, 2024 - 7:00 PM</p>
-                            </div>
-                            <span class="badge bg-success">Scheduled</span>
+                    <div class="col-md-3 text-center">
+                        <div class="d-flex flex-column">
+                            <span class="h4 mb-0 text-success counter-number">{{ $bookingStats['primary_participants'] }}</span>
+                            <span class="text-muted small">Primary Bookings</span>
                         </div>
                     </div>
-                    <div class="list-group-item border-0 px-0">
-                        <div class="d-flex align-items-center">
-                            <div class="bg-info bg-opacity-10 p-3 rounded-3 me-3">
-                                <i class="fas fa-praying-hands text-info"></i>
-                            </div>
-                            <div class="flex-grow-1">
-                                <h6 class="mb-1">Prayer Meeting</h6>
-                                <p class="mb-0 text-muted small">Sep 19, 2024 - 6:30 PM</p>
-                            </div>
-                            <span class="badge bg-info">Planned</span>
+                    <div class="col-md-3 text-center">
+                        <div class="d-flex flex-column">
+                            <span class="h4 mb-0 text-info counter-number">{{ $bookingStats['additional_participants'] }}</span>
+                            <span class="text-muted small">Additional</span>
+                        </div>
+                    </div>
+                    <div class="col-md-3 text-center">
+                        <div class="d-flex flex-column">
+                            @if($bookingStats['growth_percentage'] >= 0)
+                                <span class="h4 mb-0 text-success">+{{ $bookingStats['growth_percentage'] }}%</span>
+                            @else
+                                <span class="h4 mb-0 text-danger">{{ $bookingStats['growth_percentage'] }}%</span>
+                            @endif
+                            <span class="text-muted small">Growth</span>
                         </div>
                     </div>
                 </div>
@@ -165,8 +278,8 @@
         </div>
     </div>
 
-<!-- Recent Users -->
-    <div class="col-12 col-xl-6 mb-4">
+    <!-- Recent Users -->
+    <div class="col-12 col-xl-4 mb-4">
         <div class="card border-0 shadow-sm h-100">
             <div class="card-header bg-white">
                 <div class="d-flex justify-content-between align-items-center">
@@ -463,6 +576,8 @@
 @endpush
 
 @push('scripts')
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
 <script>
     $(document).ready(function() {
         // Initialize DataTables
@@ -481,28 +596,55 @@
         
         // Initialize charts if any
         if (typeof Chart !== 'undefined') {
-            // Sample chart for retreat attendance
-            const ctx = document.getElementById('attendanceChart');
+            // Monthly Bookings Chart
+            const ctx = document.getElementById('bookingsChart');
             if (ctx) {
+                const monthlyData = @json($monthlyBookings);
+                const labels = monthlyData.map(item => item.month);
+                const data = monthlyData.map(item => item.count);
+                
                 new Chart(ctx, {
                     type: 'line',
                     data: {
-                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+                        labels: labels,
                         datasets: [{
-                            label: 'Retreat Attendance',
-                            data: [12, 19, 15, 25, 22, 30, 28],
+                            label: 'Monthly Bookings',
+                            data: data,
                             backgroundColor: 'rgba(78, 115, 223, 0.1)',
                             borderColor: 'rgba(78, 115, 223, 1)',
-                            borderWidth: 2,
-                            tension: 0.3,
-                            fill: true
+                            borderWidth: 3,
+                            tension: 0.4,
+                            fill: true,
+                            pointBackgroundColor: 'rgba(78, 115, 223, 1)',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2,
+                            pointRadius: 6,
+                            pointHoverRadius: 8
                         }]
                     },
                     options: {
                         responsive: true,
+                        maintainAspectRatio: false,
                         plugins: {
                             legend: {
                                 display: false
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                titleColor: '#fff',
+                                bodyColor: '#fff',
+                                borderColor: 'rgba(78, 115, 223, 1)',
+                                borderWidth: 1,
+                                cornerRadius: 6,
+                                displayColors: false,
+                                callbacks: {
+                                    title: function(context) {
+                                        return context[0].label;
+                                    },
+                                    label: function(context) {
+                                        return `${context.parsed.y} booking${context.parsed.y !== 1 ? 's' : ''}`;
+                                    }
+                                }
                             }
                         },
                         scales: {
@@ -515,18 +657,55 @@
                                     color: 'rgba(0, 0, 0, 0.05)'
                                 },
                                 ticks: {
-                                    stepSize: 5
+                                    stepSize: Math.max(1, Math.ceil(Math.max(...data) / 5)),
+                                    color: '#858796',
+                                    font: {
+                                        size: 12
+                                    },
+                                    callback: function(value) {
+                                        return value;
+                                    }
                                 }
                             },
                             x: {
                                 grid: {
                                     display: false
+                                },
+                                ticks: {
+                                    color: '#858796',
+                                    font: {
+                                        size: 12
+                                    }
                                 }
                             }
+                        },
+                        interaction: {
+                            intersect: false,
+                            mode: 'index'
                         }
                     }
                 });
             }
+        }
+        
+        // Animate counter numbers
+        $('.counter-number').each(function() {
+            const $this = $(this);
+            const countTo = parseInt($this.text());
+            const duration = 2000;
+            
+            $({ countNum: 0 }).animate({
+                countNum: countTo
+            }, {
+                duration: duration,
+                easing: 'swing',
+                step: function() {
+                    $this.text(Math.floor(this.countNum));
+                },
+                complete: function() {
+                    $this.text(countTo);
+                }
+            });
         });
     });
 </script>
