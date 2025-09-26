@@ -11,24 +11,6 @@
         
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav ms-auto mt-2 mt-lg-0">
-                <!-- Notifications Dropdown -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="notificationsDropdown" role="button" 
-                       data-bs-toggle="dropdown" aria-expanded="false" style="color: #5a5c69;">
-                        <i class="fas fa-bell" style="color: #5a5c69;"></i>
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                            3
-                            <span class="visually-hidden">unread notifications</span>
-                        </span>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationsDropdown">
-                        <li><h6 class="dropdown-header">Notifications</h6></li>
-                        <li><a class="dropdown-item" href="#">New booking received</a></li>
-                        <li><a class="dropdown-item" href="#">New user registered</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item text-center" href="#">View all notifications</a></li>
-                    </ul>
-                </li>
                 
                 <!-- Messages Dropdown -->
                 <!-- <li class="nav-item dropdown">
