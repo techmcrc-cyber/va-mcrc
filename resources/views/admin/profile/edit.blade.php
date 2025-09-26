@@ -22,7 +22,7 @@
                         <div class="col-md-4 mb-3">
                             <div class="text-center">
                                 <div class="position-relative d-inline-block">
-                                    <img src="{{ $user->profile_image ? asset('storage/' . $user->profile_image) : asset('images/default-avatar.png') }}" 
+                                    <img src="{{ $user->profile_image ? asset('storage/' . $user->profile_image) : asset('/images/avatar.png') }}"
                                          class="rounded-circle img-thumbnail mb-3" 
                                          alt="Profile Image" 
                                          style="width: 150px; height: 150px; object-fit: cover;">
