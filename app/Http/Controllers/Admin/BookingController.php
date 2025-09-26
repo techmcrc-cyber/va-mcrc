@@ -459,7 +459,11 @@ class BookingController extends Controller
      */
     public function exportForm()
     {
-        $retreats = Retreat::orderBy('start_date', 'desc')->get();
+        $retreats = Retreat::withCount(['bookings' => function($query) {
+                $query->where('is_active', true);
+            }])
+            ->orderBy('start_date', 'desc')
+            ->get();
         
         return view('admin.bookings.export', compact('retreats'));
     }
@@ -474,8 +478,9 @@ class BookingController extends Controller
         ]);
 
         $query = Booking::with(['retreat'])
-            ->where('participant_number', 1)
-            ->where('is_active', true);
+            ->where('is_active', true)
+            ->orderBy('booking_id')
+            ->orderBy('participant_number');
 
         if ($request->retreat_id) {
             $query->where('retreat_id', $request->retreat_id);

@@ -94,7 +94,7 @@
                                     </div>
                                     <div class="col-md-3">
                                         <div class="mb-2">
-                                            <h4 class="mb-0" id="total-bookings">{{ $retreats->sum(function($retreat) { return $retreat->bookings()->where('participant_number', 1)->where('is_active', true)->count(); }) }}</h4>
+                                            <h4 class="mb-0" id="total-bookings">{{ $retreats->sum('bookings_count') }}</h4>
                                             <small>Total Active Bookings</small>
                                         </div>
                                     </div>
@@ -137,17 +137,14 @@
                                                     <small class="text-muted">Export bookings from all retreats</small>
                                                 </div>
                                                 <div class="text-end">
-                                                    <span class="badge bg-success">{{ $retreats->sum(function($retreat) { return $retreat->bookings()->where('participant_number', 1)->where('is_active', true)->count(); }) }} bookings</span>
+                                                    <span class="badge bg-success">{{ $retreats->sum('bookings_count') }} bookings</span>
                                                 </div>
                                             </div>
                                         </div>
 
                                         <!-- Individual Retreat Options -->
-                                        <div style="max-height: 400px; overflow-y: auto;">
+                                        <div class="retreat-list" style="max-height: 250px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 0.375rem; padding: 0.5rem;">
                                             @foreach($retreats as $retreat)
-                                                @php
-                                                    $bookingCount = $retreat->bookings()->where('participant_number', 1)->where('is_active', true)->count();
-                                                @endphp
                                                 <div class="retreat-option" data-retreat-id="{{ $retreat->id }}" 
                                                      onclick="selectRetreat(this, '{{ $retreat->id }}')">
                                                     <div class="d-flex justify-content-between align-items-center">
@@ -172,8 +169,8 @@
                                                             </div>
                                                         </div>
                                                         <div class="text-end">
-                                                            <span class="badge {{ $bookingCount > 0 ? 'bg-primary' : 'bg-light text-dark' }}">
-                                                                {{ $bookingCount }} booking{{ $bookingCount !== 1 ? 's' : '' }}
+                                                            <span class="badge {{ $retreat->bookings_count > 0 ? 'bg-primary' : 'bg-light text-dark' }}">
+                                                                {{ $retreat->bookings_count }} booking{{ $retreat->bookings_count !== 1 ? 's' : '' }}
                                                             </span>
                                                         </div>
                                                     </div>
@@ -214,34 +211,9 @@
                                             <input type="hidden" name="export_format" id="export_format" value="xlsx">
                                         </div>
 
-                                        <!-- Export Options -->
-                                        <div class="mb-4">
-                                            <label class="form-label">Include Data</label>
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" id="include_personal_data" name="include_personal_data" value="1" checked>
-                                                <label class="form-check-label" for="include_personal_data">
-                                                    Personal Information
-                                                </label>
-                                                <small class="form-text text-muted d-block">Name, email, phone, address</small>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" id="include_retreat_info" name="include_retreat_info" value="1" checked>
-                                                <label class="form-check-label" for="include_retreat_info">
-                                                    Retreat Information
-                                                </label>
-                                                <small class="form-text text-muted d-block">Retreat title, dates, criteria</small>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" id="include_flags" name="include_flags" value="1" checked>
-                                                <label class="form-check-label" for="include_flags">
-                                                    Status Flags
-                                                </label>
-                                                <small class="form-text text-muted d-block">Criteria failures, duplicates</small>
-                                            </div>
-                                        </div>
 
                                         <!-- Selection Summary -->
-                                        <div class="alert alert-light" id="selection-summary">
+                                        <div class="alert alert-light no-auto-hide" id="selection-summary">
                                             <h6 class="alert-heading">
                                                 <i class="fas fa-info-circle me-2"></i>Selection Summary
                                             </h6>
@@ -268,54 +240,59 @@
 
 @push('scripts')
 <script>
+// Define global functions before document ready
+function updateSummary(retreatId) {
+    var summaryText = '';
+    var bookingCount = 0;
+
+    if (retreatId === '') {
+        summaryText = 'Exporting all bookings from all retreats';
+        bookingCount = {{ $retreats->sum('bookings_count') }};
+    } else {
+        var selectedOption = $('.retreat-option[data-retreat-id="' + retreatId + '"]');
+        var retreatTitle = selectedOption.find('h6').first().text().trim();
+        var badgeText = selectedOption.find('.badge').last().text().trim();
+        
+        // Extract number from badge text (e.g., "5 bookings" -> 5)
+        var matches = badgeText.match(/^(\d+)/);
+        bookingCount = matches ? parseInt(matches[1]) : 0;
+        
+        summaryText = 'Exporting bookings from: ' + retreatTitle;
+    }
+
+    $('#summary-text').html(summaryText + '<br><strong>' + bookingCount + ' booking(s)</strong> will be exported');
+    $('#export-btn').prop('disabled', bookingCount === 0);
+}
+
+// Global functions for onclick handlers
+window.selectRetreat = function(element, retreatId) {
+    // Remove selected class from all retreat options
+    $('.retreat-option').removeClass('selected');
+    
+    // Add selected class to clicked option
+    $(element).addClass('selected');
+    
+    // Update hidden input
+    $('#selected_retreat_id').val(retreatId);
+    
+    // Update summary
+    updateSummary(retreatId);
+};
+
+window.selectFormat = function(element, format) {
+    // Remove selected class from all format options
+    $('.format-option').removeClass('selected');
+    
+    // Add selected class to clicked option
+    $(element).addClass('selected');
+    
+    // Update hidden input
+    $('#export_format').val(format);
+};
+
 $(document).ready(function() {
     // Initialize with "All Retreats" selected
     selectRetreat($('.retreat-option[data-retreat-id=""]')[0], '');
-
-    function updateSummary(retreatId) {
-        var summaryText = '';
-        var bookingCount = 0;
-
-        if (retreatId === '') {
-            summaryText = 'Exporting all bookings from all retreats';
-            bookingCount = {{ $retreats->sum(function($retreat) { return $retreat->bookings()->where('participant_number', 1)->where('is_active', true)->count(); }) }};
-        } else {
-            var selectedOption = $('.retreat-option[data-retreat-id="' + retreatId + '"]');
-            var retreatTitle = selectedOption.find('h6').first().text();
-            var badgeText = selectedOption.find('.badge').last().text();
-            bookingCount = parseInt(badgeText.split(' ')[0]);
-            summaryText = 'Exporting bookings from: ' + retreatTitle;
-        }
-
-        $('#summary-text').html(summaryText + '<br><strong>' + bookingCount + ' booking(s)</strong> will be exported');
-        $('#export-btn').prop('disabled', bookingCount === 0);
-    }
-
-    // Global functions for onclick handlers
-    window.selectRetreat = function(element, retreatId) {
-        // Remove selected class from all retreat options
-        $('.retreat-option').removeClass('selected');
-        
-        // Add selected class to clicked option
-        $(element).addClass('selected');
-        
-        // Update hidden input
-        $('#selected_retreat_id').val(retreatId);
-        
-        // Update summary
-        updateSummary(retreatId);
-    };
-
-    window.selectFormat = function(element, format) {
-        // Remove selected class from all format options
-        $('.format-option').removeClass('selected');
-        
-        // Add selected class to clicked option
-        $(element).addClass('selected');
-        
-        // Update hidden input
-        $('#export_format').val(format);
-    };
 
     // Form submission
     $('#export-form').on('submit', function() {

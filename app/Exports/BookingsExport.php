@@ -136,6 +136,8 @@ class BookingsExport implements FromCollection, WithHeadings, WithMapping, WithC
         return [
             'Booking ID',
             'Retreat Title',
+            'Participant Type',
+            'Participant Number',
             'First Name',
             'Last Name',
             'Email',
@@ -150,7 +152,6 @@ class BookingsExport implements FromCollection, WithHeadings, WithMapping, WithC
             'Congregation',
             'Emergency Contact Name',
             'Emergency Contact Phone',
-            'Additional Participants',
             'Special Remarks',
             'Flag',
             'Booking Date',
@@ -186,10 +187,12 @@ class BookingsExport implements FromCollection, WithHeadings, WithMapping, WithC
         return [
             $booking->booking_id,
             $booking->retreat->title ?? '',
+            $booking->participant_number == 1 ? 'Primary' : 'Additional',
+            $booking->participant_number,
             $booking->firstname,
             $booking->lastname,
-            $booking->email,
-            $booking->whatsapp_number,
+            $booking->email ?: '',
+            $booking->whatsapp_number ?: '',
             $booking->age,
             ucfirst($booking->gender),
             $booking->address,
@@ -200,7 +203,6 @@ class BookingsExport implements FromCollection, WithHeadings, WithMapping, WithC
             $booking->congregation ?? '',
             $booking->emergency_contact_name,
             $booking->emergency_contact_phone,
-            $booking->additional_participants,
             $booking->special_remarks ?? '',
             $booking->flag ? str_replace(['_', ','], [' ', ', '], $booking->flag) : '',
             $booking->created_at->format('Y-m-d H:i:s'),
@@ -236,25 +238,26 @@ class BookingsExport implements FromCollection, WithHeadings, WithMapping, WithC
         return [
             'A' => 12, // Booking ID
             'B' => 20, // Retreat Title
-            'C' => 15, // First Name
-            'D' => 15, // Last Name
-            'E' => 25, // Email
-            'F' => 15, // WhatsApp Number
-            'G' => 8,  // Age
-            'H' => 10, // Gender
-            'I' => 30, // Address
-            'J' => 15, // City
-            'K' => 15, // State
-            'L' => 20, // Diocese
-            'M' => 20, // Parish
-            'N' => 20, // Congregation
-            'O' => 20, // Emergency Contact Name
-            'P' => 18, // Emergency Contact Phone
-            'Q' => 12, // Additional Participants
-            'R' => 30, // Special Remarks
-            'S' => 20, // Flag
-            'T' => 18, // Booking Date
-            'U' => 10, // Status
+            'C' => 12, // Participant Type
+            'D' => 8,  // Participant Number
+            'E' => 15, // First Name
+            'F' => 15, // Last Name
+            'G' => 25, // Email
+            'H' => 15, // WhatsApp Number
+            'I' => 8,  // Age
+            'J' => 10, // Gender
+            'K' => 30, // Address
+            'L' => 15, // City
+            'M' => 15, // State
+            'N' => 20, // Diocese
+            'O' => 20, // Parish
+            'P' => 20, // Congregation
+            'Q' => 20, // Emergency Contact Name
+            'R' => 18, // Emergency Contact Phone
+            'S' => 30, // Special Remarks
+            'T' => 20, // Flag
+            'U' => 18, // Booking Date
+            'V' => 10, // Status
         ];
     }
 
