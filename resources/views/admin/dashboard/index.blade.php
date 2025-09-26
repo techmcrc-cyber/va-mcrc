@@ -221,7 +221,7 @@
     </div>
 
 <!-- Booking Trends Chart -->
-    <div class="col-12 col-xl-8 mb-4">
+    <div class="col-12 mb-4">
         <div class="card border-0 shadow-sm h-100">
             <div class="card-header bg-white">
                 <div class="d-flex justify-content-between align-items-center">
@@ -278,129 +278,6 @@
         </div>
     </div>
 
-    <!-- Recent Users -->
-    <div class="col-12 col-xl-4 mb-4">
-        <div class="card border-0 shadow-sm h-100">
-            <div class="card-header bg-white">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h6 class="mb-0">Recent Users</h6>
-                    <a href="{{ route('admin.users.index') }}" class="btn btn-sm btn-outline-primary">View All</a>
-                </div>
-            </div>
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover mb-0">
-                        <thead class="bg-light">
-                            <tr>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Role</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($stats['recent_users'] as $user)
-                                <tr>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <img src="{{ $user->profile_image ? asset('storage/' . $user->profile_image) : asset('images/default-avatar.png') }}" 
-                                                 class="rounded-circle me-2" width="32" height="32" alt="User">
-                                            {{ $user->name }}
-                                        </div>
-                                    </td>
-                                    <td>{{ $user->email }}</td>
-                                    <td>
-                                        <span class="badge bg-primary">{{ $user->role->name ?? 'N/A' }}</span>
-                                    </td>
-                                    <td>
-                                        @if($user->is_active)
-                                            <span class="badge bg-success">Active</span>
-                                        @else
-                                            <span class="badge bg-secondary">Inactive</span>
-                                        @endif
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="4" class="text-center py-4">No users found.</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Recent Activities -->
-    <div class="col-12 col-xl-6 mb-4">
-        <div class="card border-0 shadow-sm h-100">
-            <div class="card-header bg-white">
-                <h6 class="mb-0">Recent Activities</h6>
-            </div>
-            <div class="card-body p-0">
-                <div class="list-group list-group-flush">
-                    <div class="list-group-item border-0 border-bottom">
-                        <div class="d-flex">
-                            <div class="me-3 text-primary">
-                                <i class="fas fa-user-plus fa-2x"></i>
-                            </div>
-                            <div class="flex-grow-1">
-                                <div class="d-flex justify-content-between">
-                                    <h6 class="mb-1">New User Registration</h6>
-                                    <small class="text-muted">2 min ago</small>
-                                </div>
-                                <p class="mb-0 small text-muted">John Doe registered as a new user.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="list-group-item border-0 border-bottom">
-                        <div class="d-flex">
-                            <div class="me-3 text-success">
-                                <i class="fas fa-calendar-check fa-2x"></i>
-                            </div>
-                            <div class="flex-grow-1">
-                                <div class="d-flex justify-content-between">
-                                    <h6 class="mb-1">New Event</h6>
-                                    <small class="text-muted">1 hour ago</small>
-                                </div>
-                                <p class="mb-0 small text-muted">New event "Sunday Service" has been added.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="list-group-item border-0 border-bottom">
-                        <div class="d-flex">
-                            <div class="me-3 text-warning">
-                                <i class="fas fa-exclamation-triangle fa-2x"></i>
-                            </div>
-                            <div class="flex-grow-1">
-                                <div class="d-flex justify-content-between">
-                                    <h6 class="mb-1">System Update</h6>
-                                    <small class="text-muted">3 hours ago</small>
-                                </div>
-                                <p class="mb-0 small text-muted">System updated to version 1.2.0.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="list-group-item border-0">
-                        <div class="d-flex">
-                            <div class="me-3 text-info">
-                                <i class="fas fa-comment-alt fa-2x"></i>
-                            </div>
-                            <div class="flex-grow-1">
-                                <div class="d-flex justify-content-between">
-                                    <h6 class="mb-1">New Message</h6>
-                                    <small class="text-muted">5 hours ago</small>
-                                </div>
-                                <p class="mb-0 small text-muted">You have a new message from Sarah Johnson.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        </div>
-    </div>
 </div>
 @endsection
 
