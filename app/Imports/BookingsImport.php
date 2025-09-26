@@ -53,6 +53,7 @@ class BookingsImport implements ToCollection, WithHeadingRow
     protected function mapRowData($row)
     {
         return [
+            'group_id' => (int)($row['group_id'] ?? 1),
             'firstname' => $row['first_name'] ?? '',
             'lastname' => $row['last_name'] ?? '',
             'email' => $row['email'] ?? '',
@@ -73,15 +74,14 @@ class BookingsImport implements ToCollection, WithHeadingRow
 
     protected function validateRow($data, $retreat)
     {
-        // Use the same validation rules as BookingRequest
+        // Use the same validation rules as BookingRequest, but flexible for additional participants
         $rules = [
+            'group_id' => ['required', 'integer', 'min:1'],
             'firstname' => ['required', 'string', 'max:255'],
             'lastname' => ['required', 'string', 'max:255'],
-            'whatsapp_number' => ['required', 'string', 'size:10', 'regex:/^[0-9]{10}$/'],
             'age' => ['required', 'integer', 'min:1', 'max:120'],
-            'email' => ['required', 'email', 'max:255'],
-            'address' => ['required', 'string', 'max:500'],
             'gender' => ['required', 'in:male,female,other'],
+            'address' => ['required', 'string', 'max:500'],
             'city' => ['required', 'string', 'max:100'],
             'state' => ['required', 'string', 'max:100'],
             'diocese' => ['nullable', 'string', 'max:255'],
@@ -91,6 +91,14 @@ class BookingsImport implements ToCollection, WithHeadingRow
             'emergency_contact_phone' => ['required', 'string', 'min:10', 'max:15'],
             'special_remarks' => ['nullable', 'string'],
         ];
+        
+        // Email and WhatsApp are more flexible - not required for minors/additional participants
+        if (!empty($data['email'])) {
+            $rules['email'] = ['email', 'max:255'];
+        }
+        if (!empty($data['whatsapp_number'])) {
+            $rules['whatsapp_number'] = ['string', 'size:10', 'regex:/^[0-9]{10}$/'];
+        }
 
         // Add retreat-specific validation
         if ($retreat->criteria === 'priests_only' || $retreat->criteria === 'sisters_only') {
@@ -200,50 +208,81 @@ class BookingsImport implements ToCollection, WithHeadingRow
 
     public function processImport()
     {
-        foreach ($this->previewData as $item) {
-            if ($item['validation']['is_valid']) {
-                try {
-                    $this->createBooking($item['data'], $item['validation']['flags']);
-                    $this->importResults['success']++;
-                } catch (\Exception $e) {
-                    $this->importResults['errors']++;
+        // Group participants by group_id
+        $groupedData = collect($this->previewData)
+            ->where('validation.is_valid', true)
+            ->groupBy('data.group_id');
+        
+        $maxAdditionalMembers = config('bookings.max_additional_members', 3);
+        
+        foreach ($groupedData as $groupId => $participants) {
+            try {
+                // Validate group size
+                if (count($participants) > ($maxAdditionalMembers + 1)) {
+                    throw new \Exception("Group {$groupId} has too many participants. Maximum allowed: " . ($maxAdditionalMembers + 1));
                 }
-            } else {
-                $this->importResults['errors']++;
+                
+                $this->createGroupBooking($participants, $groupId);
+            } catch (\Exception $e) {
+                // If group fails, mark all participants in group as errors
+                $this->importResults['errors'] += count($participants);
             }
         }
+        
+        // Count errors for invalid participants
+        $invalidCount = collect($this->previewData)
+            ->where('validation.is_valid', false)
+            ->count();
+        $this->importResults['errors'] += $invalidCount;
     }
 
-    protected function createBooking($data, $flags)
+    protected function createGroupBooking($participants, $groupId)
     {
         $bookingId = Booking::generateBookingId();
         $userId = Auth::id();
-
-        Booking::create([
-            'booking_id' => $bookingId,
-            'retreat_id' => $this->retreatId,
-            'firstname' => $data['firstname'],
-            'lastname' => $data['lastname'],
-            'whatsapp_number' => $data['whatsapp_number'],
-            'age' => $data['age'],
-            'email' => $data['email'],
-            'address' => $data['address'],
-            'gender' => $data['gender'],
-            'city' => $data['city'],
-            'state' => $data['state'],
-            'diocese' => $data['diocese'],
-            'parish' => $data['parish'],
-            'congregation' => $data['congregation'],
-            'emergency_contact_name' => $data['emergency_contact_name'],
-            'emergency_contact_phone' => $data['emergency_contact_phone'],
-            'additional_participants' => 0,
-            'special_remarks' => $data['special_remarks'],
-            'flag' => $flags ?: null,
-            'participant_number' => 1,
-            'created_by' => $userId,
-            'updated_by' => $userId,
-            'is_active' => true,
-        ]);
+        
+        // Sort participants - ensure primary participant is first
+        $sortedParticipants = $participants->sortBy(function ($participant, $index) {
+            // First row in group becomes primary participant
+            return $index;
+        });
+        
+        $participantNumber = 1;
+        $additionalCount = count($participants) - 1;
+        
+        foreach ($sortedParticipants as $participant) {
+            $data = $participant['data'];
+            $flags = $participant['validation']['flags'] ?? '';
+            
+            Booking::create([
+                'booking_id' => $bookingId,
+                'retreat_id' => $this->retreatId,
+                'firstname' => $data['firstname'],
+                'lastname' => $data['lastname'],
+                'whatsapp_number' => $data['whatsapp_number'] ?: null,
+                'age' => $data['age'],
+                'email' => $data['email'] ?: null,
+                'address' => $data['address'],
+                'gender' => $data['gender'],
+                'city' => $data['city'],
+                'state' => $data['state'],
+                'diocese' => $data['diocese'],
+                'parish' => $data['parish'],
+                'congregation' => $data['congregation'],
+                'emergency_contact_name' => $data['emergency_contact_name'],
+                'emergency_contact_phone' => $data['emergency_contact_phone'],
+                'additional_participants' => $participantNumber === 1 ? $additionalCount : 0,
+                'special_remarks' => $data['special_remarks'],
+                'flag' => $flags ?: null,
+                'participant_number' => $participantNumber,
+                'created_by' => $userId,
+                'updated_by' => $userId,
+                'is_active' => true,
+            ]);
+            
+            $this->importResults['success']++;
+            $participantNumber++;
+        }
     }
 
     public function getImportResults()

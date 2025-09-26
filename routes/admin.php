@@ -45,6 +45,17 @@ Route::middleware(['auth:web'])->group(function () {
 
     // Bookings Management
     Route::prefix('bookings')->name('admin.bookings.')->group(function () {
+        // Import/Export Routes (must come before resource routes to avoid conflicts)
+        Route::get('/import', [\App\Http\Controllers\Admin\BookingController::class, 'importForm'])->name('import');
+        Route::post('/import', [\App\Http\Controllers\Admin\BookingController::class, 'processImport'])->name('import.process');
+        Route::get('/import/template', [\App\Http\Controllers\Admin\BookingController::class, 'downloadTemplate'])->name('import.template');
+        Route::post('/import/preview', [\App\Http\Controllers\Admin\BookingController::class, 'previewImport'])->name('import.preview');
+        Route::post('/import/confirm', [\App\Http\Controllers\Admin\BookingController::class, 'confirmImport'])->name('import.confirm');
+        
+        Route::get('/export', [\App\Http\Controllers\Admin\BookingController::class, 'exportForm'])->name('export');
+        Route::post('/export', [\App\Http\Controllers\Admin\BookingController::class, 'processExport'])->name('export.process');
+        
+        // Standard CRUD routes
         Route::get('/', [\App\Http\Controllers\Admin\BookingController::class, 'index'])->name('index');
         Route::get('/create', [\App\Http\Controllers\Admin\BookingController::class, 'create'])->name('create');
         Route::post('/', [\App\Http\Controllers\Admin\BookingController::class, 'store'])->name('store');
@@ -54,16 +65,6 @@ Route::middleware(['auth:web'])->group(function () {
         Route::delete('/{booking}', [\App\Http\Controllers\Admin\BookingController::class, 'destroy'])->name('destroy');
         Route::delete('/participant/{participant}', [\App\Http\Controllers\Admin\BookingController::class, 'cancelParticipant'])->name('cancel-participant');
         Route::post('/{booking}/send-confirmation', [\App\Http\Controllers\Admin\BookingController::class, 'sendConfirmation'])->name('send-confirmation');
-        
-        // Import/Export Routes
-        Route::get('/import', [\App\Http\Controllers\Admin\BookingController::class, 'importForm'])->name('import');
-        Route::post('/import', [\App\Http\Controllers\Admin\BookingController::class, 'processImport'])->name('import.process');
-        Route::get('/import/template', [\App\Http\Controllers\Admin\BookingController::class, 'downloadTemplate'])->name('import.template');
-        Route::post('/import/preview', [\App\Http\Controllers\Admin\BookingController::class, 'previewImport'])->name('import.preview');
-        Route::post('/import/confirm', [\App\Http\Controllers\Admin\BookingController::class, 'confirmImport'])->name('import.confirm');
-        
-        Route::get('/export', [\App\Http\Controllers\Admin\BookingController::class, 'exportForm'])->name('export');
-        Route::post('/export', [\App\Http\Controllers\Admin\BookingController::class, 'processExport'])->name('export.process');
     });
     
     // Users Management

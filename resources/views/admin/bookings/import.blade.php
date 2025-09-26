@@ -107,7 +107,36 @@
                                 <h6 class="alert-heading">
                                     <i class="fas fa-download me-2"></i>Step 1: Download Import Template
                                 </h6>
-                                <p class="mb-2">Download the Excel template file and fill in your booking data according to the format provided.</p>
+                                <p class="mb-2">Download the Excel template with sample data. <strong>Family/group bookings made easy</strong> - use Group ID to link participants together.</p>
+                                <div class="row mt-3">
+                                    <div class="col-md-4">
+                                        <h6 class="text-primary"><i class="fas fa-users me-1"></i>Group Bookings:</h6>
+                                        <ul class="small mb-0">
+                                            <li><strong>Group ID</strong>: Same number for family members</li>
+                                            <li>Example: 1,1,1 for family of 3</li>
+                                            <li>First row = Primary participant</li>
+                                            <li>Max {{ config('bookings.max_additional_members', 3) + 1 }} people per group</li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <h6 class="text-success"><i class="fas fa-check me-1"></i>Required Fields:</h6>
+                                        <ul class="small mb-0">
+                                            <li>Personal: Name, Age, Gender</li>
+                                            <li>Address: Full address, City, State</li>
+                                            <li>Emergency Contact: Name & Phone</li>
+                                            <li>Email/Phone: Optional for minors</li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <h6 class="text-info"><i class="fas fa-magic me-1"></i>Auto-Generated:</h6>
+                                        <ul class="small mb-0">
+                                            <li>Booking ID (unique per group)</li>
+                                            <li>Retreat details (from selection)</li>
+                                            <li>Participant numbering</li>
+                                            <li>Validation flags & timestamps</li>
+                                        </ul>
+                                    </div>
+                                </div>
                                 <a href="{{ route('admin.bookings.import.template') }}" class="btn btn-info">
                                     <i class="fas fa-download me-2"></i>Download Template
                                 </a>
