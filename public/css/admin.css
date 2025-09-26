@@ -172,9 +172,9 @@ body {
 }
 
 .list-group .list-group .list-group-item.active {
-    background-color: #4299e1;
+    background-color: #6b7280;
     color: white !important;
-    border-left: 3px solid #2b6cb0;
+    border-left: 3px solid #4b5563;
     font-weight: 500;
 }
 
