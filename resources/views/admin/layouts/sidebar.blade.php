@@ -36,34 +36,32 @@
             @endcan
             @can('view-bookings')
             <!-- Bookings Tree Menu -->
-            <div class="list-group-item p-0">
-                <a href="#bookingSubmenu" data-bs-toggle="collapse" 
-                   class="list-group-item list-group-item-action d-flex justify-content-between align-items-center {{ request()->is('admin/bookings*') ? 'active' : '' }}" 
-                   aria-expanded="{{ request()->is('admin/bookings*') ? 'true' : 'false' }}">
-                    <span><i class="fas fa-calendar-check me-2"></i> Bookings</span>
-                    <i class="fas fa-chevron-down small"></i>
-                </a>
-                <div class="collapse {{ request()->is('admin/bookings*') ? 'show' : '' }}" id="bookingSubmenu">
-                    <div class="list-group list-group-flush">
-                        @can('view-bookings')
-                        <a href="{{ route('admin.bookings.index') }}" 
-                           class="list-group-item list-group-item-action ps-4 {{ request()->routeIs('admin.bookings.index') || request()->routeIs('admin.bookings.show') || request()->routeIs('admin.bookings.edit') || request()->routeIs('admin.bookings.create') ? 'active' : '' }}">
-                            <i class="fas fa-list me-2"></i> List
-                        </a>
-                        @endcan
-                        @can('create-bookings')
-                        <a href="{{ route('admin.bookings.import') }}" 
-                           class="list-group-item list-group-item-action ps-4 {{ request()->routeIs('admin.bookings.import*') ? 'active' : '' }}">
-                            <i class="fas fa-file-import me-2"></i> Import
-                        </a>
-                        @endcan
-                        @can('view-bookings')
-                        <a href="{{ route('admin.bookings.export') }}" 
-                           class="list-group-item list-group-item-action ps-4 {{ request()->routeIs('admin.bookings.export*') ? 'active' : '' }}">
-                            <i class="fas fa-file-export me-2"></i> Export
-                        </a>
-                        @endcan
-                    </div>
+            <a href="#bookingSubmenu" data-bs-toggle="collapse" 
+               class="list-group-item list-group-item-action d-flex justify-content-between align-items-center {{ request()->is('admin/bookings*') ? 'active' : '' }}" 
+               aria-expanded="{{ request()->is('admin/bookings*') ? 'true' : 'false' }}">
+                <span><i class="fas fa-calendar-check me-2"></i> Bookings</span>
+                <i class="fas fa-chevron-down small"></i>
+            </a>
+            <div class="collapse {{ request()->is('admin/bookings*') ? 'show' : '' }}" id="bookingSubmenu">
+                <div class="list-group list-group-flush">
+                    @can('view-bookings')
+                    <a href="{{ route('admin.bookings.index') }}" 
+                       class="list-group-item list-group-item-action ps-4 {{ (request()->routeIs('admin.bookings.index') || request()->routeIs('admin.bookings.show') || request()->routeIs('admin.bookings.edit') || request()->routeIs('admin.bookings.create')) && !request()->routeIs('admin.bookings.import*') && !request()->routeIs('admin.bookings.export*') ? 'active' : '' }}">
+                        <i class="fas fa-list me-2"></i> List
+                    </a>
+                    @endcan
+                    @can('create-bookings')
+                    <a href="{{ route('admin.bookings.import') }}" 
+                       class="list-group-item list-group-item-action ps-4 {{ request()->is('admin/bookings/import*') ? 'active' : '' }}">
+                        <i class="fas fa-file-import me-2"></i> Import
+                    </a>
+                    @endcan
+                    @can('view-bookings')
+                    <a href="{{ route('admin.bookings.export') }}" 
+                       class="list-group-item list-group-item-action ps-4 {{ request()->is('admin/bookings/export*') ? 'active' : '' }}">
+                        <i class="fas fa-file-export me-2"></i> Export
+                    </a>
+                    @endcan
                 </div>
             </div>
             @endcan

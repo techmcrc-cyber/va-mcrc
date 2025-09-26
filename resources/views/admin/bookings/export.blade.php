@@ -14,7 +14,7 @@
         box-shadow: 0 4px 15px rgba(0,123,255,.1);
     }
     .stats-card {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(136deg, #ba4165 0%, #700000 100%);
         color: white;
         border-radius: 0.5rem;
     }

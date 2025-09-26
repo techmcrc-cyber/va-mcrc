@@ -33,7 +33,7 @@
         color: #28a745;
     }
     .instruction-card {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(136deg, #ba4165 0%, #700000 100%);
         color: white;
         border-radius: 0.5rem;
         padding: 1.5rem;
