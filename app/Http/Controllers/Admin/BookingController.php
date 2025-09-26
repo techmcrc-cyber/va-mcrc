@@ -9,6 +9,10 @@ use App\Models\Retreat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\BookingsExport;
+use App\Imports\BookingsImport;
+use Illuminate\Support\Facades\Session;
 
 class BookingController extends Controller
 {
@@ -363,5 +367,126 @@ class BookingController extends Controller
         return redirect()
             ->route('admin.bookings.show', $primaryBooking->id)
             ->with('success', 'Participant cancelled successfully.');
+    }
+
+    /**
+     * Show import form
+     */
+    public function importForm()
+    {
+        $retreats = Retreat::where('is_active', true)
+            ->where('end_date', '>=', now())
+            ->orderBy('start_date')
+            ->get();
+            
+        return view('admin.bookings.import', compact('retreats'));
+    }
+
+    /**
+     * Download import template
+     */
+    public function downloadTemplate()
+    {
+        return Excel::download(new BookingsExport(collect(), true), 'booking_import_template.xlsx');
+    }
+
+    /**
+     * Preview import data
+     */
+    public function previewImport(Request $request)
+    {
+        $request->validate([
+            'import_file' => 'required|file|mimes:xlsx,xls,csv|max:10240',
+            'retreat_id' => 'required|exists:retreats,id'
+        ]);
+
+        try {
+            $import = new BookingsImport($request->retreat_id, true); // Preview mode
+            Excel::import($import, $request->file('import_file'));
+            
+            $previewData = $import->getPreviewData();
+            
+            // Store import data in session for confirmation
+            Session::put('import_preview_data', [
+                'data' => $previewData,
+                'retreat_id' => $request->retreat_id,
+                'file_name' => $request->file('import_file')->getClientOriginalName()
+            ]);
+            
+            $retreat = Retreat::find($request->retreat_id);
+            
+            return view('admin.bookings.import-preview', compact('previewData', 'retreat'));
+            
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withErrors(['import_file' => 'Error processing file: ' . $e->getMessage()])
+                ->withInput();
+        }
+    }
+
+    /**
+     * Confirm and process import
+     */
+    public function confirmImport(Request $request)
+    {
+        $previewData = Session::get('import_preview_data');
+        
+        if (!$previewData) {
+            return redirect()->route('admin.bookings.import')
+                ->withErrors(['general' => 'No import data found. Please upload file again.']);
+        }
+
+        try {
+            $import = new BookingsImport($previewData['retreat_id'], false); // Live mode
+            $import->setPreviewData($previewData['data']);
+            $import->processImport();
+            
+            $results = $import->getImportResults();
+            
+            Session::forget('import_preview_data');
+            
+            return redirect()->route('admin.bookings.index')
+                ->with('success', "Import completed. {$results['success']} bookings imported successfully. {$results['errors']} errors encountered.");
+                
+        } catch (\Exception $e) {
+            return redirect()->route('admin.bookings.import')
+                ->withErrors(['general' => 'Import failed: ' . $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Show export form
+     */
+    public function exportForm()
+    {
+        $retreats = Retreat::orderBy('start_date', 'desc')->get();
+        
+        return view('admin.bookings.export', compact('retreats'));
+    }
+
+    /**
+     * Process export
+     */
+    public function processExport(Request $request)
+    {
+        $request->validate([
+            'retreat_id' => 'nullable|exists:retreats,id'
+        ]);
+
+        $query = Booking::with(['retreat'])
+            ->where('participant_number', 1)
+            ->where('is_active', true);
+
+        if ($request->retreat_id) {
+            $query->where('retreat_id', $request->retreat_id);
+            $retreat = Retreat::find($request->retreat_id);
+            $filename = 'bookings_' . Str::slug($retreat->title) . '_' . now()->format('Y-m-d') . '.xlsx';
+        } else {
+            $filename = 'all_bookings_' . now()->format('Y-m-d') . '.xlsx';
+        }
+
+        $bookings = $query->get();
+
+        return Excel::download(new BookingsExport($bookings), $filename);
     }
 }
