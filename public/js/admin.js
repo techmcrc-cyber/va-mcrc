@@ -45,8 +45,8 @@ document.addEventListener('DOMContentLoaded', function() {
         return new bootstrap.Popover(popoverTriggerEl);
     });
 
-    // Auto-hide alerts after 5 seconds
-    const alerts = document.querySelectorAll('.alert');
+    // Auto-hide alerts after 5 seconds (except those with no-auto-hide class)
+    const alerts = document.querySelectorAll('.alert:not(.no-auto-hide)');
     alerts.forEach(alert => {
         setTimeout(() => {
             const bsAlert = new bootstrap.Alert(alert);

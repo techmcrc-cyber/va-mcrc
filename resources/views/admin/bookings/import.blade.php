@@ -103,7 +103,7 @@
                     <!-- Template Download Section -->
                     <div class="row mb-4">
                         <div class="col-12">
-                            <div class="alert alert-info">
+                            <div class="alert alert-info no-auto-hide">
                                 <h6 class="alert-heading">
                                     <i class="fas fa-download me-2"></i>Step 1: Download Import Template
                                 </h6>

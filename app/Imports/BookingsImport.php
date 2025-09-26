@@ -54,21 +54,21 @@ class BookingsImport implements ToCollection, WithHeadingRow
     {
         return [
             'group_id' => (int)($row['group_id'] ?? 1),
-            'firstname' => $row['first_name'] ?? '',
-            'lastname' => $row['last_name'] ?? '',
-            'email' => $row['email'] ?? '',
-            'whatsapp_number' => $row['whatsapp_number'] ?? '',
+            'firstname' => trim($row['first_name'] ?? ''),
+            'lastname' => trim($row['last_name'] ?? ''),
+            'email' => trim($row['email'] ?? ''),
+            'whatsapp_number' => $this->sanitizePhoneNumber($row['whatsapp_number'] ?? ''),
             'age' => (int)($row['age'] ?? 0),
-            'gender' => strtolower($row['gender'] ?? ''),
-            'address' => $row['address'] ?? '',
-            'city' => $row['city'] ?? '',
-            'state' => $row['state'] ?? '',
-            'diocese' => $row['diocese'] ?? null,
-            'parish' => $row['parish'] ?? null,
-            'congregation' => $row['congregation'] ?? null,
-            'emergency_contact_name' => $row['emergency_contact_name'] ?? '',
-            'emergency_contact_phone' => $row['emergency_contact_phone'] ?? '',
-            'special_remarks' => $row['special_remarks'] ?? null,
+            'gender' => strtolower(trim($row['gender'] ?? '')),
+            'address' => trim($row['address'] ?? ''),
+            'city' => trim($row['city'] ?? ''),
+            'state' => trim($row['state'] ?? ''),
+            'diocese' => !empty($row['diocese']) ? trim($row['diocese']) : null,
+            'parish' => !empty($row['parish']) ? trim($row['parish']) : null,
+            'congregation' => !empty($row['congregation']) ? trim($row['congregation']) : null,
+            'emergency_contact_name' => trim($row['emergency_contact_name'] ?? ''),
+            'emergency_contact_phone' => $this->sanitizePhoneNumber($row['emergency_contact_phone'] ?? ''),
+            'special_remarks' => !empty($row['special_remarks']) ? trim($row['special_remarks']) : null,
         ];
     }
 
@@ -92,12 +92,19 @@ class BookingsImport implements ToCollection, WithHeadingRow
             'special_remarks' => ['nullable', 'string'],
         ];
         
+        // Ensure phone fields are strings after sanitization
+        $data['whatsapp_number'] = (string)$data['whatsapp_number'];
+        $data['emergency_contact_phone'] = (string)$data['emergency_contact_phone'];
+        
         // Email and WhatsApp are more flexible - not required for minors/additional participants
         if (!empty($data['email'])) {
             $rules['email'] = ['email', 'max:255'];
         }
         if (!empty($data['whatsapp_number'])) {
             $rules['whatsapp_number'] = ['string', 'size:10', 'regex:/^[0-9]{10}$/'];
+        } else {
+            // Allow empty whatsapp_number but ensure it's a string if provided
+            $rules['whatsapp_number'] = ['nullable', 'string'];
         }
 
         // Add retreat-specific validation
@@ -194,6 +201,31 @@ class BookingsImport implements ToCollection, WithHeadingRow
         }
 
         return implode(',', $flags);
+    }
+
+    /**
+     * Ensure phone numbers are treated as strings and strip non-digits.
+     * Handles scientific notation from Excel and preserves leading zeros.
+     */
+    protected function sanitizePhoneNumber($value)
+    {
+        if ($value === null || $value === '') return '';
+        
+        // Convert to string and trim
+        $str = trim((string)$value);
+        
+        // Handle scientific notation from Excel (e.g., 9.12345E+9)
+        if (preg_match('/^\d+\.?\d*[eE][+-]?\d+$/', $str)) {
+            // Convert scientific notation to regular number
+            $number = (float)$str;
+            $str = sprintf('%.0f', $number);
+        }
+        
+        // Remove all non-digits to get clean phone number
+        $digits = preg_replace('/\D+/', '', $str);
+        
+        // Return the digits as string (preserves leading zeros)
+        return (string)$digits;
     }
 
     public function getPreviewData()
