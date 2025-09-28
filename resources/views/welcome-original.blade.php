@@ -124,7 +124,7 @@
             font-size: 1.25rem;
             font-weight: 400;
             line-height: 1.6;
-            color: var(--dark);
+            color: var(--accent);
             margin-bottom: 0.8rem;
         }
         
@@ -220,10 +220,8 @@
                     A sacred space for spiritual growth and community
                 </p>
             </div>
-
             <div class="quote-box">
-                <p class="quote-text">"{{ $quote['text'] }}"</p>
-                <p class="quote-verse">— {{ $quote['verse'] }}</p>
+                <p class="quote-text">{{ $welcome['text'] }}</p>
             </div>
 
             <div class="btn-group">
