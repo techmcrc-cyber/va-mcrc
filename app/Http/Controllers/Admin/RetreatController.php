@@ -13,11 +13,100 @@ class RetreatController extends Controller
 {
     /**
      * Display a listing of the resource.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\View\View|\Illuminate\Http\JsonResponse
      */
-    public function index()
+    public function index(Request $request)
     {
-        $retreats = Retreat::latest()->paginate(10);
-        return view('admin.retreats.index', compact('retreats'));
+        if ($request->ajax()) {
+            $query = Retreat::query();
+            
+            // Handle search
+            if ($request->has('search') && !empty($request->search['value'])) {
+                $search = $request->search['value'];
+                $query->where(function($q) use ($search) {
+                    $q->where('title', 'like', "%{$search}%")
+                      ->orWhere('description', 'like', "%{$search}%")
+                      ->orWhere('location', 'like', "%{$search}%");
+                });
+            }
+            
+            // Handle sorting
+            if ($request->has('order')) {
+                $column = $request->input('order.0.column');
+                $dir = $request->input('order.0.dir');
+                $columns = ['title', 'start_date', 'timings', 'seats', 'criteria', 'is_active'];
+                
+                if (isset($columns[$column])) {
+                    $query->orderBy($columns[$column], $dir);
+                } else {
+                    $query->latest();
+                }
+            } else {
+                $query->latest();
+            }
+            
+            $totalData = $query->count();
+            $limit = $request->input('length', 25);
+            $start = $request->input('start', 0);
+            
+            $retreats = $query->offset($start)
+                            ->limit($limit)
+                            ->get();
+            
+            $criteriaLabels = [
+                'male_only' => 'Male Only',
+                'female_only' => 'Female Only',
+                'priests_only' => 'Priests Only',
+                'sisters_only' => 'Sisters Only',
+                'youth_only' => 'Youth Only',
+                'children' => 'Children',
+                'no_criteria' => 'No Criteria'
+            ];
+            
+            $data = [];
+            foreach ($retreats as $retreat) {
+                $nestedData = [];
+                $nestedData['title'] = $retreat->title;
+                $nestedData['date'] = $retreat->start_date->format('M d, Y') . ' - ' . $retreat->end_date->format('M d, Y');
+                $nestedData['timings'] = $retreat->timings;
+                $nestedData['seats'] = $retreat->seats;
+                $nestedData['criteria'] = $criteriaLabels[$retreat->criteria] ?? $retreat->criteria;
+                $nestedData['status'] = $retreat->is_active 
+                    ? '<span class="badge bg-success">Active</span>' 
+                    : '<span class="badge bg-secondary">Inactive</span>';
+                
+                // Actions
+                $actions = '<div class="btn-group" role="group">';
+                $actions .= '<a href="' . route('admin.retreats.show', $retreat) . '" class="btn btn-info btn-sm" title="View">';
+                $actions .= '<i class="fas fa-eye"></i></a> ';
+                $actions .= '<a href="' . route('admin.retreats.edit', $retreat) . '" class="btn btn-primary btn-sm" title="Edit">';
+                $actions .= '<i class="fas fa-edit"></i></a> ';
+                $actions .= '<form action="' . route('admin.retreats.destroy', $retreat) . '" method="POST" class="d-inline">';
+                $actions .= csrf_field();
+                $actions .= method_field('DELETE');
+                $actions .= '<button type="submit" class="btn btn-danger btn-sm" title="Delete" ';
+                $actions .= 'onclick="return confirm(\'Are you sure you want to delete this retreat?\')">';
+                $actions .= '<i class="fas fa-trash"></i></button></form>';
+                $actions .= '</div>';
+                
+                $nestedData['actions'] = $actions;
+                
+                $data[] = $nestedData;
+            }
+            
+            $json_data = [
+                "draw"            => intval($request->input('draw')),
+                "recordsTotal"    => intval($totalData),
+                "recordsFiltered" => intval($totalData),
+                "data"            => $data
+            ];
+            
+            return response()->json($json_data);
+        }
+        
+        return view('admin.retreats.index');
     }
 
     /**
