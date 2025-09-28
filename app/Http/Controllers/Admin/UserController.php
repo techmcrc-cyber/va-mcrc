@@ -14,15 +14,130 @@ class UserController extends Controller
 {
     use AuthorizesRequests;
     
-    public function index()
+    /**
+     * Display a listing of the users.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\View\View|\Illuminate\Http\JsonResponse
+     */
+    public function index(Request $request)
     {
         $this->authorize('view-users');
         
-        $users = User::with('role')
-            ->latest()
-            ->paginate(10);
+        if ($request->ajax()) {
+            $query = User::with('role');
             
-        return view('admin.users.index', compact('users'));
+            // Handle search
+            if ($request->has('search') && !empty($request->search['value'])) {
+                $search = $request->search['value'];
+                $query->where(function($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%")
+                      ->orWhere('phone', 'like', "%{$search}%");
+                });
+            }
+            
+            // Handle sorting
+            if ($request->has('order')) {
+                $column = $request->input('order.0.column');
+                $dir = $request->input('order.0.dir');
+                $columns = ['id', 'name', 'email', 'role_id', 'is_active'];
+                
+                if (isset($columns[$column])) {
+                    $query->orderBy($columns[$column], $dir);
+                } else {
+                    $query->latest();
+                }
+            } else {
+                $query->latest();
+            }
+            
+            $totalData = $query->count();
+            $limit = $request->input('length', 25);
+            $start = $request->input('start', 0);
+            
+            $users = $query->offset($start)
+                         ->limit($limit)
+                         ->get();
+            
+            $data = [];
+            foreach ($users as $user) {
+                $nestedData = [];
+                $nestedData['id'] = $user->id;
+                $nestedData['name'] = $user->name;
+                $nestedData['email'] = $user->email;
+                
+                // Role with badge
+                $roleBadge = '';
+                if ($user->role) {
+                    $roleName = $user->role->name;
+                    list($bgColor, $textColor, $borderColor) = \App\Helpers\RoleHelper::getRoleColors($roleName);
+                    $isSuperAdmin = $user->isSuperAdmin();
+                    
+                    $roleBadge = '<span class="badge shadow-sm" ';
+                    $roleBadge .= 'style="background-color: ' . $bgColor . '; ';
+                    $roleBadge .= 'color: ' . $textColor . '; ';
+                    $roleBadge .= 'border: 1px solid ' . $borderColor . ';';
+                    
+                    if ($isSuperAdmin) {
+                        $roleBadge .= 'background: linear-gradient(135deg, ' . $bgColor . ' 0%, ' . $borderColor . ' 100%);';
+                    }
+                    
+                    $roleBadge .= '">';
+                    
+                    if ($isSuperAdmin) {
+                        $roleBadge .= '<i class="fas fa-crown me-1"></i>';
+                    } else {
+                        $roleBadge .= '<i class="fas fa-user-shield me-1"></i>';
+                    }
+                    
+                    $roleBadge .= e($roleName) . '</span>';
+                } else {
+                    $roleBadge = '<span class="badge bg-secondary">';
+                    $roleBadge .= '<i class="fas fa-user-slash me-1"></i> No Role';
+                    $roleBadge .= '</span>';
+                }
+                
+                $nestedData['role'] = $roleBadge;
+                
+                // Status with badge
+                if ($user->is_active) {
+                    $nestedData['status'] = '<span class="badge bg-success"><i class="fas fa-check-circle me-1"></i> Active</span>';
+                } else {
+                    $nestedData['status'] = '<span class="badge bg-secondary"><i class="fas fa-times-circle me-1"></i> Inactive</span>';
+                }
+                
+                // Actions
+                $actions = '<div class="btn-group" role="group">';
+                $actions .= '<a href="' . route('admin.users.edit', $user) . '" class="btn btn-sm btn-primary">';
+                $actions .= '<i class="fas fa-edit"></i></a>';
+                
+                if (!$user->isSuperAdmin() && auth()->id() !== $user->id) {
+                    $actions .= '<form action="' . route('admin.users.destroy', $user) . '" method="POST" class="d-inline">';
+                    $actions .= csrf_field();
+                    $actions .= method_field('DELETE');
+                    $actions .= '<button type="submit" class="btn btn-sm btn-danger" ';
+                    $actions .= 'onclick="return confirm(\'Are you sure you want to delete this user? This action cannot be undone.\')">';
+                    $actions .= '<i class="fas fa-trash"></i></button></form>';
+                }
+                
+                $actions .= '</div>';
+                $nestedData['actions'] = $actions;
+                
+                $data[] = $nestedData;
+            }
+            
+            $json_data = [
+                "draw"            => intval($request->input('draw')),
+                "recordsTotal"    => intval($totalData),
+                "recordsFiltered" => intval($totalData),
+                "data"            => $data
+            ];
+            
+            return response()->json($json_data);
+        }
+        
+        return view('admin.users.index');
     }
 
     /**
