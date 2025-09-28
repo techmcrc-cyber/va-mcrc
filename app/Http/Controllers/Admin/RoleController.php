@@ -16,17 +16,104 @@ class RoleController extends Controller
     /**
      * Display a listing of the roles.
      *
-     * @return \Illuminate\View\View
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\View\View|\Illuminate\Http\JsonResponse
      */
-    public function index()
+    public function index(Request $request)
     {
         $this->authorize('view-roles');
         
-        $roles = Role::with('permissions')
-            ->orderBy('id', 'asc')
-            ->get();
+        if ($request->ajax()) {
+            $query = Role::with('permissions');
             
-        return view('admin.roles.index', compact('roles'));
+            // Handle search
+            if ($request->has('search') && !empty($request->search['value'])) {
+                $search = $request->search['value'];
+                $query->where(function($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                      ->orWhere('slug', 'like', "%{$search}%")
+                      ->orWhere('description', 'like', "%{$search}%");
+                });
+            }
+            
+            // Handle sorting
+            if ($request->has('order')) {
+                $column = $request->input('order.0.column');
+                $dir = $request->input('order.0.dir');
+                $columns = ['id', 'name', 'slug', 'description', 'is_active'];
+                
+                if (isset($columns[$column])) {
+                    $query->orderBy($columns[$column], $dir);
+                } else {
+                    $query->orderBy('id', 'asc');
+                }
+            } else {
+                $query->orderBy('id', 'asc');
+            }
+            
+            $totalData = $query->count();
+            $limit = $request->input('length', 25);
+            $start = $request->input('start', 0);
+            
+            $roles = $query->offset($start)
+                         ->limit($limit)
+                         ->get();
+            
+            $data = [];
+            foreach ($roles as $role) {
+                $nestedData = [];
+                $nestedData['id'] = $role->id;
+                $nestedData['name'] = $role->name;
+                $nestedData['slug'] = $role->slug;
+                $nestedData['description'] = $role->description ?: 'N/A';
+                
+                // Status with badge
+                $statusBadge = '';
+                if ($role->is_active) {
+                    $statusBadge = '<span class="badge bg-success text-white"><i class="fas fa-check-circle me-1"></i> Active</span>';
+                } else {
+                    $statusBadge = '<span class="badge bg-secondary text-white"><i class="fas fa-times-circle me-1"></i> Inactive</span>';
+                }
+                
+                // Add Super Admin badge if applicable
+                if ($role->is_super_admin) {
+                    $statusBadge .= ' <span class="badge bg-gradient-primary text-white ms-1" style="box-shadow: 0 2px 4px rgba(0,0,0,0.1);">';
+                    $statusBadge .= '<i class="fas fa-crown me-1"></i> Super Admin</span>';
+                }
+                
+                $nestedData['status'] = $statusBadge;
+                
+                // Actions
+                $actions = '<div class="btn-group" role="group">';
+                $actions .= '<a href="' . route('admin.roles.edit', $role) . '" class="btn btn-sm btn-primary">';
+                $actions .= '<i class="fas fa-edit"></i></a>';
+                
+                if (!$role->is_super_admin) {
+                    $actions .= '<form action="' . route('admin.roles.destroy', $role) . '" method="POST" class="d-inline">';
+                    $actions .= csrf_field();
+                    $actions .= method_field('DELETE');
+                    $actions .= '<button type="submit" class="btn btn-sm btn-danger" ';
+                    $actions .= 'onclick="return confirm(\'Are you sure you want to delete this role?\')">';
+                    $actions .= '<i class="fas fa-trash"></i></button></form>';
+                }
+                
+                $actions .= '</div>';
+                $nestedData['actions'] = $actions;
+                
+                $data[] = $nestedData;
+            }
+            
+            $json_data = [
+                "draw"            => intval($request->input('draw')),
+                "recordsTotal"    => intval($totalData),
+                "recordsFiltered" => intval($totalData),
+                "data"            => $data
+            ];
+            
+            return response()->json($json_data);
+        }
+        
+        return view('admin.roles.index');
     }
 
     /**

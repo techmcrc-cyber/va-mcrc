@@ -42,42 +42,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($permissions as $permission)
-                            <tr>
-                                <td>{{ $permission->id }}</td>
-                                <td>{{ $permission->name }}</td>
-                                <td>{{ $permission->slug }}</td>
-                                <td>{{ $permission->module ?: 'N/A' }}</td>
-                                <td>
-                                    @if($permission->is_active)
-                                        <span class="badge bg-success text-white">
-                                            <i class="fas fa-check-circle me-1"></i> Active
-                                        </span>
-                                    @else
-                                        <span class="badge bg-secondary text-white">
-                                            <i class="fas fa-times-circle me-1"></i> Inactive
-                                        </span>
-                                    @endif
-                                </td>
-                                <td>
-                                    <div class="btn-group" role="group">
-                                        <a href="{{ route('admin.permissions.edit', $permission) }}" class="btn btn-sm btn-primary">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        @if($permission->is_deletable)
-                                            <form action="{{ route('admin.permissions.destroy', $permission) }}" method="POST" class="d-inline">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-danger" 
-                                                    onclick="return confirm('Are you sure you want to delete this permission? This action cannot be undone.')">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </form>
-                                        @endif
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforeach
+                        <!-- Data will be loaded via AJAX -->
                     </tbody>
                 </table>
             </div>
@@ -128,21 +93,38 @@
 @push('scripts')
 <script>
     $(document).ready(function() {
-        $('#permissionsTable').DataTable({
-            "pageLength": 25,
-            "columnDefs": [
+        var table = $('#permissionsTable').DataTable({
+            "processing": true,
+            "serverSide": true,
+            "ajax": {
+                "url": "{{ route('admin.permissions.index') }}",
+                "type": "GET",
+                "dataType": "json"
+            },
+            "columns": [
+                { "data": "id", "name": "id", "width": "60px" },
+                { "data": "name", "name": "name" },
+                { "data": "slug", "name": "slug" },
+                { "data": "module", "name": "module" },
                 { 
-                    "orderable": false, 
-                    "targets": [5] // Disable sorting on Actions column
+                    "data": "status", 
+                    "name": "is_active",
+                    "orderable": true,
+                    "searchable": false
                 },
-                {
-                    "targets": 0, // ID column
-                    "width": '60px',
-                    "className": 'dt-body-left'
+                { 
+                    "data": "actions", 
+                    "name": "actions",
+                    "orderable": false,
+                    "searchable": false,
+                    "width": "100px"
                 }
             ],
-            "order": [[0, 'asc']], // Default sort by ID column
+            "order": [[0, 'asc']],
+            "pageLength": 25,
+            "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
             "stateSave": true,
+            "responsive": true,
             "language": {
                 "search": "_INPUT_",
                 "searchPlaceholder": "Search permissions...",
@@ -150,9 +132,19 @@
                 "zeroRecords": "No matching records found",
                 "info": "Showing _START_ to _END_ of _TOTAL_ entries",
                 "infoEmpty": "No records available",
-                "infoFiltered": "(filtered from _MAX_ total)"
+                "infoFiltered": "(filtered from _MAX_ total entries)",
+                "processing": '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span>',
+                "paginate": {
+                    "first": "First",
+                    "last": "Last",
+                    "next": "<i class='fas fa-chevron-right'></i>",
+                    "previous": "<i class='fas fa-chevron-left'></i>"
+                }
             },
-            "responsive": true
+            "drawCallback": function(settings) {
+                // Reinitialize tooltips after table draw
+                $('[data-toggle="tooltip"]').tooltip();
+            }
         });
     });
 </script>
