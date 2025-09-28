@@ -51,6 +51,21 @@ class BookingController extends Controller
                 });
             }
             
+            // Handle status filter
+            if ($request->has('status_filter') && !empty($request->status_filter)) {
+                $status = $request->status_filter;
+                
+                if ($status === 'confirmed') {
+                    $query->where('is_active', 1)
+                          ->whereNull('flag');
+                } elseif ($status === 'pending') {
+                    $query->where('is_active', 2);
+                } else {
+                    // For CRITERIA_FAILED or RECURRENT_BOOKING
+                    $query->where('flag', $status);
+                }
+            }
+            
             // Handle sorting
             if ($request->has('order')) {
                 $column = $request->input('order.0.column');

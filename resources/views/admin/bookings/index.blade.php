@@ -321,6 +321,7 @@ $(document).ready(function() {
             type: "GET",
             data: function(d) {
                 d.retreat_filter = $('#retreat-filter').val();
+                d.status_filter = $('#status-filter').val();
             }
         },
         columns: [
@@ -402,10 +403,10 @@ $(document).ready(function() {
         initComplete: function() {
             // Add custom filter controls
             var filterHtml = `
-                <div class="row mb-3">
-                    <div class="col-md-4">
-                        <div class="input-group">
-                            <span class="input-group-text">Filter:</span>
+                <div class="row mb-3 g-2">
+                    <div class="col-md-3">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text">Retreat:</span>
                             <select id="retreat-filter" class="form-select form-select-sm">
                                 <option value="">All Retreats</option>
                                 @foreach($retreats as $retreat)
@@ -416,8 +417,20 @@ $(document).ready(function() {
                             </select>
                         </div>
                     </div>
+                    <div class="col-md-3">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text">Status:</span>
+                            <select id="status-filter" class="form-select form-select-sm">
+                                <option value="">All Statuses</option>
+                                <option value="confirmed">Confirmed</option>
+                                <option value="pending">Pending</option>
+                                <option value="CRITERIA_FAILED">Criteria Failed</option>
+                                <option value="RECURRENT_BOOKING">Recurrent Booking</option>
+                            </select>
+                        </div>
+                    </div>
                     <div class="col-md-4">
-                        <div class="input-group">
+                        <div class="input-group input-group-sm">
                             <span class="input-group-text">Search:</span>
                             <input type="search" id="custom-search" class="form-control form-control-sm" placeholder="Search bookings...">
                         </div>
@@ -430,14 +443,19 @@ $(document).ready(function() {
             $('.dataTables_length').addClass('d-none');
             $(filterHtml).insertBefore('#bookings-table_wrapper .row:first');
             
-            // Handle retreat filter change
-            $('#retreat-filter').on('change', function() {
+            // Handle filter changes
+            $('#retreat-filter, #status-filter').on('change', function() {
                 table.ajax.reload();
             });
             
-            // Handle custom search
+            // Handle custom search with debounce
+            var searchTimeout;
             $('#custom-search').on('keyup', function() {
-                table.search(this.value).draw();
+                clearTimeout(searchTimeout);
+                var searchValue = this.value;
+                searchTimeout = setTimeout(function() {
+                    table.search(searchValue).draw();
+                }, 500);
             });
         }
     });
