@@ -16,15 +16,160 @@ use Illuminate\Support\Facades\Session;
 
 class BookingController extends Controller
 {
-    public function index()
+    /**
+     * Display a listing of the resource.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\View\View|\Illuminate\Http\JsonResponse
+     */
+    public function index(Request $request)
     {
-        $bookings = Booking::with(['retreat', 'creator'])
-            ->where('participant_number', 1) // Only show primary bookings in the list
-            ->where('is_active', true) // Only show active bookings
-            ->latest()
-            ->get();
+        if ($request->ajax()) {
+            $query = Booking::with(['retreat', 'creator'])
+                ->where('participant_number', 1) // Only show primary bookings in the list
+                ->where('is_active', true); // Only show active bookings
             
-        // Get all retreats that have bookings for the filter dropdown
+            // Handle search
+            if ($request->has('search') && !empty($request->search['value'])) {
+                $search = $request->search['value'];
+                $query->where(function($q) use ($search) {
+                    $q->where('booking_id', 'like', "%{$search}%")
+                      ->orWhere('firstname', 'like', "%{$search}%")
+                      ->orWhere('lastname', 'like', "%{$search}%")
+                      ->orWhere('whatsapp_number', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%")
+                      ->orWhereHas('retreat', function($q) use ($search) {
+                          $q->where('title', 'like', "%{$search}%");
+                      });
+                });
+            }
+            
+            // Handle retreat filter
+            if ($request->has('retreat_filter') && !empty($request->retreat_filter)) {
+                $query->whereHas('retreat', function($q) use ($request) {
+                    $q->where('title', $request->retreat_filter);
+                });
+            }
+            
+            // Handle sorting
+            if ($request->has('order')) {
+                $column = $request->input('order.0.column');
+                $dir = $request->input('order.0.dir');
+                $columns = ['booking_id', 'retreat_id', 'firstname', 'start_date', 'additional_participants', 'flag'];
+                
+                if (isset($columns[$column])) {
+                    if ($columns[$column] === 'start_date') {
+                        $query->join('retreats', 'bookings.retreat_id', '=', 'retreats.id')
+                            ->orderBy('retreats.start_date', $dir);
+                    } else {
+                        $query->orderBy($columns[$column], $dir);
+                    }
+                } else {
+                    $query->latest();
+                }
+            } else {
+                $query->latest();
+            }
+            
+            $totalData = $query->count();
+            $limit = $request->input('length', 25);
+            $start = $request->input('start', 0);
+            
+            $bookings = $query->offset($start)
+                            ->limit($limit)
+                            ->get();
+            
+            $data = [];
+            foreach ($bookings as $booking) {
+                $nestedData = [];
+                $nestedData['booking_id'] = $booking->booking_id;
+                $nestedData['retreat'] = $booking->retreat->title;
+                
+                // Guest info with flag
+                $guestInfo = '<div class="guest-info">';
+                $guestInfo .= '<div class="guest-name">';
+                $guestInfo .= '<strong>' . e($booking->firstname . ' ' . $booking->lastname) . '</strong>';
+                if ($booking->flag) {
+                    $guestInfo .= ' <span class="badge bg-warning ms-1" data-toggle="tooltip" title="' . e($booking->flag) . '">';
+                    $guestInfo .= '<i class="fas fa-exclamation-triangle"></i></span>';
+                }
+                $guestInfo .= '</div>';
+                
+                $guestInfo .= '<div class="guest-contact mt-1">';
+                if ($booking->whatsapp_number) {
+                    $guestInfo .= '<small class="text-muted d-block"><i class="fas fa-phone-alt me-1"></i>' . e($booking->whatsapp_number) . '</small>';
+                }
+                if ($booking->email) {
+                    $guestInfo .= '<small class="text-muted d-block"><i class="fas fa-envelope me-1"></i>' . e($booking->email) . '</small>';
+                }
+                $guestInfo .= '</div></div>';
+                
+                $nestedData['guest_info'] = $guestInfo;
+                
+                // Date info
+                $dateInfo = '<div class="date-info">';
+                $dateInfo .= '<div class="text-center">';
+                $dateInfo .= '<strong>' . $booking->retreat->start_date->format('M d, Y') . '</strong>';
+                $dateInfo .= '<small class="text-muted d-block">to</small>';
+                $dateInfo .= '<strong>' . $booking->retreat->end_date->format('M d, Y') . '</strong>';
+                $dateInfo .= '</div></div>';
+                
+                $nestedData['date_info'] = $dateInfo;
+                
+                // Participants
+                $participants = '<span class="badge bg-primary">' . ($booking->additional_participants + 1) . '</span>';
+                if ($booking->additional_participants > 0) {
+                    $participants .= '<br><small class="text-muted">(+' . $booking->additional_participants . ')</small>';
+                }
+                $nestedData['participants'] = $participants;
+                
+                // Status
+                $status = '';
+                if ($booking->flag) {
+                    $flags = explode(',', $booking->flag);
+                    foreach ($flags as $flag) {
+                        $status .= '<div class="mb-1">';
+                        $status .= '<span class="badge bg-warning">' . e(Str::title(str_replace('_', ' ', trim($flag)))) . '</span>';
+                        $status .= '</div>';
+                    }
+                } else {
+                    $status = '<span class="badge bg-success">Confirmed</span>';
+                }
+                $nestedData['status'] = $status;
+                
+                // Actions
+                $actions = '<div class="action-buttons">';
+                $actions .= '<div class="btn-row mb-1">';
+                $actions .= '<a href="' . route('admin.bookings.show', $booking->id) . '" class="btn btn-sm btn-info me-1" title="View">';
+                $actions .= '<i class="fas fa-eye"></i></a> ';
+                $actions .= '<a href="' . route('admin.bookings.edit', $booking->id) . '" class="btn btn-sm btn-primary" title="Edit">';
+                $actions .= '<i class="fas fa-edit"></i></a>';
+                $actions .= '</div>';
+                $actions .= '<div class="btn-row">';
+                $actions .= '<form action="' . route('admin.bookings.destroy', $booking->id) . '" method="POST" class="d-inline w-100">';
+                $actions .= csrf_field();
+                $actions .= method_field('DELETE');
+                $actions .= '<button type="submit" class="btn btn-sm btn-danger w-100" title="Cancel Booking" ';
+                $actions .= 'onclick="return confirm(\'Are you sure you want to cancel this booking? This will deactivate all participants in this booking.\')">';
+                $actions .= '<i class="fas fa-ban"></i></button></form>';
+                $actions .= '</div></div>';
+                
+                $nestedData['actions'] = $actions;
+                
+                $data[] = $nestedData;
+            }
+            
+            $json_data = [
+                "draw"            => intval($request->input('draw')),
+                "recordsTotal"    => intval(Booking::where('participant_number', 1)->where('is_active', true)->count()),
+                "recordsFiltered" => intval($totalData),
+                "data"            => $data
+            ];
+            
+            return response()->json($json_data);
+        }
+        
+        // Get all retreats that have bookings for the filter dropdown (for initial page load)
         $retreats = Retreat::whereHas('bookings', function($query) {
                 $query->where('participant_number', 1)
                       ->where('is_active', true);
@@ -32,7 +177,7 @@ class BookingController extends Controller
             ->orderBy('title')
             ->get();
             
-        return view('admin.bookings.index', compact('bookings', 'retreats'));
+        return view('admin.bookings.index', compact('retreats'));
     }
 
     public function create()

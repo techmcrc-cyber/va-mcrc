@@ -23,114 +23,20 @@
                     
                     <div class="table-responsive">
                         <table class="table table-bordered table-hover" id="bookings-table" width="100%" cellspacing="0">
-                        <thead>
-                            <tr>
-                                <th style="width: 10%;">Booking ID</th>
-                                <th style="width: 20%;">Retreat</th>
-                                <th style="width: 25%;">Primary Guest & Contact</th>
-                                <th style="width: 15%;">Dates</th>
-                                <th style="width: 8%;">Participants</th>
-                                <th style="width: 12%;">Status</th>
-                                <th style="width: 10%;">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($bookings as $booking)
+                            <thead>
                                 <tr>
-                                    <td>{{ $booking->booking_id }}</td>
-                                    <td>{{ $booking->retreat->title }}</td>
-                                    <td>
-                                        <div class="guest-info">
-                                            <div class="guest-name">
-                                                <strong>{{ $booking->firstname }} {{ $booking->lastname }}</strong>
-                                                @if($booking->flag)
-                                                    <span class="badge bg-warning ms-1" data-toggle="tooltip" title="{{ $booking->flag }}">
-                                                        <i class="fas fa-exclamation-triangle"></i>
-                                                    </span>
-                                                @endif
-                                            </div>
-                                            <div class="guest-contact mt-1">
-                                                @if($booking->whatsapp_number)
-                                                    <small class="text-muted d-block">
-                                                        <i class="fas fa-phone-alt me-1"></i>{{ $booking->whatsapp_number }}
-                                                    </small>
-                                                @endif
-                                                @if($booking->email)
-                                                    <small class="text-muted d-block">
-                                                        <i class="fas fa-envelope me-1"></i>{{ $booking->email }}
-                                                    </small>
-                                                @endif
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="date-info">
-                                            <div class="text-center">
-                                                <strong>{{ $booking->retreat->start_date->format('M d, Y') }}</strong>
-                                                <small class="text-muted d-block">to</small>
-                                                <strong>{{ $booking->retreat->end_date->format('M d, Y') }}</strong>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="text-center">
-                                        <span class="badge bg-primary">{{ $booking->additional_participants + 1 }}</span>
-                                        @if($booking->additional_participants > 0)
-                                            <br><small class="text-muted">(+{{ $booking->additional_participants }})</small>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        <div class="status-info">
-                                            @if($booking->flag)
-                                                @php
-                                                    $flags = explode(',', $booking->flag);
-                                                @endphp
-                                                @foreach($flags as $flag)
-                                                    <div class="mb-1">
-                                                        <span class="badge bg-warning">
-                                                            {{ Str::title(str_replace('_', ' ', trim($flag))) }}
-                                                        </span>
-                                                    </div>
-                                                @endforeach
-                                            @else
-                                                <span class="badge bg-success">Confirmed</span>
-                                            @endif
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="action-buttons">
-                                            <div class="btn-row mb-1">
-                                                <a href="{{ route('admin.bookings.show', $booking->id) }}" 
-                                                   class="btn btn-sm btn-info me-1" 
-                                                   title="View">
-                                                    <i class="fas fa-eye"></i>
-                                                </a>
-                                                <a href="{{ route('admin.bookings.edit', $booking->id) }}" 
-                                                   class="btn btn-sm btn-primary" 
-                                                   title="Edit">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
-                                            </div>
-                                            <div class="btn-row">
-                                                <form action="{{ route('admin.bookings.destroy', $booking->id) }}" 
-                                                      method="POST" 
-                                                      class="d-inline w-100"
-                                                      onsubmit="return confirm('Are you sure you want to cancel this booking? This will deactivate all participants in this booking.');">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-sm btn-danger w-100" title="Cancel Booking">
-                                                        <i class="fas fa-ban"></i>
-                                                    </button>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </td>
+                                    <th>Booking ID</th>
+                                    <th>Retreat</th>
+                                    <th>Primary Guest & Contact</th>
+                                    <th>Dates</th>
+                                    <th>Participants</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
                                 </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="7" class="text-center">No bookings found.</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
+                            </thead>
+                            <tbody>
+                                <!-- Data will be loaded via AJAX -->
+                            </tbody>
                         </table>
                     </div>
                 </div>
@@ -142,6 +48,8 @@
 
 @push('styles')
 <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.2/css/buttons.dataTables.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/select/1.3.4/css/select.dataTables.min.css">
 <style>
     /* Style all table headers */
     #bookings-table th {
@@ -149,7 +57,7 @@
         background-color: #f8f9fc !important;
         padding-top: 1rem !important;
         padding-bottom: 1rem !important;
-        font-size: 13px !important; /* Further reduced header font size */
+        font-size: 13px !important;
     }
     
     /* Compact ID column styling */
@@ -164,11 +72,12 @@
         border-radius: 4px;
         border: 1px solid #d1d3e2;
     }
+    
     /* Custom styling for bookings table */
     #bookings-table {
         table-layout: fixed;
         width: 100%;
-        font-size: 15px; /* Base font size increased */
+        font-size: 15px;
     }
     
     #bookings-table th,
@@ -197,6 +106,25 @@
     
     .guest-contact {
         margin-top: 3px;
+    }
+    
+    /* Loading overlay */
+    .dataTables_processing {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(255, 255, 255, 0.9);
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        z-index: 1;
+    }
+    
+    /* Button styles */
+    .dt-buttons .btn {
+        margin-right: 5px;
+        margin-bottom: 5px;
     }
     
     .guest-contact small {
@@ -373,66 +301,149 @@
 @push('scripts')
 <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.bootstrap5.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.print.min.js"></script>
+<script src="https://cdn.datatables.net/select/1.3.4/js/dataTables.select.min.js"></script>
+
 <script>
-    $(document).ready(function() {
-        // Initialize DataTable
-        var table = $('#bookings-table').DataTable({
-            "pageLength": 25,
-            "paging": true,
-            "searching": true,
-            "ordering": true,
-            "info": true,
-            "responsive": true,
-            "language": {
-                "search": "_INPUT_",
-                "searchPlaceholder": "Search bookings...",
-                "lengthMenu": "Show _MENU_ entries",
-                "zeroRecords": "No matching records found",
-                "info": "Showing _START_ to _END_ of _TOTAL_ entries",
-                "infoEmpty": "No entries available",
-                "infoFiltered": "(filtered from _MAX_ total entries)",
-                "paginate": {
-                    "first": "First",
-                    "last": "Last",
-                    "next": "Next",
-                    "previous": "Previous"
-                }
-            },
-            "dom": "<'row'<'col-md-4'l><'col-md-4'<'retreat-filter-container'>><'col-md-4'f>>" +
-                   "<'row'<'col-sm-12'tr>>" +
-                   "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
-            "responsive": true,
-            "order": [[0, 'desc']],
-            "initComplete": function() {
-                // Add retreat filter to custom container
-                var retreatFilterHtml = `
-                    <div class="form-group mb-0">
-                        <select id="retreat-filter" class="form-control">
-                            <option value="">All Retreats</option>
-                            @foreach($retreats as $retreat)
-                                <option value="{{ $retreat->title }}">
-                                    {{ $retreat->title }} ({{ $retreat->start_date->format('M Y') }})
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-                `;
-                $('.retreat-filter-container').html(retreatFilterHtml);
-                
-                // Initialize retreat filter functionality
-                $('#retreat-filter').on('change', function() {
-                    var selectedRetreat = this.value;
-                    if (selectedRetreat === '') {
-                        table.column(1).search('').draw(); // Clear filter if "All Retreats" selected
-                    } else {
-                        table.column(1).search(selectedRetreat).draw(); // Filter by retreat name (column index 1)
-                    }
-                });
+$(document).ready(function() {
+    // Initialize DataTable with server-side processing
+    var table = $('#bookings-table').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: {
+            url: "{{ route('admin.bookings.index') }}",
+            type: "GET",
+            data: function(d) {
+                d.retreat_filter = $('#retreat-filter').val();
             }
-        });
-        
-        // Initialize tooltips
-        $('[data-toggle="tooltip"]').tooltip();
+        },
+        columns: [
+            { 
+                data: 'booking_id', 
+                name: 'booking_id',
+                width: '10%'
+            },
+            { 
+                data: 'retreat', 
+                name: 'retreat.title',
+                width: '20%'
+            },
+            { 
+                data: 'guest_info', 
+                name: 'firstname',
+                width: '25%',
+                orderable: false,
+                searchable: false
+            },
+            { 
+                data: 'date_info', 
+                name: 'start_date',
+                width: '15%',
+                orderable: false,
+                searchable: false
+            },
+            { 
+                data: 'participants', 
+                name: 'additional_participants',
+                width: '8%',
+                className: 'text-center',
+                orderable: true,
+                searchable: false
+            },
+            { 
+                data: 'status', 
+                name: 'flag',
+                width: '12%',
+                orderable: true,
+                searchable: false
+            },
+            { 
+                data: 'actions', 
+                name: 'actions',
+                width: '10%',
+                orderable: false,
+                searchable: false,
+                className: 'text-center'
+            }
+        ],
+        order: [[0, 'desc']],
+        pageLength: 25,
+        lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+        dom: "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
+             "<'row'<'col-sm-12'tr>>" +
+             "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+        language: {
+            processing: '<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>',
+            search: "_INPUT_",
+            searchPlaceholder: "Search bookings...",
+            lengthMenu: "Show _MENU_ entries",
+            zeroRecords: "No matching bookings found",
+            info: "Showing _START_ to _END_ of _TOTAL_ entries",
+            infoEmpty: "No entries available",
+            infoFiltered: "(filtered from _MAX_ total entries)",
+            paginate: {
+                first: "First",
+                last: "Last",
+                next: "<i class='fas fa-chevron-right'></i>",
+                previous: "<i class='fas fa-chevron-left'></i>"
+            }
+        },
+        responsive: true,
+        drawCallback: function() {
+            // Reinitialize tooltips after table draw
+            $('[data-toggle="tooltip"]').tooltip();
+        },
+        initComplete: function() {
+            // Add custom filter controls
+            var filterHtml = `
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <span class="input-group-text">Filter:</span>
+                            <select id="retreat-filter" class="form-select form-select-sm">
+                                <option value="">All Retreats</option>
+                                @foreach($retreats as $retreat)
+                                    <option value="{{ $retreat->title }}">
+                                        {{ $retreat->title }} ({{ $retreat->start_date->format('M Y') }})
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <span class="input-group-text">Search:</span>
+                            <input type="search" id="custom-search" class="form-control form-control-sm" placeholder="Search bookings...">
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Hide default search and add our custom filters
+            $('.dataTables_filter').addClass('d-none');
+            $('.dataTables_length').addClass('d-none');
+            $(filterHtml).insertBefore('#bookings-table_wrapper .row:first');
+            
+            // Handle retreat filter change
+            $('#retreat-filter').on('change', function() {
+                table.ajax.reload();
+            });
+            
+            // Handle custom search
+            $('#custom-search').on('keyup', function() {
+                table.search(this.value).draw();
+            });
+        }
     });
+    
+    // Initialize tooltips
+    $('[data-toggle="tooltip"]').tooltip();
+});
 </script>
 @endpush
