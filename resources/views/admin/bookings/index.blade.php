@@ -295,6 +295,12 @@
             text-align: left;
         }
     }
+    #status-filter{
+        padding: 0.5rem 0.75rem;
+    }
+    #custom-search{
+        padding: 0.5rem 0.75rem;
+    }
 </style>
 @endpush
 

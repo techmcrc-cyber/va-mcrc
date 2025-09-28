@@ -57,12 +57,17 @@ class BookingController extends Controller
                 
                 if ($status === 'confirmed') {
                     $query->where('is_active', 1)
-                          ->whereNull('flag');
+                          ->where(function($q) {
+                              $q->whereNull('flag')
+                                ->orWhere('flag', '');
+                          });
                 } elseif ($status === 'pending') {
                     $query->where('is_active', 2);
                 } else {
                     // For CRITERIA_FAILED or RECURRENT_BOOKING
-                    $query->where('flag', $status);
+                    $query->where(function($q) use ($status) {
+                        $q->where('flag', 'LIKE', "%{$status}%");
+                    });
                 }
             }
             
