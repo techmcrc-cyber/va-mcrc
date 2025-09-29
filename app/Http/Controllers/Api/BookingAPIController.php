@@ -421,6 +421,7 @@ class BookingAPIController extends BaseAPIController
             $validator = Validator::make(array_merge($request->all(), ['booking_id' => $id]), [
                 'booking_id' => 'required|string',
                 'serial_number' => 'required|integer|min:1',
+                'whatsapp_number' => 'required|numeric|digits:10', // Need whatsapp_number to determine user role
             ]);
 
             if ($validator->fails()) {
@@ -429,8 +430,26 @@ class BookingAPIController extends BaseAPIController
 
             $bookingId = $id;
             $serialNumber = $request->input('serial_number');
+            $whatsappNumber = $request->input('whatsapp_number');
 
-            // Find the specific participant to cancel
+            // First, determine the current user's role by checking the show API logic
+            $currentUserParticipant = Booking::with(['retreat'])
+                ->where('booking_id', $bookingId)
+                ->where('whatsapp_number', $whatsappNumber)
+                ->where('is_active', true)
+                ->first();
+
+            if (!$currentUserParticipant) {
+                return $this->sendError(
+                    'Unable to find your participant record. Please verify your booking details.',
+                    'USER_NOT_FOUND',
+                    400
+                );
+            }
+
+            $currentUserRole = $currentUserParticipant->participant_number === 1 ? 'primary' : 'secondary';
+
+            // Find the participant to cancel
             $participantToCancel = Booking::where('booking_id', $bookingId)
                 ->where('participant_number', $serialNumber)
                 ->where('is_active', true)
@@ -438,7 +457,7 @@ class BookingAPIController extends BaseAPIController
 
             if (!$participantToCancel) {
                 return $this->sendError(
-                    'Unable to cancel booking for the specified Booking ID and participant serial number',
+                    'Unable to cancel booking for the specified participant serial number',
                     'PARTICIPANT_NOT_FOUND',
                     400
                 );
@@ -468,98 +487,193 @@ class BookingAPIController extends BaseAPIController
                 return $this->sendError('No active participants found for this booking', 'NO_PARTICIPANTS');
             }
 
-            // Check if this is the last participant (would result in complete cancellation)
-            if ($allParticipants->count() === 1) {
-                // This is a complete cancellation
-                return $this->processCompleteCancellation($participantToCancel, $retreat, $allParticipants);
-            }
-
-            // Process partial cancellation
-            DB::beginTransaction();
-
-            try {
-                // Mark participant as inactive (soft cancel)
-                $participantToCancel->update([
-                    'is_active' => false,
-                    'updated_by' => null, // API cancellations don't have user context
-                ]);
-
-                // Get remaining active participants
-                $remainingParticipants = $allParticipants->where('id', '!=', $participantToCancel->id);
-
-                // Get primary booking for email (participant_number = 1)
-                $primaryBooking = $remainingParticipants->where('participant_number', 1)->first() ?:
-                                 $allParticipants->where('participant_number', 1)->first();
-
-                if (!$primaryBooking) {
-                    throw new \Exception('Primary booking not found');
+            // Role-based cancellation logic
+            if ($currentUserRole === 'primary') {
+                // Primary can cancel: entire booking, own participation (cancels all), or any secondary
+                return $this->handlePrimaryCancellation($participantToCancel, $allParticipants, $retreat, $serialNumber);
+            } else {
+                // Secondary can only cancel their own participation
+                if ($serialNumber !== $currentUserParticipant->participant_number) {
+                    return $this->sendError(
+                        'As a secondary participant, you can only cancel your own participation',
+                        'UNAUTHORIZED_CANCELLATION',
+                        403
+                    );
                 }
-
-                // Update additional_participants count for primary booking
-                if ($primaryBooking && $primaryBooking->is_active) {
-                    $activeCount = $remainingParticipants->count();
-                    $primaryBooking->update([
-                        'additional_participants' => max(0, $activeCount - 1), // Subtract 1 for primary
-                    ]);
-                }
-
-                // Send cancellation confirmation email to primary participant
-                try {
-                    Mail::to($primaryBooking->email)
-                        ->send(new BookingCancellation(
-                            $primaryBooking,
-                            $retreat,
-                            $participantToCancel,
-                            $remainingParticipants->values(),
-                            'partial'
-                        ));
-                } catch (\Exception $e) {
-                    \Log::error('Failed to send cancellation confirmation email: ' . $e->getMessage());
-                    // Don't fail the cancellation if email fails
-                }
-
-                DB::commit();
-
-                // Prepare response
-                $responseData = [
-                    'booking_id' => $bookingId,
-                    'cancelled_participant' => [
-                        'serial_number' => $participantToCancel->participant_number,
-                        'name' => $participantToCancel->firstname . ' ' . $participantToCancel->lastname,
-                        'email' => $participantToCancel->email,
-                        'whatsapp_number' => $participantToCancel->whatsapp_number,
-                    ],
-                    'remaining_participants' => $remainingParticipants->map(function ($participant) {
-                        return [
-                            'serial_number' => $participant->participant_number,
-                            'name' => $participant->firstname . ' ' . $participant->lastname,
-                            'email' => $participant->email,
-                            'whatsapp_number' => $participant->whatsapp_number,
-                            'role' => $participant->participant_number === 1 ? 'primary' : 'secondary',
-                        ];
-                    })->values(),
-                    'retreat' => [
-                        'id' => $retreat->id,
-                        'name' => $retreat->title,
-                        'start_date' => $retreat->start_date->format('Y-m-d'),
-                        'end_date' => $retreat->end_date->format('Y-m-d'),
-                    ],
-                    'cancellation_type' => 'partial',
-                    'total_remaining' => $remainingParticipants->count(),
-                    'message' => 'Participant cancelled successfully. Confirmation email sent to primary participant.',
-                ];
-
-                return $this->sendResponse($responseData, 'Booking participant cancelled successfully');
-
-            } catch (\Exception $e) {
-                DB::rollBack();
-                \Log::error('Database error during partial cancellation: ' . $e->getMessage());
-                return $this->sendServerError('Failed to cancel participant due to database error');
+                return $this->handleSecondaryCancellation($participantToCancel, $allParticipants, $retreat);
             }
 
         } catch (\Exception $e) {
             \Log::error('API - Failed to cancel booking participant: ' . $e->getMessage());
             return $this->sendServerError('Failed to cancel booking participant');
+        }
+    }
+
+    /**
+     * Handle cancellation when current user is primary participant
+     */
+    private function handlePrimaryCancellation($participantToCancel, $allParticipants, $retreat, $serialNumber): JsonResponse
+    {
+        $primaryBooking = $allParticipants->where('participant_number', 1)->first();
+
+        // If primary is cancelling their own participation, it cancels the entire booking
+        if ($serialNumber === 1) {
+            return $this->processCompleteCancellation($participantToCancel, $retreat, $allParticipants);
+        }
+
+        // If primary is cancelling any secondary participant, do partial cancellation
+        DB::beginTransaction();
+
+        try {
+            // Mark participant as inactive (soft cancel)
+            $participantToCancel->update([
+                'is_active' => false,
+                'updated_by' => null,
+            ]);
+
+            // Get remaining active participants
+            $remainingParticipants = $allParticipants->where('id', '!=', $participantToCancel->id);
+
+            // Update additional_participants count for primary booking
+            if ($primaryBooking && $primaryBooking->is_active) {
+                $activeCount = $remainingParticipants->count();
+                $primaryBooking->update([
+                    'additional_participants' => max(0, $activeCount - 1),
+                ]);
+            }
+
+            // Send cancellation confirmation email to primary participant
+            try {
+                Mail::to($primaryBooking->email)
+                    ->send(new BookingCancellation(
+                        $primaryBooking,
+                        $retreat,
+                        $participantToCancel,
+                        $remainingParticipants->values(),
+                        'partial'
+                    ));
+            } catch (\Exception $e) {
+                \Log::error('Failed to send cancellation confirmation email: ' . $e->getMessage());
+            }
+
+            DB::commit();
+
+            // Prepare response
+            $responseData = [
+                'booking_id' => $participantToCancel->booking_id,
+                'cancelled_participant' => [
+                    'serial_number' => $participantToCancel->participant_number,
+                    'name' => $participantToCancel->firstname . ' ' . $participantToCancel->lastname,
+                    'email' => $participantToCancel->email,
+                    'whatsapp_number' => $participantToCancel->whatsapp_number,
+                ],
+                'remaining_participants' => $remainingParticipants->map(function ($participant) {
+                    return [
+                        'serial_number' => $participant->participant_number,
+                        'name' => $participant->firstname . ' ' . $participant->lastname,
+                        'email' => $participant->email,
+                        'whatsapp_number' => $participant->whatsapp_number,
+                        'role' => $participant->participant_number === 1 ? 'primary' : 'secondary',
+                    ];
+                })->values(),
+                'retreat' => [
+                    'id' => $retreat->id,
+                    'name' => $retreat->title,
+                    'start_date' => $retreat->start_date->format('Y-m-d'),
+                    'end_date' => $retreat->end_date->format('Y-m-d'),
+                ],
+                'cancellation_type' => 'partial',
+                'total_remaining' => $remainingParticipants->count(),
+                'message' => 'Participant cancelled successfully by primary participant. Confirmation email sent to primary participant.',
+            ];
+
+            return $this->sendResponse($responseData, 'Booking participant cancelled successfully');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error('Database error during primary cancellation: ' . $e->getMessage());
+            return $this->sendServerError('Failed to cancel participant due to database error');
+        }
+    }
+
+    /**
+     * Handle cancellation when current user is secondary participant
+     */
+    private function handleSecondaryCancellation($participantToCancel, $allParticipants, $retreat): JsonResponse
+    {
+        $primaryBooking = $allParticipants->where('participant_number', 1)->first();
+
+        DB::beginTransaction();
+
+        try {
+            // Mark participant as inactive (soft cancel)
+            $participantToCancel->update([
+                'is_active' => false,
+                'updated_by' => null,
+            ]);
+
+            // Get remaining active participants
+            $remainingParticipants = $allParticipants->where('id', '!=', $participantToCancel->id);
+
+            // Update additional_participants count for primary booking
+            if ($primaryBooking && $primaryBooking->is_active) {
+                $activeCount = $remainingParticipants->count();
+                $primaryBooking->update([
+                    'additional_participants' => max(0, $activeCount - 1),
+                ]);
+            }
+
+            // Send cancellation confirmation email to primary participant
+            try {
+                Mail::to($primaryBooking->email)
+                    ->send(new BookingCancellation(
+                        $primaryBooking,
+                        $retreat,
+                        $participantToCancel,
+                        $remainingParticipants->values(),
+                        'partial'
+                    ));
+            } catch (\Exception $e) {
+                \Log::error('Failed to send cancellation confirmation email: ' . $e->getMessage());
+            }
+
+            DB::commit();
+
+            // Prepare response
+            $responseData = [
+                'booking_id' => $participantToCancel->booking_id,
+                'cancelled_participant' => [
+                    'serial_number' => $participantToCancel->participant_number,
+                    'name' => $participantToCancel->firstname . ' ' . $participantToCancel->lastname,
+                    'email' => $participantToCancel->email,
+                    'whatsapp_number' => $participantToCancel->whatsapp_number,
+                ],
+                'remaining_participants' => $remainingParticipants->map(function ($participant) {
+                    return [
+                        'serial_number' => $participant->participant_number,
+                        'name' => $participant->firstname . ' ' . $participant->lastname,
+                        'email' => $participant->email,
+                        'whatsapp_number' => $participant->whatsapp_number,
+                        'role' => $participant->participant_number === 1 ? 'primary' : 'secondary',
+                    ];
+                })->values(),
+                'retreat' => [
+                    'id' => $retreat->id,
+                    'name' => $retreat->title,
+                    'start_date' => $retreat->start_date->format('Y-m-d'),
+                    'end_date' => $retreat->end_date->format('Y-m-d'),
+                ],
+                'cancellation_type' => 'partial',
+                'total_remaining' => $remainingParticipants->count(),
+                'message' => 'Your participation cancelled successfully. Confirmation email sent to primary participant.',
+            ];
+
+            return $this->sendResponse($responseData, 'Your participation cancelled successfully');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error('Database error during secondary cancellation: ' . $e->getMessage());
+            return $this->sendServerError('Failed to cancel your participation due to database error');
         }
     }
 
@@ -593,7 +707,6 @@ class BookingAPIController extends BaseAPIController
                     ));
             } catch (\Exception $e) {
                 \Log::error('Failed to send complete cancellation email: ' . $e->getMessage());
-                // Don't fail the cancellation if email fails
             }
 
             DB::commit();
