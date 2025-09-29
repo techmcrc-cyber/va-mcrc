@@ -238,15 +238,14 @@ class BookingAPIController extends BaseAPIController
                 return $this->sendValidationError($validator->errors());
             }
 
-            // Find the primary booking (participant_number = 1) with the given booking_id and whatsapp_number
-            $primaryBooking = Booking::with(['retreat'])
+            // Find the participant with the given booking_id and whatsapp_number (any participant, not just primary)
+            $participant = Booking::with(['retreat'])
                 ->where('booking_id', $bookingId)
                 ->where('whatsapp_number', $whatsappNumber)
-                ->where('participant_number', 1) // Primary participant only
                 ->where('is_active', true)
                 ->first();
 
-            if (!$primaryBooking) {
+            if (!$participant) {
                 return $this->sendError(
                     'Unable to retrieve booking information for the specified Booking ID and Whatsapp number',
                     'BOOKING_NOT_FOUND',
@@ -254,18 +253,22 @@ class BookingAPIController extends BaseAPIController
                 );
             }
 
-            // Get all participants for this booking
+            // Get all participants for this booking for comprehensive response
             $allParticipants = Booking::where('booking_id', $bookingId)
                 ->where('is_active', true)
                 ->orderBy('participant_number')
                 ->get();
 
-            $retreat = $primaryBooking->retreat;
+            $retreat = $participant->retreat;
 
             // Check if retreat still exists and is active
             if (!$retreat || !$retreat->is_active) {
                 return $this->sendError('Associated retreat is no longer available', 'RETREAT_UNAVAILABLE');
             }
+
+            // Determine participant role and get primary participant for email reference
+            $participantRole = $participant->participant_number === 1 ? 'primary' : 'secondary';
+            $primaryBooking = $allParticipants->where('participant_number', 1)->first();
 
             // Calculate booking status
             $now = now();
@@ -278,11 +281,12 @@ class BookingAPIController extends BaseAPIController
 
             // Prepare comprehensive response
             $bookingDetails = [
-                'booking_id' => $primaryBooking->booking_id,
-                'booking_date' => $primaryBooking->created_at->format('Y-m-d H:i:s'),
+                'booking_id' => $participant->booking_id,
+                'booking_date' => $participant->created_at->format('Y-m-d H:i:s'),
                 'status' => 'confirmed', // Since we only show active bookings
                 'retreat_status' => $retreatStatus,
-                
+                'current_user_role' => $participantRole, // Simple role indicator
+
                 // Retreat Information
                 'retreat' => [
                     'id' => $retreat->id,
@@ -294,38 +298,19 @@ class BookingAPIController extends BaseAPIController
                     'start_datetime' => $retreat->start_date->format('Y-m-d H:i:s'),
                     'end_datetime' => $retreat->end_date->format('Y-m-d H:i:s'),
                     'timings' => $retreat->timings,
-                    // 'location' => [
-                    //     'name' => $retreat->location,
-                    //     'address' => $retreat->address,
-                    //     'city' => $retreat->city,
-                    //     'state' => $retreat->state,
-                    //     'country' => $retreat->country,
-                    //     'postal_code' => $retreat->postal_code,
-                    //     'coordinates' => [
-                    //         'latitude' => $retreat->latitude,
-                    //         'longitude' => $retreat->longitude,
-                    //     ],
-                    // ],
-                    // 'pricing' => [
-                    //     'price' => (float) $retreat->price,
-                    //     'discount_price' => $retreat->discount_price ? (float) $retreat->discount_price : null,
-                    //     'effective_price' => (float) ($retreat->discount_price ?? $retreat->price),
-                    // ],
                     'criteria' => [
                         'type' => $retreat->criteria,
                         'label' => $retreat->criteria_label,
                     ],
                     'instructions' => $retreat->instructions,
                     'special_remarks' => $retreat->special_remarks,
-                    // 'category' => $retreat->category ? [
-                    //     'id' => $retreat->category->id,
-                    //     'name' => $retreat->category->name,
-                    // ] : null,
-                    // 'featured_image' => $retreat->featured_image_url,
                 ],
-                
-                // Primary Participant Details
-                'primary_participant' => [
+
+                // Queried Participant Role Only (Simplified)
+                'queried_participant_role' => $participantRole,
+
+                // Primary Participant Details (for reference)
+                'primary_participant' => $primaryBooking ? [
                     'serial_number' => $primaryBooking->participant_number,
                     'firstname' => $primaryBooking->firstname,
                     'lastname' => $primaryBooking->lastname,
@@ -334,50 +319,35 @@ class BookingAPIController extends BaseAPIController
                     'whatsapp_number' => $primaryBooking->whatsapp_number,
                     'age' => $primaryBooking->age,
                     'gender' => ucfirst($primaryBooking->gender),
-                    'address' => $primaryBooking->address,
-                    'city' => $primaryBooking->city,
-                    'state' => $primaryBooking->state,
-                    'diocese' => $primaryBooking->diocese,
-                    'parish' => $primaryBooking->parish,
-                    'congregation' => $primaryBooking->congregation,
-                    'emergency_contact' => [
-                        'name' => $primaryBooking->emergency_contact_name,
-                        'phone' => $primaryBooking->emergency_contact_phone,
-                    ],
-                ],
-                
-                // All Participants
-                'participants' => $allParticipants->map(function ($participant) {
+                ] : null,
+
+                // All Participants (Simplified)
+                'participants' => $allParticipants->map(function ($p) {
                     return [
-                        'serial_number' => $participant->participant_number,
-                        'firstname' => $participant->firstname,
-                        'lastname' => $participant->lastname,
-                        'full_name' => $participant->firstname . ' ' . $participant->lastname,
-                        'email' => $participant->email,
-                        'whatsapp_number' => $participant->whatsapp_number,
-                        'age' => $participant->age,
-                        'gender' => ucfirst($participant->gender),
-                        'role' => $participant->participant_number === 1 ? 'primary' : 'secondary',
-                        'emergency_contact' => [
-                            'name' => $participant->emergency_contact_name,
-                            'phone' => $participant->emergency_contact_phone,
-                        ],
+                        'serial_number' => $p->participant_number,
+                        'firstname' => $p->firstname,
+                        'lastname' => $p->lastname,
+                        'full_name' => $p->firstname . ' ' . $p->lastname,
+                        'email' => $p->email,
+                        'whatsapp_number' => $p->whatsapp_number,
+                        'age' => $p->age,
+                        'gender' => ucfirst($p->gender),
+                        'role' => $p->participant_number === 1 ? 'primary' : 'secondary',
                     ];
                 })->values(),
-                
+
                 // Booking Summary
                 'summary' => [
                     'total_participants' => $allParticipants->count(),
-                    'additional_participants' => $primaryBooking->additional_participants,
-                    'special_remarks' => $primaryBooking->special_remarks,
-                    'booking_flags' => $primaryBooking->flag ? explode(',', $primaryBooking->flag) : [],
+                    'additional_participants' => $primaryBooking ? $primaryBooking->additional_participants : 0,
+                    'special_remarks' => $participant->special_remarks,
                 ],
-                
+
                 // Important Dates and Status
                 'important_info' => [
-                    'days_until_retreat' => $retreat->start_date->isFuture() ? 
+                    'days_until_retreat' => $retreat->start_date->isFuture() ?
                         $now->diffInDays($retreat->start_date, false) : null,
-                    'is_cancellable' => $retreat->start_date->isFuture() && 
+                    'is_cancellable' => $retreat->start_date->isFuture() &&
                         $retreat->start_date->diffInDays($now) > 1, // Can cancel if more than 1 day before
                     'check_in_time' => $retreat->start_date->format('M d, Y \a\t g:i A'),
                     'check_out_time' => $retreat->end_date->format('M d, Y \a\t g:i A'),
@@ -386,7 +356,7 @@ class BookingAPIController extends BaseAPIController
             ];
 
             return $this->sendResponse($bookingDetails, 'Booking details retrieved successfully');
-            
+
         } catch (\Exception $e) {
             \Log::error('API - Failed to retrieve booking details: ' . $e->getMessage());
             return $this->sendServerError('Failed to retrieve booking details');
