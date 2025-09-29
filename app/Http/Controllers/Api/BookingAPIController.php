@@ -555,33 +555,17 @@ class BookingAPIController extends BaseAPIController
     {
         $errors = [];
 
-        // Check for duplicate WhatsApp numbers within the same booking
-        $whatsappNumbers = collect($participants)->pluck('whatsapp_number');
-        $duplicates = $whatsappNumbers->duplicates();
-        
-        if ($duplicates->isNotEmpty()) {
-            $errors[] = 'Duplicate WhatsApp numbers found within participants: ' . $duplicates->implode(', ');
-        }
-
-        // Check for duplicate email addresses within the same booking
-        $emails = collect($participants)->pluck('email');
-        $duplicateEmails = $emails->duplicates();
-        
-        if ($duplicateEmails->isNotEmpty()) {
-            $errors[] = 'Duplicate email addresses found within participants: ' . $duplicateEmails->implode(', ');
-        }
-
         // Validate each participant against retreat criteria and recurrent booking rules
         foreach ($participants as $index => $participant) {
             $participantPosition = $index + 1;
-            
+
             // Check retreat criteria compliance
             if (!$this->meetsRetreatCriteria($participant, $retreat)) {
                 $criteriaLabel = $retreat->criteria_label ?? $retreat->criteria;
                 $errors[] = "Participant {$participantPosition} ({$participant['firstname']} {$participant['lastname']}) does not meet retreat criteria: {$criteriaLabel}";
             }
 
-            // Check for recurrent bookings (within past year)
+            // Check for recurrent bookings (within past year) and add RECURRENT_BOOKING remark
             $hasRecentBooking = Booking::hasAttendedInPastYear(
                 $participant['whatsapp_number'],
                 $participant['firstname'],
@@ -589,7 +573,7 @@ class BookingAPIController extends BaseAPIController
             );
 
             if ($hasRecentBooking) {
-                $errors[] = "Participant {$participantPosition} ({$participant['firstname']} {$participant['lastname']}) has attended a retreat in the past year";
+                $errors[] = "Participant {$participantPosition} ({$participant['firstname']} {$participant['lastname']}) has attended a retreat in the past year - RECURRENT_BOOKING";
             }
         }
 
