@@ -191,6 +191,12 @@ class BookingAPIController extends BaseAPIController
                     'remarks' => 'Booking confirmed successfully. Confirmation email sent to primary participant.',
                 ];
 
+                // Modify remarks based on validation flags
+                $participantsWithFlags = collect($allBookings)->whereNotNull('flag')->count();
+                if ($participantsWithFlags > 0) {
+                    $responseData['remarks'] = "Booking confirmed with {$participantsWithFlags} participant(s) having validation flags. Please check participant details for flag information. Confirmation email sent to primary participant.";
+                }
+
                 return $this->sendCreated($responseData, 'Booking created successfully');
 
             } catch (\Exception $e) {
