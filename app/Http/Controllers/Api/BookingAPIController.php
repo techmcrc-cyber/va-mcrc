@@ -80,10 +80,11 @@ class BookingAPIController extends BaseAPIController
                 return $this->sendValidationError($validationErrors, 'Participant validation failed');
             }
 
-            // Check for duplicate participants and business rules
-            $businessRuleErrors = $this->validateBusinessRules($participants, $retreat);
-            if (!empty($businessRuleErrors)) {
-                return $this->sendError('Business rule validation failed', 'BUSINESS_RULES_FAILED', 400, $businessRuleErrors);
+            // Check for business rule violations and collect flags instead of blocking
+            $businessRuleFlags = $this->validateBusinessRules($participants, $retreat);
+            if (!empty($businessRuleFlags)) {
+                // Log the violations but don't block the booking
+                \Log::info('Business rule violations detected during booking creation: ' . json_encode($businessRuleFlags));
             }
 
             // Start database transaction
@@ -98,7 +99,11 @@ class BookingAPIController extends BaseAPIController
                 // Create bookings for all participants
                 foreach ($participants as $index => $participantData) {
                     $serialNumber = $index + 1;
-                    
+
+                    // Get flags for this participant (if any)
+                    $participantFlags = $businessRuleFlags[$index] ?? [];
+                    $flagValue = !empty($participantFlags) ? implode(',', $participantFlags) : null;
+
                     // Create booking record
                     $booking = Booking::create([
                         'booking_id' => $bookingId,
@@ -121,12 +126,13 @@ class BookingAPIController extends BaseAPIController
                         'special_remarks' => $participantData['special_remarks'] ?? null,
                         'participant_number' => $serialNumber,
                         'is_active' => true,
+                        'flag' => $flagValue, // Store business rule violation flags
                         'created_by' => null, // API bookings don't have user context
                         'updated_by' => null,
                     ]);
 
                     $allBookings[] = $booking;
-                    
+
                     if ($serialNumber === 1) {
                         $primaryBooking = $booking;
                     }
@@ -155,15 +161,33 @@ class BookingAPIController extends BaseAPIController
                         'end_date' => $retreat->end_date->format('Y-m-d'),
                     ],
                     'participants' => collect($allBookings)->map(function ($booking) {
-                        return [
+                        $participantData = [
                             'serial_number' => $booking->participant_number,
                             'name' => $booking->firstname . ' ' . $booking->lastname,
                             'email' => $booking->email,
                             'whatsapp_number' => $booking->whatsapp_number,
                             'role' => $booking->participant_number === 1 ? 'primary' : 'secondary',
                         ];
+
+                        // Add flag information if present
+                        if ($booking->flag) {
+                            $participantData['flag_status'] = $booking->flag;
+                            $participantData['flag_descriptions'] = collect(explode(',', $booking->flag))->map(function ($flag) {
+                                return match ($flag) {
+                                    'CRITERIA_FAILED' => 'Does not meet retreat criteria',
+                                    'RECURRENT_BOOKING' => 'Has attended retreat in past year',
+                                    default => $flag,
+                                };
+                            })->implode(', ');
+                        }
+
+                        return $participantData;
                     }),
                     'total_participants' => count($allBookings),
+                    'booking_summary' => [
+                        'total_violations' => collect($allBookings)->whereNotNull('flag')->count(),
+                        'participants_with_flags' => collect($allBookings)->whereNotNull('flag')->pluck('participant_number')->values(),
+                    ],
                     'remarks' => 'Booking confirmed successfully. Confirmation email sent to primary participant.',
                 ];
 
@@ -549,23 +573,23 @@ class BookingAPIController extends BaseAPIController
     }
 
     /**
-     * Validate business rules for participants.
+     * Validate business rules for participants and return flags for violations.
+     * Returns an array where keys are participant indices and values are arrays of flags.
      */
     private function validateBusinessRules(array $participants, Retreat $retreat): array
     {
-        $errors = [];
+        $flags = [];
 
         // Validate each participant against retreat criteria and recurrent booking rules
         foreach ($participants as $index => $participant) {
-            $participantPosition = $index + 1;
+            $participantFlags = [];
 
             // Check retreat criteria compliance
             if (!$this->meetsRetreatCriteria($participant, $retreat)) {
-                $criteriaLabel = $retreat->criteria_label ?? $retreat->criteria;
-                $errors[] = "Participant {$participantPosition} ({$participant['firstname']} {$participant['lastname']}) does not meet retreat criteria: {$criteriaLabel}";
+                $participantFlags[] = 'CRITERIA_FAILED';
             }
 
-            // Check for recurrent bookings (within past year) and add RECURRENT_BOOKING remark
+            // Check for recurrent bookings (within past year) and add RECURRENT_BOOKING flag
             $hasRecentBooking = Booking::hasAttendedInPastYear(
                 $participant['whatsapp_number'],
                 $participant['firstname'],
@@ -573,11 +597,15 @@ class BookingAPIController extends BaseAPIController
             );
 
             if ($hasRecentBooking) {
-                $errors[] = "Participant {$participantPosition} ({$participant['firstname']} {$participant['lastname']}) has attended a retreat in the past year - RECURRENT_BOOKING";
+                $participantFlags[] = 'RECURRENT_BOOKING';
+            }
+
+            if (!empty($participantFlags)) {
+                $flags[$index] = $participantFlags;
             }
         }
 
-        return $errors;
+        return $flags;
     }
 
     /**

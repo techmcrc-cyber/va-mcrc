@@ -25,8 +25,36 @@
 
         <div class="content">
             <p>Dear {{ $booking->firstname }} {{ $booking->lastname }},</p>
-            
+
             <p>Thank you for your retreat booking! Your booking has been <strong>confirmed</strong>.</p>
+
+            @php
+                $participantsWithFlags = collect($allParticipants)->whereNotNull('flag')->count();
+            @endphp
+
+            @if($participantsWithFlags > 0)
+                <div class="important">
+                    <h4>⚠️ Important Notice</h4>
+                    <p><strong>{{ $participantsWithFlags }} participant(s)</strong> in your booking have validation flags that may require administrative review:</p>
+                    <ul>
+                        @foreach($allParticipants->whereNotNull('flag') as $participant)
+                            <li><strong>{{ $participant->firstname }} {{ $participant->lastname }}</strong> (Serial #{{ $participant->participant_number }}):
+                                @php
+                                    $flags = explode(',', $participant->flag);
+                                    $descriptions = [];
+                                    foreach($flags as $flag) {
+                                        if($flag == 'CRITERIA_FAILED') $descriptions[] = 'Does not meet retreat criteria';
+                                        elseif($flag == 'RECURRENT_BOOKING') $descriptions[] = 'Has attended retreat in past year';
+                                        else $descriptions[] = $flag;
+                                    }
+                                @endphp
+                                {{ implode(', ', $descriptions) }}
+                            </li>
+                        @endforeach
+                    </ul>
+                    <p>Please contact us if you have questions about these flags.</p>
+                </div>
+            @endif
 
             <div class="booking-details">
                 <h3>📋 Booking Details</h3>
@@ -48,6 +76,24 @@
                 <p><strong>WhatsApp:</strong> {{ $booking->whatsapp_number }}</p>
                 <p><strong>Age:</strong> {{ $booking->age }} years</p>
                 <p><strong>Gender:</strong> {{ ucfirst($booking->gender) }}</p>
+
+                @if($booking->flag)
+                    <div style="background-color: #fef3c7; border: 1px solid #f59e0b; padding: 8px; border-radius: 3px; margin-top: 8px;">
+                        <p style="margin: 0; font-size: 12px; color: #92400e;">
+                            <strong>⚠️ Status Flags:</strong><br>
+                            @php
+                                $flags = explode(',', $booking->flag);
+                                $descriptions = [];
+                                foreach($flags as $flag) {
+                                    if($flag == 'CRITERIA_FAILED') $descriptions[] = 'Does not meet retreat criteria';
+                                    elseif($flag == 'RECURRENT_BOOKING') $descriptions[] = 'Has attended retreat in past year';
+                                    else $descriptions[] = $flag;
+                                }
+                            @endphp
+                            {{ implode(', ', $descriptions) }}
+                        </p>
+                    </div>
+                @endif
             </div>
 
             @if(count($allParticipants) > 1)
@@ -62,6 +108,24 @@
                                 <p><strong>WhatsApp:</strong> {{ $participant->whatsapp_number }}</p>
                                 <p><strong>Age:</strong> {{ $participant->age }} years</p>
                                 <p><strong>Gender:</strong> {{ ucfirst($participant->gender) }}</p>
+
+                                @if($participant->flag)
+                                    <div style="background-color: #fef3c7; border: 1px solid #f59e0b; padding: 8px; border-radius: 3px; margin-top: 8px;">
+                                        <p style="margin: 0; font-size: 12px; color: #92400e;">
+                                            <strong>⚠️ Status Flags:</strong><br>
+                                            @php
+                                                $flags = explode(',', $participant->flag);
+                                                $descriptions = [];
+                                                foreach($flags as $flag) {
+                                                    if($flag == 'CRITERIA_FAILED') $descriptions[] = 'Does not meet retreat criteria';
+                                                    elseif($flag == 'RECURRENT_BOOKING') $descriptions[] = 'Has attended retreat in past year';
+                                                    else $descriptions[] = $flag;
+                                                }
+                                            @endphp
+                                            {{ implode(', ', $descriptions) }}
+                                        </p>
+                                    </div>
+                                @endif
                             </div>
                         @endif
                     @endforeach
