@@ -209,7 +209,7 @@ class BookingAPIController extends BaseAPIController
             }
 
             // Find the primary booking (participant_number = 1) with the given booking_id and whatsapp_number
-            $primaryBooking = Booking::with(['retreat.category'])
+            $primaryBooking = Booking::with(['retreat'])
                 ->where('booking_id', $bookingId)
                 ->where('whatsapp_number', $whatsappNumber)
                 ->where('participant_number', 1) // Primary participant only
@@ -264,34 +264,34 @@ class BookingAPIController extends BaseAPIController
                     'start_datetime' => $retreat->start_date->format('Y-m-d H:i:s'),
                     'end_datetime' => $retreat->end_date->format('Y-m-d H:i:s'),
                     'timings' => $retreat->timings,
-                    'location' => [
-                        'name' => $retreat->location,
-                        'address' => $retreat->address,
-                        'city' => $retreat->city,
-                        'state' => $retreat->state,
-                        'country' => $retreat->country,
-                        'postal_code' => $retreat->postal_code,
-                        'coordinates' => [
-                            'latitude' => $retreat->latitude,
-                            'longitude' => $retreat->longitude,
-                        ],
-                    ],
-                    'pricing' => [
-                        'price' => (float) $retreat->price,
-                        'discount_price' => $retreat->discount_price ? (float) $retreat->discount_price : null,
-                        'effective_price' => (float) ($retreat->discount_price ?? $retreat->price),
-                    ],
+                    // 'location' => [
+                    //     'name' => $retreat->location,
+                    //     'address' => $retreat->address,
+                    //     'city' => $retreat->city,
+                    //     'state' => $retreat->state,
+                    //     'country' => $retreat->country,
+                    //     'postal_code' => $retreat->postal_code,
+                    //     'coordinates' => [
+                    //         'latitude' => $retreat->latitude,
+                    //         'longitude' => $retreat->longitude,
+                    //     ],
+                    // ],
+                    // 'pricing' => [
+                    //     'price' => (float) $retreat->price,
+                    //     'discount_price' => $retreat->discount_price ? (float) $retreat->discount_price : null,
+                    //     'effective_price' => (float) ($retreat->discount_price ?? $retreat->price),
+                    // ],
                     'criteria' => [
                         'type' => $retreat->criteria,
                         'label' => $retreat->criteria_label,
                     ],
                     'instructions' => $retreat->instructions,
                     'special_remarks' => $retreat->special_remarks,
-                    'category' => $retreat->category ? [
-                        'id' => $retreat->category->id,
-                        'name' => $retreat->category->name,
-                    ] : null,
-                    'featured_image' => $retreat->featured_image_url,
+                    // 'category' => $retreat->category ? [
+                    //     'id' => $retreat->category->id,
+                    //     'name' => $retreat->category->name,
+                    // ] : null,
+                    // 'featured_image' => $retreat->featured_image_url,
                 ],
                 
                 // Primary Participant Details

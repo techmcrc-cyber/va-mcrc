@@ -99,7 +99,7 @@ return [
 
     'key' => env('APP_KEY'),
     
-    'api_key' => env('API_KEY', 'retreat_api_key_2024'),
+    'api_key' => env('API_KEY', 'mcrc_retreat_api_key_2025'),
 
     'previous_keys' => [
         ...array_filter(

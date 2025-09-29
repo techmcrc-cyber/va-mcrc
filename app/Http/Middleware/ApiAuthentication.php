@@ -32,7 +32,7 @@ class ApiAuthentication
         $apiKey = str_replace('Bearer ', '', $apiKey);
         
         // Validate API key (you can store this in config or database)
-        $validApiKey = config('app.api_key', 'retreat_api_key_2024');
+        $validApiKey = config('app.api_key', 'mcrc_retreat_api_key_2025');
         
         if ($apiKey !== $validApiKey) {
             return response()->json([

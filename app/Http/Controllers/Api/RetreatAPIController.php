@@ -17,13 +17,12 @@ class RetreatAPIController extends BaseAPIController
     {
         try {
             $retreats = Retreat::with(['bookings' => function($query) {
-                    $query->whereIn('status', ['confirmed', 'pending']);
+                    $query->whereIn('is_active', ['confirmed', 'pending']);
                 }])
                 ->active() // Only active retreats
                 ->upcoming() // Starting from current day
                 ->orderBy('start_date', 'asc')
                 ->get();
-
             // Filter out fully booked retreats
             $availableRetreats = $retreats->filter(function ($retreat) {
                 $bookedSeats = $retreat->bookings->count();
@@ -40,9 +39,6 @@ class RetreatAPIController extends BaseAPIController
                     'end_date' => $retreat->end_date->format('Y-m-d'),
                     'available_spots' => $retreat->seats - $bookedSeats,
                     'total_seats' => $retreat->seats,
-                    'location' => $retreat->location,
-                    'price' => (float) $retreat->price,
-                    'discount_price' => $retreat->discount_price ? (float) $retreat->discount_price : null,
                     'criteria' => $retreat->criteria,
                     'criteria_label' => $retreat->criteria_label,
                     'is_featured' => (bool) $retreat->is_featured
@@ -77,8 +73,8 @@ class RetreatAPIController extends BaseAPIController
 
             // Find the retreat with bookings
             $retreat = Retreat::with(['bookings' => function($query) {
-                    $query->whereIn('status', ['confirmed', 'pending']);
-                }, 'category'])
+                    $query->whereIn('is_active', ['confirmed', 'pending']);
+                }])
                 ->where('id', $id)
                 ->active()
                 ->first();
@@ -101,25 +97,25 @@ class RetreatAPIController extends BaseAPIController
                 'start_date' => $retreat->start_date->format('Y-m-d'),
                 'end_date' => $retreat->end_date->format('Y-m-d'),
                 'timings' => $retreat->timings,
-                'location' => [
-                    'name' => $retreat->location,
-                    'address' => $retreat->address,
-                    'city' => $retreat->city,
-                    'state' => $retreat->state,
-                    'country' => $retreat->country,
-                    'postal_code' => $retreat->postal_code,
-                    'coordinates' => [
-                        'latitude' => $retreat->latitude,
-                        'longitude' => $retreat->longitude,
-                    ],
-                ],
-                'pricing' => [
-                    'price' => (float) $retreat->price,
-                    'discount_price' => $retreat->discount_price ? (float) $retreat->discount_price : null,
-                    'has_discount' => $retreat->discount_price !== null && $retreat->discount_price < $retreat->price,
-                    'discount_percentage' => $retreat->discount_price ? round((($retreat->price - $retreat->discount_price) / $retreat->price) * 100) : 0,
-                    'effective_price' => (float) ($retreat->discount_price ?? $retreat->price),
-                ],
+                // 'location' => [
+                //     'name' => $retreat->location,
+                //     'address' => $retreat->address,
+                //     'city' => $retreat->city,
+                //     'state' => $retreat->state,
+                //     'country' => $retreat->country,
+                //     'postal_code' => $retreat->postal_code,
+                //     'coordinates' => [
+                //         'latitude' => $retreat->latitude,
+                //         'longitude' => $retreat->longitude,
+                //     ],
+                // ],
+                // 'pricing' => [
+                //     'price' => (float) $retreat->price,
+                //     'discount_price' => $retreat->discount_price ? (float) $retreat->discount_price : null,
+                //     'has_discount' => $retreat->discount_price !== null && $retreat->discount_price < $retreat->price,
+                //     'discount_percentage' => $retreat->discount_price ? round((($retreat->price - $retreat->discount_price) / $retreat->price) * 100) : 0,
+                //     'effective_price' => (float) ($retreat->discount_price ?? $retreat->price),
+                // ],
                 'availability' => [
                     'total_seats' => $retreat->seats,
                     'booked_seats' => $bookedSeats,
@@ -136,16 +132,17 @@ class RetreatAPIController extends BaseAPIController
                     'instructions' => $retreat->instructions,
                     'is_featured' => (bool) $retreat->is_featured,
                 ],
-                'category' => $retreat->category ? [
-                    'id' => $retreat->category->id,
-                    'name' => $retreat->category->name,
-                ] : null,
-                'featured_image' => $retreat->featured_image_url,
+                // 'category' => $retreat->category ? [
+                //     'id' => $retreat->category->id,
+                //     'name' => $retreat->category->name,
+                // ] : null,
+                //'featured_image' => $retreat->featured_image_url,
             ];
 
             return $this->sendResponse($retreatDetails, 'Retreat details retrieved successfully');
             
         } catch (\Exception $e) {
+            dd($e->getMessage());
             \Log::error('API - Failed to retrieve retreat details: ' . $e->getMessage());
             return $this->sendServerError('Failed to retrieve retreat details');
         }
