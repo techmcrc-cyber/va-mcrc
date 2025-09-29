@@ -15,10 +15,6 @@ use Illuminate\Http\JsonResponse;
 
 class BookingAPIController extends BaseAPIController
 {
-    /**
-     * Store a newly created booking.
-     * Accept JSON array of participant objects.
-     */
     public function store(Request $request): JsonResponse
     {
         try {
@@ -32,19 +28,17 @@ class BookingAPIController extends BaseAPIController
                 return $this->sendValidationError($initialValidator->errors());
             }
 
-            // Get retreat details
             $retreat = Retreat::with(['bookings' => function($query) {
-                $query->active();
-            }])->where('id', $request->retreat_id)
-              ->active()
-              ->first();
+                    $query->active();
+                }])->where('id', $request->retreat_id)
+                  ->active()
+                  ->first();
 
             if (!$retreat) {
                 return $this->sendNotFound('Retreat not found or inactive');
             }
 
-            // Check if retreat is available for booking
-            if ($retreat->start_date->isPast()) {
+            if ($retreat->end_date->isPast()) {
                 return $this->sendError('This retreat has already started or ended', 'RETREAT_PAST');
             }
 
@@ -59,7 +53,6 @@ class BookingAPIController extends BaseAPIController
                 );
             }
 
-            // Validate each participant
             $validationErrors = [];
             $participants = $request->participants;
 
@@ -80,31 +73,25 @@ class BookingAPIController extends BaseAPIController
                 return $this->sendValidationError($validationErrors, 'Participant validation failed');
             }
 
-            // Check for business rule violations and collect flags instead of blocking
             $businessRuleFlags = $this->validateBusinessRules($participants, $retreat);
             if (!empty($businessRuleFlags)) {
-                // Log the violations but don't block the booking
                 \Log::info('Business rule violations detected during booking creation: ' . json_encode($businessRuleFlags));
             }
 
-            // Start database transaction
             DB::beginTransaction();
 
             try {
-                // Generate unique booking ID
+
                 $bookingId = Booking::generateBookingId();
                 $allBookings = [];
                 $primaryBooking = null;
 
-                // Create bookings for all participants
                 foreach ($participants as $index => $participantData) {
                     $serialNumber = $index + 1;
 
-                    // Get flags for this participant (if any)
                     $participantFlags = $businessRuleFlags[$index] ?? [];
                     $flagValue = !empty($participantFlags) ? implode(',', $participantFlags) : null;
 
-                    // Create booking record
                     $booking = Booking::create([
                         'booking_id' => $bookingId,
                         'retreat_id' => $retreat->id,
@@ -138,20 +125,17 @@ class BookingAPIController extends BaseAPIController
                     }
                 }
 
-                // Send confirmation email to primary participant
                 if ($primaryBooking) {
                     try {
                         Mail::to($primaryBooking->email)
                             ->send(new BookingConfirmation($primaryBooking, $retreat, $allBookings));
                     } catch (\Exception $e) {
                         \Log::error('Failed to send booking confirmation email: ' . $e->getMessage());
-                        // Don't fail the booking if email fails
                     }
                 }
 
                 DB::commit();
 
-                // Prepare response
                 $responseData = [
                     'booking_id' => $bookingId,
                     'retreat' => [
@@ -169,7 +153,6 @@ class BookingAPIController extends BaseAPIController
                             'role' => $booking->participant_number === 1 ? 'primary' : 'secondary',
                         ];
 
-                        // Add flag information if present
                         if ($booking->flag) {
                             $participantData['flag_status'] = $booking->flag;
                             $participantData['flag_descriptions'] = collect(explode(',', $booking->flag))->map(function ($flag) {
@@ -191,7 +174,6 @@ class BookingAPIController extends BaseAPIController
                     'remarks' => 'Booking confirmed successfully. Confirmation email sent to primary participant.',
                 ];
 
-                // Modify remarks based on validation flags
                 $participantsWithFlags = collect($allBookings)->whereNotNull('flag')->count();
                 if ($participantsWithFlags > 0) {
                     $responseData['remarks'] = "Booking confirmed with {$participantsWithFlags} participant(s) having validation flags. Please check participant details for flag information. Confirmation email sent to primary participant.";
@@ -211,14 +193,88 @@ class BookingAPIController extends BaseAPIController
         }
     }
 
-    /**
-     * Display the specified booking.
-     * Requires booking_id and whatsapp_number for validation.
-     */
+    private function getParticipantValidationRules(Retreat $retreat): array
+    {
+
+        $rules = [
+            'firstname' => 'required|string|max:255',
+            'lastname' => 'required|string|max:255',
+            'whatsapp_number' => 'required|numeric|digits:10',
+            'age' => 'required|integer|min:1|max:120',
+            'email' => 'required|email|max:255',
+            'address' => 'required|string|max:500',
+            'gender' => 'required|in:male,female,other',
+            'city' => 'required|string|max:255',
+            'state' => 'required|string|max:255',
+            'diocese' => 'nullable|string|max:255',
+            'parish' => 'nullable|string|max:255',
+            'congregation' => 'nullable|string|max:255',
+            'emergency_contact_name' => 'required|string|max:255',
+            'emergency_contact_phone' => 'required|string|max:20',
+            'special_remarks' => 'nullable|string|max:1000',
+        ];
+
+        if (in_array($retreat->criteria, ['priests_only', 'sisters_only'])) {
+            $rules['congregation'] = 'required|string|max:255';
+        }
+
+        return $rules;
+    }
+
+    private function validateBusinessRules(array $participants, Retreat $retreat): array
+    {
+        $flags = [];
+
+        // Validate each participant against retreat criteria and recurrent booking rules
+        foreach ($participants as $index => $participant) {
+            $participantFlags = [];
+
+            // Check retreat criteria compliance
+            if (!$this->meetsRetreatCriteria($participant, $retreat)) {
+                $participantFlags[] = 'CRITERIA_FAILED';
+            }
+
+            // Check for recurrent bookings (within past year) and add RECURRENT_BOOKING flag
+            $hasRecentBooking = Booking::hasAttendedInPastYear(
+                $participant['whatsapp_number'],
+                $participant['firstname'],
+                $participant['lastname']
+            );
+
+            if ($hasRecentBooking) {
+                $participantFlags[] = 'RECURRENT_BOOKING';
+            }
+
+            if (!empty($participantFlags)) {
+                $flags[$index] = $participantFlags;
+            }
+        }
+
+        return $flags;
+    }
+
+    private function meetsRetreatCriteria(array $participant, Retreat $retreat): bool
+    {
+        if ($retreat->criteria === 'no_criteria') {
+            return true;
+        }
+
+        $criteriaCheck = [
+            'male_only' => $participant['gender'] === 'male',
+            'female_only' => $participant['gender'] === 'female',
+            'priests_only' => !empty($participant['congregation']),
+            'sisters_only' => $participant['gender'] === 'female' && !empty($participant['congregation']),
+            'youth_only' => $participant['age'] >= 16 && $participant['age'] <= 30,
+            'children' => $participant['age'] <= 15,
+        ];
+
+        return $criteriaCheck[$retreat->criteria] ?? false;
+    }
+    
     public function show(Request $request): JsonResponse
     {
         try {
-            // Validate required parameters (can be in headers or query params)
+
             $bookingId = $request->header('booking-id') ?? $request->query('booking_id');
             $whatsappNumber = $request->header('whatsapp-number') ?? $request->query('whatsapp_number');
 
@@ -238,7 +294,6 @@ class BookingAPIController extends BaseAPIController
                 return $this->sendValidationError($validator->errors());
             }
 
-            // Find the participant with the given booking_id and whatsapp_number (any participant, not just primary)
             $participant = Booking::with(['retreat'])
                 ->where('booking_id', $bookingId)
                 ->where('whatsapp_number', $whatsappNumber)
@@ -253,7 +308,6 @@ class BookingAPIController extends BaseAPIController
                 );
             }
 
-            // Get all participants for this booking for comprehensive response
             $allParticipants = Booking::where('booking_id', $bookingId)
                 ->where('is_active', true)
                 ->orderBy('participant_number')
@@ -261,16 +315,13 @@ class BookingAPIController extends BaseAPIController
 
             $retreat = $participant->retreat;
 
-            // Check if retreat still exists and is active
             if (!$retreat || !$retreat->is_active) {
                 return $this->sendError('Associated retreat is no longer available', 'RETREAT_UNAVAILABLE');
             }
 
-            // Determine participant role and get primary participant for email reference
             $participantRole = $participant->participant_number === 1 ? 'primary' : 'secondary';
             $primaryBooking = $allParticipants->where('participant_number', 1)->first();
 
-            // Calculate booking status
             $now = now();
             $retreatStatus = 'upcoming';
             if ($retreat->end_date->isPast()) {
@@ -363,10 +414,6 @@ class BookingAPIController extends BaseAPIController
         }
     }
 
-    /**
-     * Partially cancel booking.
-     * Cancel specific participant by their serial number.
-     */
     public function cancel(Request $request, $id): JsonResponse
     {
         try {
@@ -516,98 +563,6 @@ class BookingAPIController extends BaseAPIController
         }
     }
 
-    /**
-     * Get validation rules for each participant based on retreat criteria.
-     */
-    private function getParticipantValidationRules(Retreat $retreat): array
-    {
-        // Base validation rules for all participants
-        $rules = [
-            'firstname' => 'required|string|max:255',
-            'lastname' => 'required|string|max:255',
-            'whatsapp_number' => 'required|numeric|digits:10',
-            'age' => 'required|integer|min:1|max:120',
-            'email' => 'required|email|max:255',
-            'address' => 'required|string|max:500',
-            'gender' => 'required|in:male,female,other',
-            'city' => 'required|string|max:255',
-            'state' => 'required|string|max:255',
-            'diocese' => 'nullable|string|max:255',
-            'parish' => 'nullable|string|max:255',
-            'congregation' => 'nullable|string|max:255',
-            'emergency_contact_name' => 'required|string|max:255',
-            'emergency_contact_phone' => 'required|string|max:20',
-            'special_remarks' => 'nullable|string|max:1000',
-        ];
-
-        // Add specific rules based on retreat criteria
-        if (in_array($retreat->criteria, ['priests_only', 'sisters_only'])) {
-            $rules['congregation'] = 'required|string|max:255';
-        }
-
-        return $rules;
-    }
-
-    /**
-     * Validate business rules for participants and return flags for violations.
-     * Returns an array where keys are participant indices and values are arrays of flags.
-     */
-    private function validateBusinessRules(array $participants, Retreat $retreat): array
-    {
-        $flags = [];
-
-        // Validate each participant against retreat criteria and recurrent booking rules
-        foreach ($participants as $index => $participant) {
-            $participantFlags = [];
-
-            // Check retreat criteria compliance
-            if (!$this->meetsRetreatCriteria($participant, $retreat)) {
-                $participantFlags[] = 'CRITERIA_FAILED';
-            }
-
-            // Check for recurrent bookings (within past year) and add RECURRENT_BOOKING flag
-            $hasRecentBooking = Booking::hasAttendedInPastYear(
-                $participant['whatsapp_number'],
-                $participant['firstname'],
-                $participant['lastname']
-            );
-
-            if ($hasRecentBooking) {
-                $participantFlags[] = 'RECURRENT_BOOKING';
-            }
-
-            if (!empty($participantFlags)) {
-                $flags[$index] = $participantFlags;
-            }
-        }
-
-        return $flags;
-    }
-
-    /**
-     * Check if participant meets retreat criteria.
-     */
-    private function meetsRetreatCriteria(array $participant, Retreat $retreat): bool
-    {
-        if ($retreat->criteria === 'no_criteria') {
-            return true;
-        }
-
-        $criteriaCheck = [
-            'male_only' => $participant['gender'] === 'male',
-            'female_only' => $participant['gender'] === 'female',
-            'priests_only' => !empty($participant['congregation']),
-            'sisters_only' => $participant['gender'] === 'female' && !empty($participant['congregation']),
-            'youth_only' => $participant['age'] >= 16 && $participant['age'] <= 30,
-            'children' => $participant['age'] <= 15,
-        ];
-
-        return $criteriaCheck[$retreat->criteria] ?? false;
-    }
-
-    /**
-     * Process complete cancellation when last participant is cancelled.
-     */
     private function processCompleteCancellation($participantToCancel, $retreat, $allParticipants): JsonResponse
     {
         try {
