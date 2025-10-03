@@ -1,0 +1,263 @@
+{
+	"info": {
+		"_postman_id": "9e21b622-b2dc-4296-ae23-1e74f2ae8b8a",
+		"name": "Retreat",
+		"description": "Complete API collection for Mount Carmel Retreat Centre booking system. This collection includes all endpoints for retreat listing, booking, viewing, and cancellation with proper authentication and validation.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "34230282",
+		"_collection_link": "https://restless-crater-977474.postman.co/workspace/intellyze~5096dff1-a237-46f2-8727-e7c6705335f7/collection/34230282-9e21b622-b2dc-4296-ae23-1e74f2ae8b8a?action=share&source=collection_link&creator=34230282"
+	},
+	"item": [
+		{
+			"name": "Health Check",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "{{base_url}}api/health"
+			},
+			"response": []
+		},
+		{
+			"name": "Retreats List",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var sessionId = pm.response.headers.get(\"RETREAT-SESSION-ID\");",
+							"pm.environment.set(\"session_id\", sessionId);"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "RETREAT-API-KEY",
+						"value": "{{api_key}}",
+						"type": "text"
+					}
+				],
+				"url": "{{base_url}}api/retreats"
+			},
+			"response": []
+		},
+		{
+			"name": "Retreat Details",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "RETREAT-API-KEY",
+						"value": "{{api_key}}",
+						"type": "text"
+					},
+					{
+						"key": "RETREAT-SESSION-ID",
+						"value": "{{session_id}}",
+						"type": "text"
+					}
+				],
+				"url": "{{base_url}}api/retreats/1"
+			},
+			"response": []
+		},
+		{
+			"name": "Retreat  Booking",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "RETREAT-API-KEY",
+						"value": "{{api_key}}",
+						"type": "text"
+					},
+					{
+						"key": "RETREAT-SESSION-ID",
+						"value": "{{session_id}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"retreat_id\":1 ,\n  \"participants\": [\n    {\n      \"firstname\": \"Maria\",\n      \"lastname\": \"Sharapova\",\n      \"whatsapp_number\": \"9876543220\",\n      \"age\": 28,\n      \"email\": \"mary.smith@example.com\",\n      \"address\": \"456 Oak Avenue, Uptown\",\n      \"gender\": \"female\",\n      \"city\": \"Pune\",\n      \"state\": \"Maharashtra\",\n      \"diocese\": \"Pune Diocese\",\n      \"parish\": \"Sacred Heart Church\",\n      \"congregation\": null,\n      \"emergency_contact_name\": \"Robert Smith\",\n      \"emergency_contact_phone\": \"9876543221\",\n      \"special_remarks\": \"Primary participant - Group leader\"\n    },\n    {\n      \"firstname\": \"Anna\",\n      \"lastname\": \"Johnson\",\n      \"whatsapp_number\": \"9876543230\",\n      \"age\": 25,\n      \"email\": \"anna.johnson@example.com\",\n      \"address\": \"789 Pine Street, Midtown\",\n      \"gender\": \"female\",\n      \"city\": \"Pune\",\n      \"state\": \"Maharashtra\",\n      \"diocese\": \"Pune Diocese\",\n      \"parish\": \"Sacred Heart Church\",\n      \"congregation\": null,\n      \"emergency_contact_name\": \"Mary Smith\",\n      \"emergency_contact_phone\": \"9876543220\",\n      \"special_remarks\": \"Friend of Mary Smith\"\n    },\n    {\n      \"firstname\": \"Sarah\",\n      \"lastname\": \"Williams\",\n      \"whatsapp_number\": \"9876543240\",\n      \"age\": 32,\n      \"email\": \"sarah.williams@example.com\",\n      \"address\": \"321 Elm Drive, Southside\",\n      \"gender\": \"female\",\n      \"city\": \"Pune\",\n      \"state\": \"Maharashtra\",\n      \"diocese\": \"Pune Diocese\",\n      \"parish\": \"Sacred Heart Church\",\n      \"congregation\": null,\n      \"emergency_contact_name\": \"Mary Smith\",\n      \"emergency_contact_phone\": \"9876543220\",\n      \"special_remarks\": \"Part of church group\"\n    }\n  ]\n}"
+				},
+				"url": "{{base_url}}api/bookings"
+			},
+			"response": []
+		},
+		{
+			"name": "View Booking",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "RETREAT-API-KEY",
+						"value": "{{api_key}}",
+						"type": "text"
+					},
+					{
+						"key": "RETREAT-SESSION-ID",
+						"value": "{{session_id}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}api/bookings?booking_id=RB8&whatsapp_number=9876543220",
+					"host": [
+						"{{base_url}}api"
+					],
+					"path": [
+						"bookings"
+					],
+					"query": [
+						{
+							"key": "booking_id",
+							"value": "RB8"
+						},
+						{
+							"key": "whatsapp_number",
+							"value": "9876543220"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Booking Cancellation",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "RETREAT-API-KEY",
+						"value": "{{api_key}}",
+						"type": "text"
+					},
+					{
+						"key": "RETREAT-SESSION-ID",
+						"value": "{{session_id}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"serial_number\": 1\n}"
+				},
+				"url": "{{base_url}}api/bookings/RB7/cancel"
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost/retreatms/public",
+			"type": "string"
+		},
+		{
+			"key": "api_key",
+			"value": "retreat_api_key_2024",
+			"type": "string"
+		}
+	]
+}
