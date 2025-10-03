@@ -368,9 +368,6 @@ class BookingAPIController extends BaseAPIController
                     'special_remarks' => $retreat->special_remarks,
                 ],
 
-                // Queried Participant Role Only (Simplified)
-                'queried_participant_role' => $participantRole,
-
                 // Primary Participant Details (for reference)
                 'primary_participant' => $primaryBooking ? [
                     'serial_number' => $primaryBooking->participant_number,
@@ -437,11 +434,13 @@ class BookingAPIController extends BaseAPIController
                 $sessionContext = \Cache::get("session:{$sessionId}:booking_context");
             }
 
-            // Get whatsapp_number from request or session
+            // Get whatsapp_number and participant_number from request or session
             $whatsappNumber = $request->input('whatsapp_number');
+            $currentUserParticipantNumber = null;
             
             if (!$whatsappNumber && $sessionContext) {
                 $whatsappNumber = $sessionContext['whatsapp_number'];
+                $currentUserParticipantNumber = $sessionContext['participant_number'];
             }
 
             // Validate input parameters
@@ -461,12 +460,20 @@ class BookingAPIController extends BaseAPIController
             $bookingId = $id;
             $serialNumber = $request->input('serial_number');
 
-            // First, determine the current user's role by checking the show API logic
-            $currentUserParticipant = Booking::with(['retreat'])
+            // First, determine the current user's role
+            // If we have participant_number from session, use it for precise identification
+            $query = Booking::with(['retreat'])
                 ->where('booking_id', $bookingId)
                 ->where('whatsapp_number', $whatsappNumber)
-                ->where('is_active', true)
-                ->first();
+                ->where('is_active', true);
+            
+            // If we know the exact participant number from session, use it to avoid ambiguity
+            // (in case multiple participants share the same whatsapp number)
+            if ($currentUserParticipantNumber) {
+                $query->where('participant_number', $currentUserParticipantNumber);
+            }
+            
+            $currentUserParticipant = $query->first();
 
             if (!$currentUserParticipant) {
                 return $this->sendError(
