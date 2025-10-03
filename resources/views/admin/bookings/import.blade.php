@@ -220,7 +220,7 @@
                         </div>
 
                         <!-- Import Options -->
-                        <div class="row mb-4">
+                       <!--  <div class="row mb-4">
                             <div class="col-12">
                                 <div class="card">
                                     <div class="card-body">
@@ -254,7 +254,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
 
                         <!-- Submit Button -->
                         <div class="row">
