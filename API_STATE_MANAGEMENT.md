@@ -33,7 +33,7 @@ Headers:
 #### **Server Processing:**
 ```php
 // ApiAuthentication Middleware (lines 45-57)
-$sessionId = $request->header('X-Session-ID'); // NULL (first request)
+$sessionId = $request->header('RETREAT-SESSION-ID'); // NULL (first request)
 
 if (!$sessionId) {
     // Generate unique session ID
@@ -53,7 +53,7 @@ if (!$sessionId) {
 #### **Server Response:**
 ```http
 HTTP/1.1 200 OK
-X-Session-ID: api_session_a1b2c3d4-e5f6-7g8h-9i0j-k1l2m3n4o5p6
+RETREAT-SESSION-ID: api_session_a1b2c3d4-e5f6-7g8h-9i0j-k1l2m3n4o5p6
 Content-Type: application/json
 
 {
@@ -73,13 +73,13 @@ Content-Type: application/json
 GET /api/retreats/1
 Headers: 
   RETREAT-API-KEY: retreat_api_key_2024
-  X-Session-ID: api_session_a1b2c3d4-e5f6-7g8h-9i0j-k1l2m3n4o5p6
+  RETREAT-SESSION-ID: api_session_a1b2c3d4-e5f6-7g8h-9i0j-k1l2m3n4o5p6
 ```
 
 #### **Server Processing:**
 ```php
 // ApiAuthentication Middleware (lines 58-65)
-$sessionId = $request->header('X-Session-ID'); // Existing session
+$sessionId = $request->header('RETREAT-SESSION-ID'); // Existing session
 
 // Update existing session
 $sessionData = Cache::get("api_session:{$sessionId}");
@@ -188,7 +188,7 @@ Cache::put("session:{$sessionId}:booking_flow", [
 // Per-session rate limiting
 public function handle(Request $request, Closure $next): Response
 {
-    $sessionId = $request->header('X-Session-ID');
+    $sessionId = $request->header('RETREAT-SESSION-ID');
     $requestKey = "session:{$sessionId}:requests:" . now()->format('Y-m-d-H');
     $requestCount = Cache::increment($requestKey);
     
@@ -209,7 +209,7 @@ public function handle(Request $request, Closure $next): Response
 // IP address validation
 public function handle(Request $request, Closure $next): Response
 {
-    $sessionId = $request->header('X-Session-ID');
+    $sessionId = $request->header('RETREAT-SESSION-ID');
     $sessionData = Cache::get("api_session:{$sessionId}");
     
     if ($sessionData && $sessionData['ip_address'] !== $request->ip()) {
@@ -339,19 +339,19 @@ class SessionAnalyticsService
 # 1. App Launch - Get retreats list
 GET /api/retreats
 Headers: RETREAT-API-KEY: retreat_api_key_2024
-Response Headers: X-Session-ID: api_session_abc123
+Response Headers: RETREAT-SESSION-ID: api_session_abc123
 
 # 2. User browses specific retreat
 GET /api/retreats/5
 Headers: 
   RETREAT-API-KEY: retreat_api_key_2024
-  X-Session-ID: api_session_abc123
+  RETREAT-SESSION-ID: api_session_abc123
 
 # 3. User fills booking form and submits
 POST /api/bookings
 Headers: 
   RETREAT-API-KEY: retreat_api_key_2024
-  X-Session-ID: api_session_abc123
+  RETREAT-SESSION-ID: api_session_abc123
 Body: {retreat_id: 5, participants: [...]}
 Response: {booking_id: "RB789"}
 
@@ -359,13 +359,13 @@ Response: {booking_id: "RB789"}
 GET /api/bookings?booking_id=RB789&whatsapp_number=9876543210
 Headers: 
   RETREAT-API-KEY: retreat_api_key_2024
-  X-Session-ID: api_session_abc123
+  RETREAT-SESSION-ID: api_session_abc123
 
 # 5. Later, user cancels one participant
 PATCH /api/bookings/RB789/cancel
 Headers: 
   RETREAT-API-KEY: retreat_api_key_2024
-  X-Session-ID: api_session_abc123
+  RETREAT-SESSION-ID: api_session_abc123
 Body: {serial_number: 2}
 ```
 
@@ -532,7 +532,7 @@ class RetreatAPIClient {
         
         // Add session ID if we have one
         if (this.sessionId) {
-            headers['X-Session-ID'] = this.sessionId;
+            headers['RETREAT-SESSION-ID'] = this.sessionId;
         }
         
         const response = await fetch(`${this.baseURL}${endpoint}`, {
@@ -541,7 +541,7 @@ class RetreatAPIClient {
         });
         
         // Store session ID from response
-        const newSessionId = response.headers.get('X-Session-ID');
+        const newSessionId = response.headers.get('RETREAT-SESSION-ID');
         if (newSessionId) {
             this.sessionId = newSessionId;
             // Store in local storage for persistence
@@ -588,7 +588,7 @@ class RetreatAPIClient
         ];
         
         if ($this->sessionId) {
-            $headers[] = 'X-Session-ID: ' . $this->sessionId;
+            $headers[] = 'RETREAT-SESSION-ID: ' . $this->sessionId;
         }
         
         $curl = curl_init();
@@ -612,7 +612,7 @@ class RetreatAPIClient
     
     private function handleHeader($curl, $header)
     {
-        if (strpos($header, 'X-Session-ID:') === 0) {
+        if (strpos($header, 'RETREAT-SESSION-ID:') === 0) {
             $this->sessionId = trim(substr($header, 13));
         }
         return strlen($header);

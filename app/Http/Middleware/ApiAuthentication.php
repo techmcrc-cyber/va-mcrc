@@ -43,7 +43,7 @@ class ApiAuthentication
         }
         
         // Generate or retrieve session ID
-        $sessionId = $request->header('X-Session-ID');
+        $sessionId = $request->header('RETREAT-SESSION-ID');
         
         if (!$sessionId) {
             $sessionId = 'api_session_' . Str::uuid();
@@ -71,7 +71,7 @@ class ApiAuthentication
         $response = $next($request);
         
         if (method_exists($response, 'header')) {
-            $response->header('X-Session-ID', $sessionId);
+            $response->header('RETREAT-SESSION-ID', $sessionId);
         }
         
         return $response;

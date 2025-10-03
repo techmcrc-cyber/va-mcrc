@@ -308,6 +308,17 @@ class BookingAPIController extends BaseAPIController
                 );
             }
 
+            // Store booking details in session for future use (e.g., cancellation)
+            $sessionId = $request->input('session_id');
+            if ($sessionId) {
+                \Cache::put("session:{$sessionId}:booking_context", [
+                    'booking_id' => $bookingId,
+                    'whatsapp_number' => $whatsappNumber,
+                    'participant_number' => $participant->participant_number,
+                    'stored_at' => now()
+                ], 60 * 24); // 24 hours
+            }
+
             $allParticipants = Booking::where('booking_id', $bookingId)
                 ->where('is_active', true)
                 ->orderBy('participant_number')
@@ -417,8 +428,27 @@ class BookingAPIController extends BaseAPIController
     public function cancel(Request $request, $id): JsonResponse
     {
         try {
+            // Try to get booking context from session first
+            $sessionId = $request->input('session_id');
+
+            $sessionContext = null;
+            
+            if ($sessionId) {
+                $sessionContext = \Cache::get("session:{$sessionId}:booking_context");
+            }
+
+            // Get whatsapp_number from request or session
+            $whatsappNumber = $request->input('whatsapp_number');
+            
+            if (!$whatsappNumber && $sessionContext) {
+                $whatsappNumber = $sessionContext['whatsapp_number'];
+            }
+
             // Validate input parameters
-            $validator = Validator::make(array_merge($request->all(), ['booking_id' => $id]), [
+            $validator = Validator::make(array_merge($request->all(), [
+                'booking_id' => $id,
+                'whatsapp_number' => $whatsappNumber
+            ]), [
                 'booking_id' => 'required|string',
                 'serial_number' => 'required|integer|min:1',
                 'whatsapp_number' => 'required|numeric|digits:10', // Need whatsapp_number to determine user role
@@ -430,7 +460,6 @@ class BookingAPIController extends BaseAPIController
 
             $bookingId = $id;
             $serialNumber = $request->input('serial_number');
-            $whatsappNumber = $request->input('whatsapp_number');
 
             // First, determine the current user's role by checking the show API logic
             $currentUserParticipant = Booking::with(['retreat'])

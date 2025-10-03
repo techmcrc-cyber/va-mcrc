@@ -1939,7 +1939,7 @@ class ApiAuthentication
         }
         
         // Generate or retrieve session ID
-        $sessionId = $request->header('X-Session-ID');
+        $sessionId = $request->header('RETREAT-SESSION-ID');
         
         if (!$sessionId) {
             $sessionId = 'api_session_' . Str::uuid();
@@ -1967,7 +1967,7 @@ class ApiAuthentication
         $response = $next($request);
         
         if (method_exists($response, 'header')) {
-            $response->header('X-Session-ID', $sessionId);
+            $response->header('RETREAT-SESSION-ID', $sessionId);
         }
         
         return $response;
@@ -2094,7 +2094,7 @@ Let me start building the WordPress integration:
 +        
 +        $headers = [
 +            'RETREAT-API-KEY' => $this->api_key,
-+            'X-Session-ID' => $this->session_id,
++            'RETREAT-SESSION-ID' => $this->session_id,
 +            'Content-Type' => 'application/json',
 +            'Accept' => 'application/json'
 +        ];
@@ -2126,8 +2126,8 @@ Let me start building the WordPress integration:
 +        
 +        // Update session ID if provided in response
 +        $response_headers = wp_remote_retrieve_headers($response);
-+        if (isset($response_headers['x-session-id'])) {
-+            $this->session_id = $response_headers['x-session-id'];
++        if (isset($response_headers['RETREAT-SESSION-ID'])) {
++            $this->session_id = $response_headers['RETREAT-SESSION-ID'];
 +            set_transient('retreat_api_session_id', $this->session_id, DAY_IN_SECONDS);
 +        }
 +        
@@ -2306,3 +2306,4 @@ Let me start building the WordPress integration:
 
 MarkAsCompleted: 1 items
 Now let me create the retreat listing template:
+
