@@ -277,37 +277,64 @@ class BookingAPIController extends BaseAPIController
 
             $bookingId = $request->header('booking-id') ?? $request->query('booking_id');
             $whatsappNumber = $request->header('whatsapp-number') ?? $request->query('whatsapp_number');
+            $participantNumber = $request->header('participant-number') ?? $request->query('participant_number');
 
             $validator = Validator::make([
                 'booking_id' => $bookingId,
                 'whatsapp_number' => $whatsappNumber,
+                'participant_number' => $participantNumber,
             ], [
                 'booking_id' => 'required|string',
                 'whatsapp_number' => 'required|numeric|digits:10',
+                'participant_number' => 'nullable|integer|min:1|max:4',
             ], [
                 'booking_id.required' => 'Booking ID is required in headers or query parameters',
                 'whatsapp_number.required' => 'WhatsApp number is required in headers or query parameters',
                 'whatsapp_number.digits' => 'WhatsApp number must be exactly 10 digits',
+                'participant_number.integer' => 'Participant number must be a valid integer',
+                'participant_number.min' => 'Participant number must be at least 1',
+                'participant_number.max' => 'Participant number cannot exceed 4',
             ]);
 
             if ($validator->fails()) {
                 return $this->sendValidationError($validator->errors());
             }
 
-            $participant = Booking::with(['retreat'])
+            // Build query to find the specific participant
+            $query = Booking::with(['retreat'])
                 ->where('booking_id', $bookingId)
                 ->where('whatsapp_number', $whatsappNumber)
-                ->where('is_active', true)
-                ->first();
+                ->where('is_active', true);
+            
+            // If participant_number is provided, use it for precise identification
+            // This handles cases where multiple participants share the same whatsapp number
+            if ($participantNumber) {
+                $query->where('participant_number', $participantNumber);
+            }
+            
+            $participant = $query->first();
 
             if (!$participant) {
-                return $this->sendError(
-                    'Unable to retrieve booking information for the specified Booking ID and Whatsapp number',
-                    'BOOKING_NOT_FOUND',
-                    400
-                );
+                $errorMessage = $participantNumber 
+                    ? 'Unable to retrieve booking information for the specified Booking ID, WhatsApp number, and participant number'
+                    : 'Unable to retrieve booking information for the specified Booking ID and WhatsApp number';
+                
+                return $this->sendError($errorMessage, 'BOOKING_NOT_FOUND', 400);
+            }
+            
+            // Check if there are multiple participants with the same whatsapp number
+            $duplicateCheck = Booking::where('booking_id', $bookingId)
+                ->where('whatsapp_number', $whatsappNumber)
+                ->where('is_active', true)
+                ->count();
+            // If multiple participants share the same number and no participant_number was provided,
+            // return a warning in the response
+            $multipleParticipantsWarning = null;
+            if ($duplicateCheck > 1 && !$participantNumber) {
+                $multipleParticipantsWarning = 'Multiple participants found with this WhatsApp number. Showing details for participant #' . $participant->participant_number . '. To view a specific participant, include participant_number in your request.';
             }
 
+           //dd($duplicateCheck); 
             // Store booking details in session for future use (e.g., cancellation)
             $sessionId = $request->input('session_id');
             if ($sessionId) {
@@ -413,6 +440,11 @@ class BookingAPIController extends BaseAPIController
                     'duration_days' => $retreat->start_date->diffInDays($retreat->end_date) + 1,
                 ],
             ];
+            
+            // Add warning if multiple participants share the same whatsapp number
+            if ($multipleParticipantsWarning) {
+                $bookingDetails['warning'] = $multipleParticipantsWarning;
+            }
 
             return $this->sendResponse($bookingDetails, 'Booking details retrieved successfully');
 
