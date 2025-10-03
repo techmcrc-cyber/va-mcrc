@@ -27,7 +27,7 @@ The Retreat Management System API implements a sophisticated session-based state
 ```http
 GET /api/retreats
 Headers: 
-  X-API-Key: retreat_api_key_2024
+  RETREAT-API-KEY: retreat_api_key_2024
 ```
 
 #### **Server Processing:**
@@ -72,7 +72,7 @@ Content-Type: application/json
 ```http
 GET /api/retreats/1
 Headers: 
-  X-API-Key: retreat_api_key_2024
+  RETREAT-API-KEY: retreat_api_key_2024
   X-Session-ID: api_session_a1b2c3d4-e5f6-7g8h-9i0j-k1l2m3n4o5p6
 ```
 
@@ -338,19 +338,19 @@ class SessionAnalyticsService
 ```http
 # 1. App Launch - Get retreats list
 GET /api/retreats
-Headers: X-API-Key: retreat_api_key_2024
+Headers: RETREAT-API-KEY: retreat_api_key_2024
 Response Headers: X-Session-ID: api_session_abc123
 
 # 2. User browses specific retreat
 GET /api/retreats/5
 Headers: 
-  X-API-Key: retreat_api_key_2024
+  RETREAT-API-KEY: retreat_api_key_2024
   X-Session-ID: api_session_abc123
 
 # 3. User fills booking form and submits
 POST /api/bookings
 Headers: 
-  X-API-Key: retreat_api_key_2024
+  RETREAT-API-KEY: retreat_api_key_2024
   X-Session-ID: api_session_abc123
 Body: {retreat_id: 5, participants: [...]}
 Response: {booking_id: "RB789"}
@@ -358,13 +358,13 @@ Response: {booking_id: "RB789"}
 # 4. User checks booking confirmation
 GET /api/bookings?booking_id=RB789&whatsapp_number=9876543210
 Headers: 
-  X-API-Key: retreat_api_key_2024
+  RETREAT-API-KEY: retreat_api_key_2024
   X-Session-ID: api_session_abc123
 
 # 5. Later, user cancels one participant
 PATCH /api/bookings/RB789/cancel
 Headers: 
-  X-API-Key: retreat_api_key_2024
+  RETREAT-API-KEY: retreat_api_key_2024
   X-Session-ID: api_session_abc123
 Body: {serial_number: 2}
 ```
@@ -525,7 +525,7 @@ class RetreatAPIClient {
     
     async request(endpoint, options = {}) {
         const headers = {
-            'X-API-Key': this.apiKey,
+            'RETREAT-API-KEY': this.apiKey,
             'Content-Type': 'application/json',
             ...options.headers
         };
@@ -583,7 +583,7 @@ class RetreatAPIClient
     public function request($endpoint, $method = 'GET', $data = null)
     {
         $headers = [
-            'X-API-Key: ' . $this->apiKey,
+            'RETREAT-API-KEY: ' . $this->apiKey,
             'Content-Type: application/json'
         ];
         

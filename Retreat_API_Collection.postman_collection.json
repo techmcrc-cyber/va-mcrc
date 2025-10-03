@@ -75,7 +75,7 @@
 				"method": "GET",
 				"header": [
 					{
-						"key": "X-API-Key",
+						"key": "RETREAT-API-KEY",
 						"value": "{{api_key}}",
 						"type": "text"
 					}
@@ -119,7 +119,7 @@
 				"method": "GET",
 				"header": [
 					{
-						"key": "X-API-Key",
+						"key": "RETREAT-API-KEY",
 						"value": "{{api_key}}",
 						"type": "text"
 					}
@@ -169,7 +169,7 @@
 				"method": "POST",
 				"header": [
 					{
-						"key": "X-API-Key",
+						"key": "RETREAT-API-KEY",
 						"value": "{{api_key}}",
 						"type": "text"
 					},
@@ -227,7 +227,7 @@
 				"method": "POST",
 				"header": [
 					{
-						"key": "X-API-Key",
+						"key": "RETREAT-API-KEY",
 						"value": "{{api_key}}",
 						"type": "text"
 					},
@@ -280,7 +280,7 @@
 				"method": "GET",
 				"header": [
 					{
-						"key": "X-API-Key",
+						"key": "RETREAT-API-KEY",
 						"value": "{{api_key}}",
 						"type": "text"
 					}
@@ -334,7 +334,7 @@
 				"method": "GET",
 				"header": [
 					{
-						"key": "X-API-Key",
+						"key": "RETREAT-API-KEY",
 						"value": "{{api_key}}",
 						"type": "text"
 					},
@@ -388,7 +388,7 @@
 				"method": "PATCH",
 				"header": [
 					{
-						"key": "X-API-Key",
+						"key": "RETREAT-API-KEY",
 						"value": "{{api_key}}",
 						"type": "text"
 					},
@@ -443,7 +443,7 @@
 				"method": "PATCH",
 				"header": [
 					{
-						"key": "X-API-Key",
+						"key": "RETREAT-API-KEY",
 						"value": "{{api_key}}",
 						"type": "text"
 					},
@@ -496,7 +496,7 @@
 				"method": "POST",
 				"header": [
 					{
-						"key": "X-API-Key",
+						"key": "RETREAT-API-KEY",
 						"value": "{{api_key}}",
 						"type": "text"
 					},
@@ -549,7 +549,7 @@
 				"method": "GET",
 				"header": [
 					{
-						"key": "X-API-Key",
+						"key": "RETREAT-API-KEY",
 						"value": "invalid_key",
 						"type": "text"
 					}
@@ -592,7 +592,7 @@
 				"method": "GET",
 				"header": [
 					{
-						"key": "X-API-Key",
+						"key": "RETREAT-API-KEY",
 						"value": "{{api_key}}",
 						"type": "text"
 					}

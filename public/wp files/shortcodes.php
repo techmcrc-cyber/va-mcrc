@@ -1914,7 +1914,7 @@ class ApiAuthentication
     public function handle(Request $request, Closure $next): Response
     {
         // Check for API key in headers
-        $apiKey = $request->header('X-API-Key') ?? $request->header('Authorization');
+        $apiKey = $request->header('RETREAT-API-KEY') ?? $request->header('Authorization');
         
         if (!$apiKey) {
             return response()->json([
@@ -2042,7 +2042,7 @@ Based on your Laravel retreat management system analysis, I'll help you integrat
 ## Integration Overview
 
 Your Laravel system has a well-structured API with:
-- **Authentication**: API key-based authentication (`X-API-Key` header)
+- **Authentication**: API key-based authentication (`RETREAT-API-KEY` header)
 - **Retreat Endpoints**: List and detail views
 - **Booking Endpoints**: Create, view, and cancel bookings
 - **Validation**: Comprehensive form validation matching your requirements
@@ -2093,7 +2093,7 @@ Let me start building the WordPress integration:
 +        $url = trailingslashit($this->api_base_url) . ltrim($endpoint, '/');
 +        
 +        $headers = [
-+            'X-API-Key' => $this->api_key,
++            'RETREAT-API-KEY' => $this->api_key,
 +            'X-Session-ID' => $this->session_id,
 +            'Content-Type' => 'application/json',
 +            'Accept' => 'application/json'

@@ -18,7 +18,7 @@ class ApiAuthentication
     public function handle(Request $request, Closure $next): Response
     {
         // Check for API key in headers
-        $apiKey = $request->header('X-API-Key') ?? $request->header('Authorization');
+        $apiKey = $request->header('RETREAT-API-KEY') ?? $request->header('Authorization');
         
         if (!$apiKey) {
             return response()->json([
