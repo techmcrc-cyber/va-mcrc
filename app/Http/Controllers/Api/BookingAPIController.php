@@ -457,55 +457,69 @@ class BookingAPIController extends BaseAPIController
     public function cancel(Request $request, $id): JsonResponse
     {
         try {
-            // Try to get booking context from session first
+            // Get session ID and retrieve booking context
             $sessionId = $request->input('session_id');
 
-            $sessionContext = null;
+            if (!$sessionId) {
+                return $this->sendError(
+                    'Session ID is required. Please retrieve booking details first using GET /api/bookings',
+                    'SESSION_REQUIRED',
+                    400
+                );
+            }
             
-            if ($sessionId) {
-                $sessionContext = \Cache::get("session:{$sessionId}:booking_context");
-            }
-
-            // Get whatsapp_number and participant_number from request or session
-            $whatsappNumber = $request->input('whatsapp_number');
-            $currentUserParticipantNumber = null;
+            $sessionContext = \Cache::get("session:{$sessionId}:booking_context");
             
-            if (!$whatsappNumber && $sessionContext) {
-                $whatsappNumber = $sessionContext['whatsapp_number'];
-                $currentUserParticipantNumber = $sessionContext['participant_number'];
+            if (!$sessionContext) {
+                return $this->sendError(
+                    'No booking context found in session. Please retrieve booking details first using GET /api/bookings',
+                    'SESSION_CONTEXT_MISSING',
+                    400
+                );
             }
 
-            // Validate input parameters
-            $validator = Validator::make(array_merge($request->all(), [
-                'booking_id' => $id,
-                'whatsapp_number' => $whatsappNumber
-            ]), [
-                'booking_id' => 'required|string',
-                'serial_number' => 'required|integer|min:1',
-                'whatsapp_number' => 'required|numeric|digits:10', // Need whatsapp_number to determine user role
-            ]);
-
-            if ($validator->fails()) {
-                return $this->sendValidationError($validator->errors());
+            // Get whatsapp_number and participant_number ONLY from session
+            $whatsappNumber = $sessionContext['whatsapp_number'];
+            $currentUserParticipantNumber = $sessionContext['participant_number'];
+            $sessionBookingId = $sessionContext['booking_id'];
+            
+            // Validate that the booking_id in URL matches the one in session
+            if ($id !== $sessionBookingId) {
+                return $this->sendError(
+                    'Booking ID mismatch. You can only cancel bookings from your current session.',
+                    'BOOKING_ID_MISMATCH',
+                    403
+                );
             }
 
+            // Get serial_number from request body (optional)
+            // If not provided, user is canceling their own participation
             $bookingId = $id;
             $serialNumber = $request->input('serial_number');
-
-            // First, determine the current user's role
-            // If we have participant_number from session, use it for precise identification
-            $query = Booking::with(['retreat'])
-                ->where('booking_id', $bookingId)
-                ->where('whatsapp_number', $whatsappNumber)
-                ->where('is_active', true);
             
-            // If we know the exact participant number from session, use it to avoid ambiguity
-            // (in case multiple participants share the same whatsapp number)
-            if ($currentUserParticipantNumber) {
-                $query->where('participant_number', $currentUserParticipantNumber);
+            // If no serial_number provided, use participant_number from session (self-cancellation)
+            if (!$serialNumber) {
+                $serialNumber = $currentUserParticipantNumber;
             }
             
-            $currentUserParticipant = $query->first();
+            // Validate serial_number
+            if (!is_numeric($serialNumber) || $serialNumber < 1 || $serialNumber > 4) {
+                return $this->sendError(
+                    'Invalid serial number. Must be between 1 and 4.',
+                    'INVALID_SERIAL_NUMBER',
+                    400
+                );
+            }
+            
+            $serialNumber = (int) $serialNumber;
+
+            // Determine the current user's role using session data
+            $currentUserParticipant = Booking::with(['retreat'])
+                ->where('booking_id', $bookingId)
+                ->where('whatsapp_number', $whatsappNumber)
+                ->where('participant_number', $currentUserParticipantNumber)
+                ->where('is_active', true)
+                ->first();
 
             if (!$currentUserParticipant) {
                 return $this->sendError(
@@ -538,12 +552,12 @@ class BookingAPIController extends BaseAPIController
             }
 
             // Check if retreat is cancellable (not already started)
-            if ($retreat->start_date->isPast()) {
-                return $this->sendError(
-                    'Cannot cancel booking for a retreat that has already started',
-                    'RETREAT_ALREADY_STARTED'
-                );
-            }
+            // if ($retreat->start_date->isPast()) {
+            //     return $this->sendError(
+            //         'Cannot cancel booking for a retreat that has already started',
+            //         'RETREAT_ALREADY_STARTED'
+            //     );
+            // }
 
             // Get all participants for this booking
             $allParticipants = Booking::where('booking_id', $bookingId)
