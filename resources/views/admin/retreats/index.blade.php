@@ -158,17 +158,17 @@ $(document).ready(function() {
                     columns: [0, 1, 2, 3, 4, 5]
                 }
             },
-            {
-                extend: 'print',
-                className: 'btn btn-sm btn-secondary',
-                text: '<i class="fas fa-print me-1"></i> Print',
-                exportOptions: {
-                    columns: [0, 1, 2, 3, 4, 5]
-                },
-                customize: function (win) {
-                    $(win.document.body).find('h1').text('Retreats List');
-                }
-            }
+            // {
+            //     extend: 'print',
+            //     className: 'btn btn-sm btn-secondary',
+            //     text: '<i class="fas fa-print me-1"></i> Print',
+            //     exportOptions: {
+            //         columns: [0, 1, 2, 3, 4, 5]
+            //     },
+            //     customize: function (win) {
+            //         $(win.document.body).find('h1').text('Retreats List');
+            //     }
+            // }
         ],
         language: {
             processing: '<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>',

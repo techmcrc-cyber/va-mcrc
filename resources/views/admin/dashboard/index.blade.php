@@ -23,13 +23,13 @@
                         to give you a future and a hope." - Jeremiah 29:11
                     </p>
                 </div>
-                <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                <!-- <div class="col-md-4 text-md-end mt-3 mt-md-0">
                     <div class="d-flex flex-column flex-md-row justify-content-md-end gap-3">
                         <a href="#" class="btn btn-outline-light fw-bold">
                             <i class="fas fa-plus me-2"></i> Add New
                         </a>
                     </div>
-                </div>
+                </div> -->
             </div>
         </div>
     </div>
@@ -221,7 +221,7 @@
     </div>
 
 <!-- Booking Trends Chart -->
-    <div class="col-12 mb-4">
+    <!-- <div class="col-12 mb-4">
         <div class="card border-0 shadow-sm h-100">
             <div class="card-header bg-white">
                 <div class="d-flex justify-content-between align-items-center">
@@ -243,7 +243,6 @@
                     <canvas id="bookingsChart"></canvas>
                 </div>
                 
-                <!-- Chart Summary Stats -->
                 <div class="row mt-4 pt-3 border-top">
                     <div class="col-md-3 text-center">
                         <div class="d-flex flex-column">
@@ -276,7 +275,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
 
 </div>
 @endsection

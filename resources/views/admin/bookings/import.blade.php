@@ -107,7 +107,7 @@
                                 <h6 class="alert-heading">
                                     <i class="fas fa-download me-2"></i>Step 1: Download Import Template
                                 </h6>
-                                <p class="mb-2">Download the Excel template with sample data. <strong>Family/group bookings made easy</strong> - use Group ID to link participants together.</p>
+                                <p class="mb-2">Download the Excel template with sample data. <strong>single/group bookings made easy</strong> - use Group ID to link participants together.</p>
                                 <div class="row mt-3">
                                     <div class="col-md-4">
                                         <h6 class="text-primary"><i class="fas fa-users me-1"></i>Group Bookings:</h6>
