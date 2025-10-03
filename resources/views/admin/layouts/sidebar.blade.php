@@ -86,6 +86,13 @@
                 <i class="fas fa-user-shield me-2"></i> Roles
             </a>
             @endcan
+
+            <form method="POST" action="{{ route('admin.logout') }}" class="d-inline">
+            @csrf
+                <button type="submit" class="dropdown-item list-group-item list-group-item-action">
+                    <i class="fas fa-sign-out-alt me-2"></i> Logout
+                </button>
+            </form>
         
 
             <!-- Booking Management -->
@@ -145,7 +152,7 @@
     
     <!-- Sidebar Footer -->
     <div class="sidebar-footer p-3 text-center border-top">
-        <div class="d-flex justify-content-center gap-2 mb-2">
+       <!--  <div class="d-flex justify-content-center gap-2 mb-2">
             <a href="#" class="text-white-50" data-bs-toggle="tooltip" title="Help Center">
                 <i class="fas fa-question-circle"></i>
             </a>
@@ -155,7 +162,7 @@
             <a href="#" class="text-white-50" data-bs-toggle="tooltip" title="Feedback">
                 <i class="fas fa-comment-alt"></i>
             </a>
-        </div>
+        </div> -->
         <small class="text-muted d-block">v1.0.0</small>
         <small class="text-muted">
             <i class="fas fa-heart text-danger"></i> Made with prayer
