@@ -492,17 +492,20 @@ class BookingAPIController extends BaseAPIController
                 );
             }
 
-            // Get serial_number from request body (optional)
-            // If not provided, user is canceling their own participation
+            // Get serial_number from request body (REQUIRED)
             $bookingId = $id;
             $serialNumber = $request->input('serial_number');
             
-            // If no serial_number provided, use participant_number from session (self-cancellation)
+            // Validate serial_number is provided
             if (!$serialNumber) {
-                $serialNumber = $currentUserParticipantNumber;
+                return $this->sendError(
+                    'The serial_number field is required in the request body',
+                    'SERIAL_NUMBER_REQUIRED',
+                    400
+                );
             }
             
-            // Validate serial_number
+            // Validate serial_number format
             if (!is_numeric($serialNumber) || $serialNumber < 1 || $serialNumber > 4) {
                 return $this->sendError(
                     'Invalid serial number. Must be between 1 and 4.',
@@ -551,13 +554,13 @@ class BookingAPIController extends BaseAPIController
                 return $this->sendError('Associated retreat not found', 'RETREAT_NOT_FOUND');
             }
 
-            // Check if retreat is cancellable (not already started)
-            // if ($retreat->start_date->isPast()) {
-            //     return $this->sendError(
-            //         'Cannot cancel booking for a retreat that has already started',
-            //         'RETREAT_ALREADY_STARTED'
-            //     );
-            // }
+            Check if retreat is cancellable (not already started)
+            if ($retreat->start_date->isPast()) {
+                return $this->sendError(
+                    'Cannot cancel booking for a retreat that has already started',
+                    'RETREAT_ALREADY_STARTED'
+                );
+            }
 
             // Get all participants for this booking
             $allParticipants = Booking::where('booking_id', $bookingId)
