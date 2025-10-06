@@ -216,8 +216,8 @@
         color: white;
     }
     
-    #status-filter, #custom-search {
-        padding: 0.5rem 0.75rem;
+    #retreat-filter, #status-filter, #custom-search {
+        padding: 0.5rem 0.5rem;
     }
 </style>
 @endpush
