@@ -84,6 +84,22 @@
         box-shadow: 0 0 10px rgba(0,0,0,0.1);
         z-index: 1;
     }
+    
+    /* Action buttons styling */
+    #retreats-table .btn-group {
+        gap: 4px;
+        display: flex;
+    }
+    
+    #retreats-table .btn-group .btn {
+        padding: 4px 8px;
+        font-size: 12px;
+        line-height: 1.2;
+    }
+    
+    #retreats-table .btn-group .btn i {
+        font-size: 12px;
+    }
 </style>
 @endpush
 

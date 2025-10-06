@@ -87,18 +87,38 @@ class RetreatController extends Controller
                     ? '<span class="badge bg-success">Active</span>' 
                     : '<span class="badge bg-secondary">Inactive</span>';
                 
+                // Check if retreat has ended
+                $hasEnded = $retreat->end_date < now();
+                
                 // Actions
                 $actions = '<div class="btn-group" role="group">';
                 $actions .= '<a href="' . route('admin.retreats.show', $retreat) . '" class="btn btn-info btn-sm" title="View">';
                 $actions .= '<i class="fas fa-eye"></i></a> ';
-                $actions .= '<a href="' . route('admin.retreats.edit', $retreat) . '" class="btn btn-primary btn-sm" title="Edit">';
-                $actions .= '<i class="fas fa-edit"></i></a> ';
-                $actions .= '<form action="' . route('admin.retreats.destroy', $retreat) . '" method="POST" class="d-inline">';
-                $actions .= csrf_field();
-                $actions .= method_field('DELETE');
-                $actions .= '<button type="submit" class="btn btn-danger btn-sm" title="Delete" ';
-                $actions .= 'onclick="return confirm(\'Are you sure you want to delete this retreat?\')">';
-                $actions .= '<i class="fas fa-trash"></i></button></form>';
+                
+                if ($hasEnded) {
+                    // Disabled Edit button for past retreats
+                    $actions .= '<button class="btn btn-primary btn-sm" title="Cannot edit past retreat" disabled>';
+                    $actions .= '<i class="fas fa-edit"></i></button> ';
+                } else {
+                    // Active Edit button for current/future retreats
+                    $actions .= '<a href="' . route('admin.retreats.edit', $retreat) . '" class="btn btn-primary btn-sm" title="Edit">';
+                    $actions .= '<i class="fas fa-edit"></i></a> ';
+                }
+                
+                if ($hasEnded) {
+                    // Disabled Delete button for past retreats
+                    $actions .= '<button class="btn btn-danger btn-sm" title="Cannot delete past retreat" disabled>';
+                    $actions .= '<i class="fas fa-trash"></i></button>';
+                } else {
+                    // Active Delete button for current/future retreats
+                    $actions .= '<form action="' . route('admin.retreats.destroy', $retreat) . '" method="POST" class="d-inline">';
+                    $actions .= csrf_field();
+                    $actions .= method_field('DELETE');
+                    $actions .= '<button type="submit" class="btn btn-danger btn-sm" title="Delete" ';
+                    $actions .= 'onclick="return confirm(\'Are you sure you want to delete this retreat?\')">';
+                    $actions .= '<i class="fas fa-trash"></i></button></form>';
+                }
+                
                 $actions .= '</div>';
                 
                 $nestedData['actions'] = $actions;
