@@ -75,15 +75,10 @@ class BookingController extends Controller
             if ($request->has('order')) {
                 $column = $request->input('order.0.column');
                 $dir = $request->input('order.0.dir');
-                $columns = ['booking_id', 'retreat_id', 'firstname', 'start_date', 'additional_participants', 'flag'];
+                $columns = ['booking_id', 'retreat_id', 'firstname', 'additional_participants', 'flag'];
                 
                 if (isset($columns[$column])) {
-                    if ($columns[$column] === 'start_date') {
-                        $query->join('retreats', 'bookings.retreat_id', '=', 'retreats.id')
-                            ->orderBy('retreats.start_date', $dir);
-                    } else {
-                        $query->orderBy($columns[$column], $dir);
-                    }
+                    $query->orderBy($columns[$column], $dir);
                 } else {
                     $query->latest();
                 }
@@ -125,16 +120,6 @@ class BookingController extends Controller
                 $guestInfo .= '</div></div>';
                 
                 $nestedData['guest_info'] = $guestInfo;
-                
-                // Date info
-                $dateInfo = '<div class="date-info">';
-                $dateInfo .= '<div class="text-center">';
-                $dateInfo .= '<strong>' . $booking->retreat->start_date->format('M d, Y') . '</strong>';
-                $dateInfo .= '<small class="text-muted d-block">to</small>';
-                $dateInfo .= '<strong>' . $booking->retreat->end_date->format('M d, Y') . '</strong>';
-                $dateInfo .= '</div></div>';
-                
-                $nestedData['date_info'] = $dateInfo;
                 
                 // Participants
                 $participants = '<span class="badge bg-primary">' . ($booking->additional_participants + 1) . '</span>';

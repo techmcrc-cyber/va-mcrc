@@ -28,7 +28,6 @@
                                     <th>Booking ID</th>
                                     <th>Retreat</th>
                                     <th>Primary Guest & Contact</th>
-                                    <th>Dates</th>
                                     <th>Participants</th>
                                     <th>Status</th>
                                     <th>Actions</th>
@@ -339,26 +338,19 @@ $(document).ready(function() {
             { 
                 data: 'retreat', 
                 name: 'retreat.title',
-                width: '20%'
+                width: '25%'
             },
             { 
                 data: 'guest_info', 
                 name: 'firstname',
-                width: '25%',
-                orderable: false,
-                searchable: false
-            },
-            { 
-                data: 'date_info', 
-                name: 'start_date',
-                width: '15%',
+                width: '30%',
                 orderable: false,
                 searchable: false
             },
             { 
                 data: 'participants', 
                 name: 'additional_participants',
-                width: '8%',
+                width: '10%',
                 className: 'text-center',
                 orderable: true,
                 searchable: false
@@ -366,7 +358,7 @@ $(document).ready(function() {
             { 
                 data: 'status', 
                 name: 'flag',
-                width: '12%',
+                width: '15%',
                 orderable: true,
                 searchable: false
             },
