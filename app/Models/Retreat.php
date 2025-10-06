@@ -36,6 +36,7 @@ class Retreat extends Model implements HasMedia
         'criteria',
         'special_remarks',
         'instructions',
+        'whatsapp_channel_link',
         'is_featured',
         'is_active',
         'category_id',

@@ -41,10 +41,10 @@ class RetreatController extends Controller
                 if (isset($columns[$column])) {
                     $query->orderBy($columns[$column], $dir);
                 } else {
-                    $query->latest();
+                    $query->orderBy('end_date', 'desc');
                 }
             } else {
-                $query->latest();
+                $query->orderBy('end_date', 'desc');
             }
             
             $totalData = $query->count();
@@ -70,9 +70,19 @@ class RetreatController extends Controller
                 $nestedData = [];
                 $nestedData['title'] = $retreat->title;
                 $nestedData['date'] = $retreat->start_date->format('M d, Y') . ' - ' . $retreat->end_date->format('M d, Y');
+                $nestedData['end_date'] = $retreat->end_date->format('Y-m-d'); // For sorting
                 $nestedData['timings'] = $retreat->timings;
                 $nestedData['seats'] = $retreat->seats;
                 $nestedData['criteria'] = $criteriaLabels[$retreat->criteria] ?? $retreat->criteria;
+                
+                // WhatsApp Channel Link
+                if ($retreat->whatsapp_channel_link) {
+                    $nestedData['whatsapp_link'] = '<a href="' . e($retreat->whatsapp_channel_link) . '" target="_blank" class="btn btn-success btn-sm" title="WhatsApp Channel">';
+                    $nestedData['whatsapp_link'] .= '<i class="fab fa-whatsapp"></i></a>';
+                } else {
+                    $nestedData['whatsapp_link'] = '<span class="text-muted">-</span>';
+                }
+                
                 $nestedData['status'] = $retreat->is_active 
                     ? '<span class="badge bg-success">Active</span>' 
                     : '<span class="badge bg-secondary">Inactive</span>';

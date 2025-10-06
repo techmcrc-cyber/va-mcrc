@@ -30,6 +30,7 @@
                                     <th>Timings</th>
                                     <th>Seats</th>
                                     <th>Criteria</th>
+                                    <th>WhatsApp</th>
                                     <th>Status</th>
                                     <th>Actions</th>
                                 </tr>
@@ -107,7 +108,11 @@ $(document).ready(function() {
         },
         columns: [
             { data: 'title', name: 'title' },
-            { data: 'date', name: 'date', orderable: false },
+            { 
+                data: 'date', 
+                name: 'end_date',
+                type: 'date'
+            },
             { data: 'timings', name: 'timings' },
             { 
                 data: 'seats', 
@@ -118,6 +123,14 @@ $(document).ready(function() {
                 data: 'criteria', 
                 name: 'criteria',
                 orderable: false
+            },
+            { 
+                data: 'whatsapp_link', 
+                name: 'whatsapp_channel_link',
+                orderable: false,
+                searchable: false,
+                className: 'text-center',
+                width: '80px'
             },
             { 
                 data: 'status', 
@@ -135,7 +148,7 @@ $(document).ready(function() {
                 width: '120px'
             }
         ],
-        order: [[0, 'asc']],
+        order: [[1, 'desc']],
         pageLength: 25,
         lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
         dom: "<'row'<'col-sm-12 col-md-6'B><'col-sm-12 col-md-4'f><'col-sm-12 col-md-2'l>>" +
@@ -147,7 +160,7 @@ $(document).ready(function() {
                 className: 'btn btn-sm btn-success',
                 text: '<i class="fas fa-file-excel me-1"></i> Excel',
                 exportOptions: {
-                    columns: [0, 1, 2, 3, 4, 5]
+                    columns: [0, 1, 2, 3, 4, 6]
                 }
             },
             {
@@ -155,7 +168,7 @@ $(document).ready(function() {
                 className: 'btn btn-sm btn-danger',
                 text: '<i class="fas fa-file-pdf me-1"></i> PDF',
                 exportOptions: {
-                    columns: [0, 1, 2, 3, 4, 5]
+                    columns: [0, 1, 2, 3, 4, 6]
                 }
             },
             // {

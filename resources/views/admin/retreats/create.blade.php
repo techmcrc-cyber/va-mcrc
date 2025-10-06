@@ -35,6 +35,17 @@
                                 </div>
 
                                 <div class="form-group mb-3">
+                                    <label for="whatsapp_channel_link" class="form-label">WhatsApp Channel Link *</label>
+                                    <input type="url" class="form-control @error('whatsapp_channel_link') is-invalid @enderror" 
+                                           id="whatsapp_channel_link" name="whatsapp_channel_link" 
+                                           value="{{ old('whatsapp_channel_link') }}" 
+                                           placeholder="https://whatsapp.com/channel/..." required>
+                                    @error('whatsapp_channel_link')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <div class="form-group mb-3">
                                     <label for="description" class="form-label">Description *</label>
                                     <div id="editor">{!! old('description') !!}</div>
                                     <input type="hidden" name="description" id="description" value="{{ old('description') }}">

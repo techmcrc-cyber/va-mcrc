@@ -24,6 +24,9 @@ class RetreatRequest extends FormRequest
     {
         $retreatId = $this->route('retreat');
         $retreatId = $retreatId instanceof \App\Models\Retreat ? $retreatId->id : $retreatId;
+        
+        // Check if this is an update (edit) or create request
+        $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH') || $retreatId;
 
         return [
             'title' => ['required', 'string', 'max:255'],
@@ -36,7 +39,9 @@ class RetreatRequest extends FormRequest
             ],
             'description' => ['required', 'string'],
             'short_description' => ['nullable', 'string', 'max:500'],
-            'start_date' => ['required', 'date', 'after_or_equal:today'],
+            'start_date' => $isUpdate 
+                ? ['required', 'date'] 
+                : ['required', 'date', 'after_or_equal:today'],
             'end_date' => ['required', 'date', 'after:start_date'],
             'timings' => ['required', 'string', 'max:255'],
             'seats' => ['required', 'integer', 'min:1'],
@@ -62,6 +67,7 @@ class RetreatRequest extends FormRequest
                     'no_criteria'
                 ])
             ],
+            'whatsapp_channel_link' => ['required', 'url', 'max:500'],
             'special_remarks' => ['nullable', 'string'],
             'instructions' => ['required', 'string'],
             'is_featured' => ['boolean'],
