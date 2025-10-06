@@ -55,6 +55,10 @@ Route::middleware(['auth:web'])->group(function () {
         Route::get('/export', [\App\Http\Controllers\Admin\BookingController::class, 'exportForm'])->name('export');
         Route::post('/export', [\App\Http\Controllers\Admin\BookingController::class, 'processExport'])->name('export.process');
         
+        // Active and Archive Lists
+        Route::get('/active', [\App\Http\Controllers\Admin\BookingController::class, 'active'])->name('active');
+        Route::get('/archive', [\App\Http\Controllers\Admin\BookingController::class, 'archive'])->name('archive');
+        
         // Standard CRUD routes
         Route::get('/', [\App\Http\Controllers\Admin\BookingController::class, 'index'])->name('index');
         Route::get('/create', [\App\Http\Controllers\Admin\BookingController::class, 'create'])->name('create');

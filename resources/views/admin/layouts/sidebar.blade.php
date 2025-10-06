@@ -45,9 +45,15 @@
             <div class="collapse {{ request()->is('admin/bookings*') ? 'show' : '' }}" id="bookingSubmenu">
                 <div class="list-group list-group-flush">
                     @can('view-bookings')
-                    <a href="{{ route('admin.bookings.index') }}" 
-                       class="list-group-item list-group-item-action ps-4 {{ request()->routeIs('admin.bookings.index') || request()->routeIs('admin.bookings.show') || request()->routeIs('admin.bookings.edit') || request()->routeIs('admin.bookings.create') ? 'active' : '' }}">
-                        <i class="fas fa-list me-2"></i> List
+                    <a href="{{ route('admin.bookings.active') }}" 
+                       class="list-group-item list-group-item-action ps-4 {{ request()->routeIs('admin.bookings.active') || (request()->routeIs('admin.bookings.show') && !request()->get('archived')) || (request()->routeIs('admin.bookings.edit') && !request()->get('archived')) || request()->routeIs('admin.bookings.create') ? 'active' : '' }}">
+                        <i class="fas fa-list me-2"></i> Active List
+                    </a>
+                    @endcan
+                    @can('view-bookings')
+                    <a href="{{ route('admin.bookings.archive') }}" 
+                       class="list-group-item list-group-item-action ps-4 {{ request()->routeIs('admin.bookings.archive') ? 'active' : '' }}">
+                        <i class="fas fa-archive me-2"></i> Archive List
                     </a>
                     @endcan
                     @can('create-bookings')
