@@ -554,7 +554,7 @@ class BookingAPIController extends BaseAPIController
                 return $this->sendError('Associated retreat not found', 'RETREAT_NOT_FOUND');
             }
 
-            Check if retreat is cancellable (not already started)
+            // Check if retreat is cancellable (not already started)
             if ($retreat->start_date->isPast()) {
                 return $this->sendError(
                     'Cannot cancel booking for a retreat that has already started',
