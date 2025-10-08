@@ -198,6 +198,17 @@
                                 </div>
                             </div>
                             
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="married">Marital Status</label>
+                                    <select class="form-control" id="married" name="married">
+                                        <option value="">-- Select Status --</option>
+                                        <option value="yes" {{ old('married', $booking->married) == 'yes' ? 'selected' : '' }}>Married</option>
+                                        <option value="no" {{ old('married', $booking->married) == 'no' ? 'selected' : '' }}>Unmarried</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="email">Email Address <span class="text-danger">*</span></label>

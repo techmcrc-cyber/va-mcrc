@@ -18,6 +18,7 @@ class Booking extends Model
         'email',
         'address',
         'gender',
+        'married',
         'city',
         'state',
         'diocese',

@@ -44,6 +44,7 @@ class BookingRequest extends FormRequest
             'email' => 'required|email|max:255',
             'address' => 'required|string',
             'gender' => 'required|in:male,female,other',
+            'married' => 'nullable|in:yes,no',
             'city' => 'required|string|max:255',
             'state' => 'required|string|max:255',
             'diocese' => 'nullable|string|max:255',
