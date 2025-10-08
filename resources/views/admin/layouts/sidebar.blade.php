@@ -71,6 +71,12 @@
                 </div>
             </div>
             @endcan
+            @if(Auth::user()->role && Auth::user()->role->is_super_admin)
+            <a href="{{ route('admin.special-bookings.index') }}" 
+               class="list-group-item list-group-item-action {{ request()->is('admin/special-bookings*') ? 'active' : '' }}">
+                <i class="fas fa-star me-2"></i> Special Bookings
+            </a>
+            @endif
             @can('view-criteria')
             <a href="{{ route('admin.criteria.index') }}" 
                class="list-group-item list-group-item-action {{ request()->is('admin/criteria*') ? 'active' : '' }}">

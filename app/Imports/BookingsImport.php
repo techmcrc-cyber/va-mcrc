@@ -107,101 +107,36 @@ class BookingsImport implements ToCollection, WithHeadingRow
             $rules['whatsapp_number'] = ['nullable', 'string'];
         }
 
-        // Add retreat-specific validation
-        if ($retreat->criteria === 'priests_only' || $retreat->criteria === 'sisters_only') {
-            $rules['congregation'] = ['required', 'string', 'max:255'];
-        }
-
         $validator = Validator::make($data, $rules);
         
         $errors = [];
-        $warnings = [];
         
         if ($validator->fails()) {
             $errors = $validator->errors()->all();
         }
 
-        // Check retreat criteria
-        $criteriaCheck = $this->checkRetreatCriteria($data, $retreat);
-        if (!$criteriaCheck['meets_criteria']) {
-            $warnings[] = $criteriaCheck['message'];
-        }
+        // Use CriteriaValidationService for strict validation
+        $validationService = new \App\Services\CriteriaValidationService();
+        $criteriaValidation = $validationService->validateWithRecurrentCheck(
+            $data,
+            $retreat->criteria,
+            true // Strict mode - must pass criteria
+        );
 
-        // Check for duplicate bookings
-        $duplicateCheck = $this->checkForDuplicates($data);
-        if ($duplicateCheck['is_duplicate']) {
-            $warnings[] = $duplicateCheck['message'];
+        // If criteria validation fails, add to errors (not warnings)
+        if (!$criteriaValidation['valid']) {
+            $errors = array_merge($errors, $criteriaValidation['messages']);
         }
 
         return [
             'is_valid' => empty($errors),
             'errors' => $errors,
-            'warnings' => $warnings,
-            'flags' => $this->generateFlags($data, $retreat, $duplicateCheck, $criteriaCheck)
+            'warnings' => [], // No warnings in strict mode
+            'flags' => $criteriaValidation['flag_string']
         ];
     }
 
-    protected function checkRetreatCriteria($data, $retreat)
-    {
-        if ($retreat->criteria === 'no_criteria') {
-            return ['meets_criteria' => true];
-        }
 
-        $criteriaCheck = [
-            'male_only' => $data['gender'] === 'male',
-            'female_only' => $data['gender'] === 'female',
-            'priests_only' => !empty(trim($data['congregation'] ?? '')),
-            'sisters_only' => $data['gender'] === 'female' && !empty(trim($data['congregation'] ?? '')),
-            'youth_only' => $data['age'] >= 16 && $data['age'] <= 30,
-            'children' => $data['age'] <= 15,
-        ];
-
-        $meetsCriteria = $criteriaCheck[$retreat->criteria] ?? false;
-
-        $messages = [
-            'male_only' => 'Only male participants are allowed for this retreat',
-            'female_only' => 'Only female participants are allowed for this retreat',
-            'priests_only' => 'Only priests are allowed for this retreat (congregation required)',
-            'sisters_only' => 'Only sisters are allowed for this retreat (female + congregation required)',
-            'youth_only' => 'Only youth (age 16-30) are allowed for this retreat',
-            'children' => 'Only children (age 15 or below) are allowed for this retreat',
-        ];
-
-        return [
-            'meets_criteria' => $meetsCriteria,
-            'message' => $meetsCriteria ? '' : ($messages[$retreat->criteria] ?? 'Does not meet retreat criteria')
-        ];
-    }
-
-    protected function checkForDuplicates($data)
-    {
-        $exists = Booking::where('whatsapp_number', $data['whatsapp_number'])
-            ->where('firstname', $data['firstname'])
-            ->where('lastname', $data['lastname'])
-            ->where('is_active', true)
-            ->where('created_at', '>=', now()->subYear())
-            ->exists();
-
-        return [
-            'is_duplicate' => $exists,
-            'message' => $exists ? 'Participant has already booked a retreat in the past year' : ''
-        ];
-    }
-
-    protected function generateFlags($data, $retreat, $duplicateCheck, $criteriaCheck)
-    {
-        $flags = [];
-
-        if ($duplicateCheck['is_duplicate']) {
-            $flags[] = 'RECURRENT_BOOKING';
-        }
-
-        if (!$criteriaCheck['meets_criteria']) {
-            $flags[] = 'CRITERIA_FAILED';
-        }
-
-        return implode(',', $flags);
-    }
 
     /**
      * Ensure phone numbers are treated as strings and strip non-digits.
@@ -284,7 +219,8 @@ class BookingsImport implements ToCollection, WithHeadingRow
         
         foreach ($sortedParticipants as $participant) {
             $data = $participant['data'];
-            $flags = $participant['validation']['flags'] ?? '';
+            // Only store RECURRENT_BOOKING flag (criteria failures prevent import in strict mode)
+            $flags = $participant['validation']['flags'] ?? null;
             
             Booking::create([
                 'booking_id' => $bookingId,
@@ -305,7 +241,7 @@ class BookingsImport implements ToCollection, WithHeadingRow
                 'emergency_contact_phone' => $data['emergency_contact_phone'],
                 'additional_participants' => $participantNumber === 1 ? $additionalCount : 0,
                 'special_remarks' => $data['special_remarks'],
-                'flag' => $flags ?: null,
+                'flag' => $flags,
                 'participant_number' => $participantNumber,
                 'created_by' => $userId,
                 'updated_by' => $userId,

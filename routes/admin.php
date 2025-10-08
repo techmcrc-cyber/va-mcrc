@@ -121,4 +121,12 @@ Route::middleware(['auth:web'])->group(function () {
         Route::put('/{permission}', [\App\Http\Controllers\Admin\PermissionController::class, 'update'])->name('update');
         Route::delete('/{permission}', [\App\Http\Controllers\Admin\PermissionController::class, 'destroy'])->name('destroy');
     });
+
+    // Special Bookings (Super Admin Only)
+    Route::prefix('special-bookings')->name('admin.special-bookings.')->middleware('can:super-admin')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\SpecialBookingController::class, 'index'])->name('index');
+        Route::get('/create', [\App\Http\Controllers\Admin\SpecialBookingController::class, 'create'])->name('create');
+        Route::post('/', [\App\Http\Controllers\Admin\SpecialBookingController::class, 'store'])->name('store');
+        Route::get('/{specialBooking}', [\App\Http\Controllers\Admin\SpecialBookingController::class, 'show'])->name('show');
+    });
 });

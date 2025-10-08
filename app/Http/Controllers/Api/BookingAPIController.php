@@ -73,9 +73,14 @@ class BookingAPIController extends BaseAPIController
                 return $this->sendValidationError($validationErrors, 'Participant validation failed');
             }
 
-            $businessRuleFlags = $this->validateBusinessRules($participants, $retreat);
-            if (!empty($businessRuleFlags)) {
-                \Log::info('Business rule violations detected during booking creation: ' . json_encode($businessRuleFlags));
+            // Validate business rules (criteria + recurrent booking) with STRICT mode
+            try {
+                $businessRuleFlags = $this->validateBusinessRules($participants, $retreat);
+                if (!empty($businessRuleFlags)) {
+                    \Log::info('Recurrent booking flags detected: ' . json_encode($businessRuleFlags));
+                }
+            } catch (\Exception $e) {
+                return $this->sendError($e->getMessage(), 'CRITERIA_VALIDATION_FAILED', 400);
             }
 
             DB::beginTransaction();
@@ -223,52 +228,46 @@ class BookingAPIController extends BaseAPIController
 
     private function validateBusinessRules(array $participants, Retreat $retreat): array
     {
-        $flags = [];
+        $validationService = new \App\Services\CriteriaValidationService();
+        $allValidations = [];
+        $hasFailures = false;
 
-        // Validate each participant against retreat criteria and recurrent booking rules
+        // Validate each participant with STRICT mode
         foreach ($participants as $index => $participant) {
-            $participantFlags = [];
-
-            // Check retreat criteria compliance
-            if (!$this->meetsRetreatCriteria($participant, $retreat)) {
-                $participantFlags[] = 'CRITERIA_FAILED';
-            }
-
-            // Check for recurrent bookings (within past year) and add RECURRENT_BOOKING flag
-            $hasRecentBooking = Booking::hasAttendedInPastYear(
-                $participant['whatsapp_number'],
-                $participant['firstname'],
-                $participant['lastname']
+            $validation = $validationService->validateWithRecurrentCheck(
+                $participant,
+                $retreat->criteria,
+                true // Strict mode
             );
 
-            if ($hasRecentBooking) {
-                $participantFlags[] = 'RECURRENT_BOOKING';
-            }
+            $allValidations[$index] = $validation;
 
-            if (!empty($participantFlags)) {
-                $flags[$index] = $participantFlags;
+            // If criteria validation fails, mark as having failures
+            if (!$validation['valid']) {
+                $hasFailures = true;
+            }
+        }
+
+        // If any participant fails criteria validation, throw error
+        if ($hasFailures) {
+            $errorMessages = [];
+            foreach ($allValidations as $index => $validation) {
+                if (!$validation['valid']) {
+                    $errorMessages[] = "Participant " . ($index + 1) . ": " . implode(', ', $validation['messages']);
+                }
+            }
+            throw new \Exception("Booking validation failed: " . implode('; ', $errorMessages));
+        }
+
+        // Return only flags (RECURRENT_BOOKING) for participants who passed criteria
+        $flags = [];
+        foreach ($allValidations as $index => $validation) {
+            if (!empty($validation['flags'])) {
+                $flags[$index] = $validation['flags'];
             }
         }
 
         return $flags;
-    }
-
-    private function meetsRetreatCriteria(array $participant, Retreat $retreat): bool
-    {
-        if ($retreat->criteria === 'no_criteria') {
-            return true;
-        }
-
-        $criteriaCheck = [
-            'male_only' => $participant['gender'] === 'male',
-            'female_only' => $participant['gender'] === 'female',
-            'priests_only' => !empty($participant['congregation']),
-            'sisters_only' => $participant['gender'] === 'female' && !empty($participant['congregation']),
-            'youth_only' => $participant['age'] >= 16 && $participant['age'] <= 30,
-            'children' => $participant['age'] <= 15,
-        ];
-
-        return $criteriaCheck[$retreat->criteria] ?? false;
     }
     
     public function show(Request $request): JsonResponse
