@@ -92,6 +92,16 @@ Route::middleware(['auth:web'])->group(function () {
         Route::delete('/{retreat}', [\App\Http\Controllers\Admin\RetreatController::class, 'destroy'])->name('destroy');
     });
 
+    // Criteria Management
+    Route::prefix('criteria')->name('admin.criteria.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\CriteriaController::class, 'index'])->name('index');
+        Route::get('/create', [\App\Http\Controllers\Admin\CriteriaController::class, 'create'])->name('create');
+        Route::post('/', [\App\Http\Controllers\Admin\CriteriaController::class, 'store'])->name('store');
+        Route::get('/{criterion}/edit', [\App\Http\Controllers\Admin\CriteriaController::class, 'edit'])->name('edit');
+        Route::put('/{criterion}', [\App\Http\Controllers\Admin\CriteriaController::class, 'update'])->name('update');
+        Route::delete('/{criterion}', [\App\Http\Controllers\Admin\CriteriaController::class, 'destroy'])->name('destroy');
+    });
+
     // Roles Management
     Route::prefix('roles')->name('admin.roles.')->group(function () {
         Route::get('/', [\App\Http\Controllers\Admin\RoleController::class, 'index'])->name('index');

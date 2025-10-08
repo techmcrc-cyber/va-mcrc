@@ -71,6 +71,12 @@
                 </div>
             </div>
             @endcan
+            @can('view-criteria')
+            <a href="{{ route('admin.criteria.index') }}" 
+               class="list-group-item list-group-item-action {{ request()->is('admin/criteria*') ? 'active' : '' }}">
+                <i class="fas fa-filter me-2"></i> Criteria
+            </a>
+            @endcan
         
             @can('view-users')
             <a href="{{ route('admin.users.index') }}" 

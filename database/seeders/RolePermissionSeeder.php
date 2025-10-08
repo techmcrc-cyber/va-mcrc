@@ -49,6 +49,12 @@ class RolePermissionSeeder extends Seeder
             ['name' => 'Edit Bookings', 'slug' => 'edit-bookings', 'module' => 'bookings'],
             ['name' => 'Delete Bookings', 'slug' => 'delete-bookings', 'module' => 'bookings'],
             
+            // Criteria Management
+            ['name' => 'View Criteria', 'slug' => 'view-criteria', 'module' => 'criteria'],
+            ['name' => 'Create Criteria', 'slug' => 'create-criteria', 'module' => 'criteria'],
+            ['name' => 'Edit Criteria', 'slug' => 'edit-criteria', 'module' => 'criteria'],
+            ['name' => 'Delete Criteria', 'slug' => 'delete-criteria', 'module' => 'criteria'],
+            
         ];
 
         foreach ($permissions as $permission) {
