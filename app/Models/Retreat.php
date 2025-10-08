@@ -126,6 +126,14 @@ class Retreat extends Model implements HasMedia
     }
 
     /**
+     * Get the criteria that belongs to the retreat.
+     */
+    public function criteriaRelation()
+    {
+        return $this->belongsTo(Criteria::class, 'criteria');
+    }
+
+    /**
      * Get the featured image URL.
      */
     public function getFeaturedImageUrlAttribute()

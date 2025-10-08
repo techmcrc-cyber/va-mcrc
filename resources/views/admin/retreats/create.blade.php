@@ -104,12 +104,13 @@
                                         </div>
 
                                         <div class="form-group mb-3">
-                                            <label for="criteria" class="form-label">Eligibility Criteria *</label>
+                                            <label for="criteria" class="form-label">Eligibility Criteria</label>
                                             <select class="form-select @error('criteria') is-invalid @enderror" 
-                                                    id="criteria" name="criteria" required>
-                                                @foreach($criteriaOptions as $value => $label)
-                                                    <option value="{{ $value }}" {{ old('criteria') == $value ? 'selected' : '' }}>
-                                                        {{ $label }}
+                                                    id="criteria" name="criteria">
+                                                <option value="">No Criteria</option>
+                                                @foreach($criteriaOptions as $id => $name)
+                                                    <option value="{{ $id }}" {{ old('criteria') == $id ? 'selected' : '' }}>
+                                                        {{ $name }}
                                                     </option>
                                                 @endforeach
                                             </select>

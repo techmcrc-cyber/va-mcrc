@@ -51,19 +51,10 @@ class RetreatController extends Controller
             $limit = $request->input('length', 25);
             $start = $request->input('start', 0);
             
-            $retreats = $query->offset($start)
+            $retreats = $query->with('criteriaRelation')
+                            ->offset($start)
                             ->limit($limit)
                             ->get();
-            
-            $criteriaLabels = [
-                'male_only' => 'Male Only',
-                'female_only' => 'Female Only',
-                'priests_only' => 'Priests Only',
-                'sisters_only' => 'Sisters Only',
-                'youth_only' => 'Youth Only',
-                'children' => 'Children',
-                'no_criteria' => 'No Criteria'
-            ];
             
             $data = [];
             foreach ($retreats as $retreat) {
@@ -73,7 +64,7 @@ class RetreatController extends Controller
                 $nestedData['end_date'] = $retreat->end_date->format('Y-m-d'); // For sorting
                 $nestedData['timings'] = $retreat->timings;
                 $nestedData['seats'] = $retreat->seats;
-                $nestedData['criteria'] = $criteriaLabels[$retreat->criteria] ?? $retreat->criteria;
+                $nestedData['criteria'] = $retreat->criteriaRelation ? $retreat->criteriaRelation->name : '-';
                 
                 // WhatsApp Channel Link
                 if ($retreat->whatsapp_channel_link) {
@@ -144,15 +135,7 @@ class RetreatController extends Controller
      */
     public function create()
     {
-        $criteriaOptions = [
-            'male_only' => 'Male Only',
-            'female_only' => 'Female Only',
-            'priests_only' => 'Priests Only',
-            'sisters_only' => 'Sisters Only',
-            'youth_only' => 'Youth Only (Age 16-30)',
-            'children' => 'Children (Age 15 or below)',
-            'no_criteria' => 'No Criteria'
-        ];
+        $criteriaOptions = \App\Models\Criteria::where('status', 1)->pluck('name', 'id');
         
         return view('admin.retreats.create', compact('criteriaOptions'));
     }
@@ -179,6 +162,7 @@ class RetreatController extends Controller
      */
     public function show(Retreat $retreat)
     {
+        $retreat->load('criteriaRelation');
         return view('admin.retreats.show', compact('retreat'));
     }
 
@@ -187,15 +171,7 @@ class RetreatController extends Controller
      */
     public function edit(Retreat $retreat)
     {
-        $criteriaOptions = [
-            'male_only' => 'Male Only',
-            'female_only' => 'Female Only',
-            'priests_only' => 'Priests Only',
-            'sisters_only' => 'Sisters Only',
-            'youth_only' => 'Youth Only (Age 16-30)',
-            'children' => 'Children (Age 15 or below)',
-            'no_criteria' => 'No Criteria'
-        ];
+        $criteriaOptions = \App\Models\Criteria::where('status', 1)->pluck('name', 'id');
         
         return view('admin.retreats.edit', compact('retreat', 'criteriaOptions'));
     }

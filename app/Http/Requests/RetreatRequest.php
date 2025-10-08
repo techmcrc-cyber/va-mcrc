@@ -55,18 +55,7 @@ class RetreatRequest extends FormRequest
             'postal_code' => ['nullable', 'string', 'max:20'],
             'latitude' => ['nullable', 'numeric', 'between:-90,90'],
             'longitude' => ['nullable', 'numeric', 'between:-180,180'],
-            'criteria' => [
-                'required',
-                Rule::in([
-                    'male_only',
-                    'female_only',
-                    'priests_only',
-                    'sisters_only',
-                    'youth_only',
-                    'children',
-                    'no_criteria'
-                ])
-            ],
+            'criteria' => ['nullable', 'exists:criteria,id'],
             'whatsapp_channel_link' => ['required', 'url', 'max:500'],
             'special_remarks' => ['nullable', 'string'],
             'instructions' => ['required', 'string'],

@@ -74,18 +74,7 @@
                                         <tr>
                                             <th>Eligibility Criteria</th>
                                             <td>
-                                                @php
-                                                    $criteriaLabels = [
-                                                        'male_only' => 'Male Only',
-                                                        'female_only' => 'Female Only',
-                                                        'priests_only' => 'Priests Only',
-                                                        'sisters_only' => 'Sisters Only',
-                                                        'youth_only' => 'Youth Only (Age 16-30)',
-                                                        'children' => 'Children (Age 15 or below)',
-                                                        'no_criteria' => 'No Criteria'
-                                                    ];
-                                                @endphp
-                                                {{ $criteriaLabels[$retreat->criteria] ?? $retreat->criteria }}
+                                                {{ $retreat->criteriaRelation ? $retreat->criteriaRelation->name : 'No Criteria' }}
                                             </td>
                                         </tr>
                                         @if($retreat->special_remarks)
