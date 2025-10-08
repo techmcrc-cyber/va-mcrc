@@ -49,6 +49,46 @@
 
 @push('styles')
 <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
+<style>
+    #special-bookings-table th {
+        font-weight: bold !important;
+        background-color: #f8f9fc !important;
+        padding-top: 1rem !important;
+        padding-bottom: 1rem !important;
+    }
+    
+    .dataTables_length {
+        margin-bottom: 15px;
+    }
+    
+    .dataTables_length select {
+        margin: 0 5px;
+        padding: 4px 20px;
+        border-radius: 4px;
+        border: 1px solid #d1d3e2;
+    }
+    
+    /* Action buttons styling */
+    #special-bookings-table .btn-row {
+        display: flex;
+        gap: 4px;
+        margin-bottom: 4px;
+    }
+    
+    #special-bookings-table .btn-row:last-child {
+        margin-bottom: 0;
+    }
+    
+    #special-bookings-table .btn-sm {
+        padding: 4px 8px;
+        font-size: 12px;
+        line-height: 1.2;
+    }
+    
+    #special-bookings-table .btn-sm i {
+        font-size: 12px;
+    }
+</style>
 @endpush
 
 @push('scripts')
@@ -66,9 +106,9 @@ $(document).ready(function() {
             { data: 'retreat', name: 'retreat' },
             { data: 'flags', name: 'flags', orderable: false },
             { data: 'created_at', name: 'created_at' },
-            { data: 'actions', name: 'actions', orderable: false, searchable: false }
+            { data: 'actions', name: 'actions', orderable: false, searchable: false, className: 'text-center', width: '120px' }
         ],
-        order: [[4, 'desc']],
+        order: [[0, 'desc']], // Order by booking_id (first column) descending
         pageLength: 25
     });
 });

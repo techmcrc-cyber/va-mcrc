@@ -128,5 +128,7 @@ Route::middleware(['auth:web'])->group(function () {
         Route::get('/create', [\App\Http\Controllers\Admin\SpecialBookingController::class, 'create'])->name('create');
         Route::post('/', [\App\Http\Controllers\Admin\SpecialBookingController::class, 'store'])->name('store');
         Route::get('/{specialBooking}', [\App\Http\Controllers\Admin\SpecialBookingController::class, 'show'])->name('show');
+        Route::get('/{specialBooking}/edit', [\App\Http\Controllers\Admin\SpecialBookingController::class, 'edit'])->name('edit');
+        Route::put('/{specialBooking}', [\App\Http\Controllers\Admin\SpecialBookingController::class, 'update'])->name('update');
     });
 });

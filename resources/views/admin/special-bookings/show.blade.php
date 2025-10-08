@@ -7,9 +7,14 @@
     <div class="card mb-2">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h4 class="m-0 fw-bold">Special Booking: {{ $specialBooking->booking_id }}</h4>
-            <a href="{{ route('admin.special-bookings.index') }}" class="btn btn-secondary btn-sm">
-                <i class="fas fa-arrow-left me-1"></i> Back to List
-            </a>
+            <div>
+                <a href="{{ route('admin.special-bookings.edit', $specialBooking) }}" class="btn btn-primary btn-sm">
+                    <i class="fas fa-edit me-1"></i> Edit
+                </a>
+                <a href="{{ route('admin.special-bookings.index') }}" class="btn btn-secondary btn-sm">
+                    <i class="fas fa-arrow-left me-1"></i> Back to List
+                </a>
+            </div>
         </div>
     </div>
 
