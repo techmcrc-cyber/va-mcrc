@@ -6,21 +6,31 @@
     <title>Booking Confirmation</title>
     <style>
         body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-        .header { background-color: #8b4165; color: white; padding: 20px; text-align: center; border-radius: 5px 5px 0 0; }
+        .container { max-width: 75%; margin: 0 auto; padding: 20px; }
+        .header { background-color: #b53d5e; color: white; padding: 10px 30px; border-radius: 5px 5px 0 0; display: flex; align-items: center; justify-content: flex-start; }
+        .header img { max-width: 100px; height: auto; margin-right: 20px; flex-shrink: 0; }
+        .header-text { flex: 1; text-align: center; }
+        .header-text h2 { margin: 0 0 5px 0; }
+        .header-text p { margin: 0; }
         .content { background-color: #f9f9f9; padding: 20px; border: 1px solid #ddd; }
         .footer { background-color: #eee; padding: 15px; text-align: center; border-radius: 0 0 5px 5px; font-size: 12px; }
-        .booking-details { background-color: white; padding: 15px; margin: 10px 0; border-radius: 5px; border-left: 4px solid #8b4165; }
+        .booking-details { background-color: white; padding: 15px; margin: 10px 0; border-radius: 5px; border-left: 4px solid #b53d5e; }
         .participant { background-color: white; padding: 10px; margin: 5px 0; border-radius: 3px; border-left: 3px solid #6b7280; }
-        .highlight { color: #8b4165; font-weight: bold; }
+        .highlight { color: #b53d5e; font-weight: bold; }
         .important { background-color: #fff3cd; border: 1px solid #ffeaa7; padding: 10px; border-radius: 5px; margin: 10px 0; }
+        .whatsapp-section { background-color: #e7f7ef; border: 2px solid #25d366; padding: 15px; border-radius: 5px; margin: 15px 0; text-align: center; }
+        .whatsapp-button { display: inline-block; background-color: #25d366; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: bold; margin-top: 10px; }
+        .whatsapp-button:hover { background-color: #20ba5a; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h2>🙏 Retreat Booking Confirmation</h2>
-            <p>Mount Carmel Retreat Centre</p>
+            <img src="https://mountcarmelretreatcentre.org/wp-content/uploads/2022/02/logo_mcrc_new-1-100x118.png" alt="Mount Carmel Retreat Centre Logo">
+            <div class="header-text">
+                <h2>Retreat Booking Confirmation</h2>
+                <p>Mount Carmel Retreat Centre</p>
+            </div>
         </div>
 
         <div class="content">
@@ -67,6 +77,13 @@
                 <p><strong>Address:</strong> {{ $retreat->address }}, {{ $retreat->city }}, {{ $retreat->state }}</p>
                 @endif
             </div>
+
+            @if($retreat->description)
+                <div class="booking-details">
+                    <h3>📖 About This Retreat</h3>
+                    <div>{!! $retreat->description !!}</div>
+                </div>
+            @endif
 
             <div class="booking-details">
                 <h3>👤 Primary Participant</h3>
@@ -135,7 +152,7 @@
             @if($retreat->instructions)
                 <div class="important">
                     <h4>📋 Important Instructions</h4>
-                    <p>{{ $retreat->instructions }}</p>
+                    <div>{!! $retreat->instructions !!}</div>
                 </div>
             @endif
 
@@ -143,6 +160,18 @@
                 <div class="booking-details">
                     <h4>📝 Special Remarks</h4>
                     <p>{{ $booking->special_remarks }}</p>
+                </div>
+            @endif
+
+            @if($retreat->whatsapp_channel_link)
+                <div class="whatsapp-section">
+                    <h4 style="color: #25d366; margin-top: 0;">💬 Join Our WhatsApp Community</h4>
+                    <p>Stay connected with fellow retreat participants and receive important updates!</p>
+                    <a href="{{ $retreat->whatsapp_channel_link }}" class="whatsapp-button" target="_blank">
+                        Join WhatsApp Community
+                    </a>
+                    <p style="font-size: 12px; color: #666; margin-top: 10px;">Click the button above or copy this link: <br>
+                    <span style="word-break: break-all;">{{ $retreat->whatsapp_channel_link }}</span></p>
                 </div>
             @endif
 
