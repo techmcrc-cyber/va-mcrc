@@ -311,8 +311,8 @@
                         </div>
                         
                         <!-- Validation Messages -->
-                        <div id="validation-messages" class="alert alert-warning d-none">
-                            <h5><i class="icon fas fa-exclamation-triangle"></i> Validation Warnings</h5>
+                        <div id="validation-messages" class="alert alert-danger d-none">
+                            <h5><i class="icon fas fa-exclamation-triangle"></i> Validation Errors</h5>
                             <ul id="validation-errors">
                                 <!-- Validation errors will be added here -->
                             </ul>
@@ -581,6 +581,78 @@
         $(document).on('click', '.add-another-participant', function() {
             addParticipant();
         });
+        
+        // Helper function to validate participant against criteria
+        function validateParticipantCriteria(participant, criteria) {
+            const errors = [];
+            
+            if (!criteria || criteria === 'no_criteria') {
+                return errors;
+            }
+            
+            switch (criteria) {
+                case 'male_only':
+                    if (participant.gender !== 'male') {
+                        errors.push(`${participant.name}: Must be Male`);
+                    }
+                    break;
+                    
+                case 'female_only':
+                    if (participant.gender !== 'female') {
+                        errors.push(`${participant.name}: Must be Female`);
+                    }
+                    break;
+                    
+                case 'priests_only':
+                    if (!participant.congregation) {
+                        errors.push(`${participant.name}: Congregation is required for Priests`);
+                    }
+                    break;
+                    
+                case 'sisters_only':
+                    if (participant.gender !== 'female') {
+                        errors.push(`${participant.name}: Must be Female for Sisters retreat`);
+                    }
+                    if (!participant.congregation) {
+                        errors.push(`${participant.name}: Congregation is required for Sisters`);
+                    }
+                    break;
+                    
+                case 'youth_only':
+                    if (participant.age < 16 || participant.age > 30) {
+                        errors.push(`${participant.name}: Age must be between 16-30 years for Youth retreat`);
+                    }
+                    break;
+                    
+                case 'children':
+                    if (participant.age > 15) {
+                        errors.push(`${participant.name}: Age must be 15 years or below for Children retreat`);
+                    }
+                    break;
+            }
+            
+            return errors;
+        }
+        
+        // Helper function to show validation errors
+        function showValidationErrors(errors) {
+            const $validationMessages = $('#validation-messages');
+            const $validationList = $('#validation-errors');
+            
+            $validationList.empty();
+            
+            errors.forEach(function(error) {
+                $validationList.append(`<li>${error}</li>`);
+            });
+            
+            $validationMessages.removeClass('d-none');
+            $validationMessages.removeClass('alert-warning').addClass('alert-danger');
+            
+            // Scroll to validation messages
+            $('html, body').animate({
+                scrollTop: $validationMessages.offset().top - 100
+            }, 500);
+        }
         
         // Add validation rules for dynamically added participants
         function addParticipantValidation(participantIndex) {
@@ -851,92 +923,57 @@
                 $(element).removeClass('is-invalid');
             },
             submitHandler: function(form) {
-                // Check for validation warnings
-                const warnings = [];
+                // Check for validation errors
+                const errors = [];
                 
                 // Check if retreat is selected
                 const retreatId = $('#retreat_id').val();
                 if (!retreatId) {
-                    warnings.push('Please select a retreat');
+                    errors.push('Please select a retreat');
+                    showValidationErrors(errors);
+                    return false;
                 }
                 
-                // Check congregation field requirement
+                // Get retreat criteria
                 const criteria = $('#retreat_id option:selected').data('criteria');
-                const congregation = $('#congregation').val();
                 
-                if ((criteria === 'priests_only' || criteria === 'sisters_only') && !congregation.trim()) {
-                    warnings.push('Congregation field is required for Priests and Sisters retreats.');
+                // Validate primary participant
+                const primaryParticipant = {
+                    name: 'Primary Participant',
+                    gender: $('#gender').val(),
+                    age: parseInt($('#age').val()),
+                    congregation: $('#congregation').val()?.trim() || ''
+                };
+                
+                const primaryErrors = validateParticipantCriteria(primaryParticipant, criteria);
+                if (primaryErrors.length > 0) {
+                    errors.push(...primaryErrors);
                 }
                 
-                // Check if primary participant meets criteria
-                const gender = $('#gender').val();
-                const age = parseInt($('#age').val());
-                
-                if (criteria) {
-                    let meetsCriteria = false;
+                // Validate all additional participants
+                $('.participant-section:visible').each(function(index) {
+                    const participantNum = index + 1; // Display as #1, #2, #3 in create
+                    const participant = {
+                        name: `Participant #${participantNum}`,
+                        gender: $(this).find('select[name*="[gender]"]').val(),
+                        age: parseInt($(this).find('input[name*="[age]"]').val()),
+                        congregation: $(this).find('input[name*="[congregation]"]').val()?.trim() || ''
+                    };
                     
-                    switch (criteria) {
-                        case 'male_only':
-                            meetsCriteria = gender === 'male';
-                            break;
-                        case 'female_only':
-                            meetsCriteria = gender === 'female';
-                            break;
-                        case 'priests_only':
-                            meetsCriteria = congregation !== '' && congregation.trim() !== '';
-                            break;
-                        case 'sisters_only':
-                            meetsCriteria = gender === 'female' && congregation !== '' && congregation.trim() !== '';
-                            break;
-                        case 'youth_only':
-                            meetsCriteria = age >= 16 && age <= 30; // Youth: Age 16-30
-                            break;
-                        case 'children':
-                            meetsCriteria = age <= 15; // Children: Age 15 or below
-                            break;
-                        case 'no_criteria':
-                        default:
-                            meetsCriteria = true;
+                    const participantErrors = validateParticipantCriteria(participant, criteria);
+                    if (participantErrors.length > 0) {
+                        errors.push(...participantErrors);
                     }
-                    
-                    if (!meetsCriteria) {
-                        warnings.push('Primary participant does not meet the retreat criteria');
-                    }
+                });
+                
+                // Show errors if any and prevent submission
+                if (errors.length > 0) {
+                    showValidationErrors(errors);
+                    return false;
                 }
                 
-                // Check for past bookings
-                const whatsappNumber = $('#whatsapp_number').val();
-                const fullName = $('#firstname').val() + ' ' + $('#lastname').val();
-                
-                if (whatsappNumber && fullName.trim()) {
-                    // This would be an AJAX call in a real implementation
-                    // For now, we'll just show a warning if the fields are filled
-                    warnings.push('Note: System will check for past bookings during submission');
-                }
-                
-                // Show warnings if any
-                if (warnings.length > 0) {
-                    const $validationMessages = $('#validation-messages');
-                    const $validationList = $('#validation-errors');
-                    
-                    $validationList.empty();
-                    
-                    warnings.forEach(function(warning) {
-                        $validationList.append(`<li>${warning}</li>`);
-                    });
-                    
-                    $validationMessages.removeClass('d-none');
-                    
-                    // Scroll to validation messages
-                    $('html, body').animate({
-                        scrollTop: $validationMessages.offset().top - 100
-                    }, 500);
-                    
-                    // Still allow form submission with warnings
-                    form.submit();
-                } else {
-                    form.submit();
-                }
+                // All validations passed, submit the form
+                form.submit();
             }
         });
     });
