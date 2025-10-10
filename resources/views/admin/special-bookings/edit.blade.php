@@ -295,7 +295,7 @@
                                             <div class="participant-section mb-4" id="participant-{{ $participantCount }}">
                                                 <input type="hidden" name="participants[{{ $participantCount }}][id]" value="{{ $participant->id }}">
                                                 <div class="participant-header d-flex justify-content-between align-items-center mb-3">
-                                        <h5 class="participant-title m-0">Participant #{{ $participantCount }}</h5>
+                                        <h5 class="participant-title m-0">Participant #{{ $participantCount + 1 }}</h5>
                                         <button type="button" class="btn btn-sm btn-danger remove-participant text-white" data-participant="{{ $participantCount }}">
                                             <i class="fas fa-times"></i> Remove
                                         </button>
@@ -496,8 +496,8 @@
         
         // Initialize participant counter and max participants
         const maxParticipants = parseInt($('#max-additional-members').val());
-        let participantCount = 0;
-        let nextParticipantNumber = 1;
+        let participantCount = $('.participant-section').length;
+        let nextParticipantNumber = participantCount + 1;
         
         // Update the additional_participants hidden input
         $('#additional_participants').val(participantCount);
@@ -505,8 +505,7 @@
         // Initialize existing participants
         $('.participant-section').each(function(index) {
             const partIndex = index + 1;
-            participantCount++;
-            nextParticipantNumber++;
+            const displayNumber = partIndex + 1; // Display as #2, #3, etc.
             
             // Update input names to ensure proper array indexing
             $(this).find('[name^="participants["]').each(function() {
@@ -516,7 +515,7 @@
             
             // Update participant title and ID
             $(this).attr('id', 'participant-' + partIndex);
-            $(this).find('.participant-title').text('Participant #' + partIndex);
+            $(this).find('.participant-title').text('Participant #' + displayNumber);
             
             // Update remove button data attribute
             $(this).find('.remove-participant').attr('data-participant', partIndex);
@@ -569,8 +568,9 @@
             let visibleIndex = 0;
             $('.participant-section:visible').each(function() {
                 visibleIndex++;
+                const displayNumber = visibleIndex + 1; // Display as #2, #3, etc.
                 $(this).attr('id', 'participant-' + visibleIndex);
-                $(this).find('.participant-title').text('Participant #' + visibleIndex);
+                $(this).find('.participant-title').text('Participant #' + displayNumber);
                 
                 // Update input names
                 $(this).find('[name^="participants["]').each(function() {
@@ -697,8 +697,9 @@
             let currentIndex = 0;
             $('.participant-section').each(function() {
                 currentIndex++;
+                const displayNumber = currentIndex + 1; // Display as #2, #3, etc.
                 $(this).attr('id', 'participant-' + currentIndex);
-                $(this).find('.participant-title').text('Participant #' + currentIndex);
+                $(this).find('.participant-title').text('Participant #' + displayNumber);
                 
                 // Update input names
                 $(this).find('[name^="participants["]').each(function() {
