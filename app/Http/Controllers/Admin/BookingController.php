@@ -353,7 +353,7 @@ class BookingController extends Controller
             if (!$participantValidation['valid']) {
                 return redirect()->back()
                     ->withInput()
-                    ->withErrors(['criteria' => "Participant " . ($index + 2) . " does not meet retreat criteria: " . implode(', ', $participantValidation['messages'])]);
+                    ->withErrors(["participants.{$index}.criteria" => implode(', ', $participantValidation['messages'])]);
             }
         }
         
@@ -473,9 +473,46 @@ class BookingController extends Controller
         }
         
         $bookingData = $request->validated();
+        $retreat = \App\Models\Retreat::findOrFail($bookingData['retreat_id']);
+        $validationService = new \App\Services\CriteriaValidationService();
         $userId = Auth::id();
         
-        // Update primary booking
+        // Validate primary participant with STRICT mode
+        $primaryValidation = $validationService->validateWithRecurrentCheck(
+            $bookingData,
+            $retreat->criteria,
+            true, // Strict mode - booking fails if criteria not met
+            $booking->booking_id
+        );
+        
+        if (!$primaryValidation['valid']) {
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['criteria' => 'Primary participant does not meet retreat criteria: ' . implode(', ', $primaryValidation['messages'])]);
+        }
+        
+        // Validate additional participants with STRICT mode
+        $participants = $bookingData['participants'] ?? [];
+        foreach ($participants as $index => $participant) {
+            if (empty($participant['firstname']) && empty($participant['lastname'])) {
+                continue;
+            }
+            
+            $participantValidation = $validationService->validateWithRecurrentCheck(
+                $participant,
+                $retreat->criteria,
+                true, // Strict mode
+                $booking->booking_id
+            );
+            
+            if (!$participantValidation['valid']) {
+                return redirect()->back()
+                    ->withInput()
+                    ->withErrors(["participants.{$index}.criteria" => implode(', ', $participantValidation['messages'])]);
+            }
+        }
+        
+        // All validations passed, update primary booking
         $booking->update([
             'retreat_id' => $bookingData['retreat_id'],
             'firstname' => $bookingData['firstname'],
@@ -495,29 +532,9 @@ class BookingController extends Controller
             'emergency_contact_phone' => $bookingData['emergency_contact_phone'],
             'additional_participants' => $bookingData['additional_participants'],
             'special_remarks' => $bookingData['special_remarks'] ?? null,
+            'flag' => $primaryValidation['flag_string'], // Only RECURRENT_BOOKING flag if applicable
             'updated_by' => $userId,
         ]);
-        
-        // Re-evaluate flags for primary booking after update
-        $flag = null;
-        
-        // Check for recurrent booking (exclude current booking from check)
-        if (Booking::hasAttendedInPastYear(
-            $bookingData['whatsapp_number'],
-            $bookingData['firstname'],
-            $bookingData['lastname'],
-            $booking->booking_id
-        )) {
-            $flag = 'RECURRENT_BOOKING';
-        }
-        
-        // Check criteria for primary booking
-        if (!$booking->fresh()->meetsRetreatCriteria()) {
-            $flag = $flag ? $flag . ',CRITERIA_FAILED' : 'CRITERIA_FAILED';
-        }
-        
-        // Update flag for primary booking
-        $booking->update(['flag' => $flag]);
         
         // Handle deleted participants
         if (isset($bookingData['deleted_participants']) && is_array($bookingData['deleted_participants'])) {
@@ -540,6 +557,14 @@ class BookingController extends Controller
                     continue;
                 }
                 
+                // Validate participant (already validated above, get validation result again)
+                $participantValidation = $validationService->validateWithRecurrentCheck(
+                    $participant,
+                    $retreat->criteria,
+                    true,
+                    $booking->booking_id
+                );
+                
                 $participantData = [
                     'retreat_id' => $bookingData['retreat_id'],
                     'firstname' => $participant['firstname'],
@@ -549,14 +574,16 @@ class BookingController extends Controller
                     'email' => $participant['email'],
                     'address' => $bookingData['address'],
                     'gender' => $participant['gender'],
+                    'married' => $participant['married'] ?? null,
+                    'congregation' => $participant['congregation'] ?? null,
                     'city' => $bookingData['city'],
                     'state' => $bookingData['state'],
                     'diocese' => $bookingData['diocese'] ?? null,
                     'parish' => $bookingData['parish'] ?? null,
-                    'congregation' => $bookingData['congregation'] ?? null,
                     'emergency_contact_name' => $bookingData['emergency_contact_name'],
                     'emergency_contact_phone' => $bookingData['emergency_contact_phone'],
                     'special_remarks' => $bookingData['special_remarks'] ?? null,
+                    'flag' => $participantValidation['flag_string'], // Only RECURRENT_BOOKING flag if applicable
                     'updated_by' => $userId,
                 ];
                 
@@ -569,8 +596,6 @@ class BookingController extends Controller
                     // Update existing participant
                     $existingParticipant->update($participantData);
                     $existingParticipant->update(['is_active' => true]); // Reactivate
-                    
-                    $participantBooking = $existingParticipant;
                 } else {
                     // Create new participant
                     $participantData['booking_id'] = $booking->booking_id;
@@ -578,29 +603,8 @@ class BookingController extends Controller
                     $participantData['created_by'] = $userId;
                     $participantData['is_active'] = true;
                     
-                    $participantBooking = Booking::create($participantData);
+                    Booking::create($participantData);
                 }
-                
-                // Re-evaluate flags for participant after update/create
-                $participantFlag = null;
-                
-                // Check for recurrent booking (exclude current booking from check)
-                if (Booking::hasAttendedInPastYear(
-                    $participant['whatsapp_number'],
-                    $participant['firstname'],
-                    $participant['lastname'],
-                    $booking->booking_id
-                )) {
-                    $participantFlag = 'RECURRENT_BOOKING';
-                }
-                
-                // Check criteria for participant
-                if (!$participantBooking->fresh()->meetsRetreatCriteria()) {
-                    $participantFlag = $participantFlag ? $participantFlag . ',CRITERIA_FAILED' : 'CRITERIA_FAILED';
-                }
-                
-                // Update flag for participant
-                $participantBooking->update(['flag' => $participantFlag]);
                 
                 $participantNumber++;
             }

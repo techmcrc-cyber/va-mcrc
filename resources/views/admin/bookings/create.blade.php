@@ -438,6 +438,7 @@
         
         // Show/hide add more members section - using event delegation for dynamically added elements
         $(document).on('click', '#btn-yes-add-members', function(e) {
+            console.log('Yes, Add Members button clicked');
             e.preventDefault();
             $('#add-more-members-prompt').addClass('d-none');
             $('#additional-participants-section').removeClass('d-none');
@@ -449,7 +450,9 @@
         });
         
         function addParticipant(participantData = null, index = null) {
+            console.log('addParticipant called with:', participantData, index);
             const currentCount = $('.participant-section').length;
+            console.log('Current participant count:', currentCount, 'Max:', maxParticipants);
             if (currentCount >= maxParticipants) {
                 alert('Maximum of ' + maxParticipants + ' additional participants allowed.');
                 return;
@@ -587,21 +590,35 @@
         @php
             $oldParticipants = old('participants', []);
             $hasOldParticipants = !empty($oldParticipants);
+            // Also check if there are any participant-related errors
+            $hasParticipantErrors = false;
+            foreach($errors->keys() as $key) {
+                if (strpos($key, 'participants.') === 0) {
+                    $hasParticipantErrors = true;
+                    break;
+                }
+            }
         @endphp
         
-        @if($hasOldParticipants)
-            // Show the participants container
-            $('#add-more-members-prompt').addClass('d-none');
-            $('#additional-participants-section').removeClass('d-none');
-            
-            // Add participants based on old input
-            const oldParticipants = @json($oldParticipants);
-            const validationErrors = @json($errors->messages());
-            
-            Object.keys(oldParticipants).forEach(function(key) {
-                const participant = oldParticipants[key];
-                addParticipant(participant, parseInt(key));
-            });
+        @if($hasOldParticipants || $hasParticipantErrors)
+        // Show the participants container
+        $('#add-more-members-prompt').addClass('d-none');
+        $('#additional-participants-section').removeClass('d-none');
+        
+        // Add participants based on old input
+        const oldParticipants = @json($oldParticipants);
+        const validationErrors = @json($errors->messages());
+        
+        Object.keys(oldParticipants).forEach(function(key) {
+            const participant = oldParticipants[key];
+            addParticipant(participant, parseInt(key));
+        });
+        
+        // Update the additional_participants count and global counters
+        const repopulatedCount = Object.keys(oldParticipants).length;
+        $('#additional_participants').val(repopulatedCount);
+        
+        console.log('Repopulated', repopulatedCount, 'participants');
             
             // Display validation errors for each participant field
             setTimeout(function() {
@@ -648,21 +665,17 @@
                         }
                     }
                     
-                    // Also check for criteria errors that mention participant numbers
-                    if (fieldName === 'criteria' && errorMessages[0].includes('Participant')) {
-                        // Extract participant number from message like "Participant 2 does not meet..."
-                        const match = errorMessages[0].match(/Participant (\d+)/);
-                        if (match) {
-                            const participantNum = parseInt(match[1]);
-                            const participantIndex = participantNum - 2; // Participant 2 is index 0
-                            
-                            console.log('Found criteria error for participant:', participantNum, 'index:', participantIndex);
-                            
-                            if (!participantErrors[participantIndex]) {
-                                participantErrors[participantIndex] = [];
-                            }
-                            participantErrors[participantIndex].push(errorMessages[0]);
+                    // Check for criteria errors (participants.{index}.criteria)
+                    const criteriaMatch = fieldName.match(/^participants\.(\d+)\.criteria$/);
+                    if (criteriaMatch) {
+                        const participantIndex = criteriaMatch[1];
+                        
+                        console.log('Found criteria error for participant index:', participantIndex);
+                        
+                        if (!participantErrors[participantIndex]) {
+                            participantErrors[participantIndex] = [];
                         }
+                        participantErrors[participantIndex].push('Criteria validation failed: ' + errorMessages[0]);
                     }
                 });
                 
@@ -1076,7 +1089,6 @@
                 
                 // All validations passed, submit the form
                 form.submit();
-                }
             }
         });
     });

@@ -304,7 +304,7 @@
                                     @php $participantCount = 1; @endphp
                                     @foreach($allParticipants as $participant)
                                         @if($participant->id !== $booking->id)
-                                            <div class="participant-section mb-4" id="participant-{{ $participantCount }}">
+                                            <div class="participant-section mb-4" id="participant-{{ $participantCount }}" data-participant-index="{{ $participantCount }}">
                                                 <input type="hidden" name="participants[{{ $participantCount }}][id]" value="{{ $participant->id }}">
                                                 <div class="participant-header d-flex justify-content-between align-items-center mb-3">
                                         <h5 class="participant-title m-0">Participant #{{ $participantCount + 1 }}</h5>
@@ -312,6 +312,15 @@
                                             <i class="fas fa-times"></i> Remove
                                         </button>
                                     </div>
+                                                @if($errors->has("participants.{$participantCount}.criteria"))
+                                                    <div class="alert alert-danger alert-dismissible">
+                                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                                        <i class="icon fas fa-exclamation-triangle"></i> Criteria validation failed:
+                                                        <ul class="mb-0 mt-2">
+                                                            <li>{{ $errors->first("participants.{$participantCount}.criteria") }}</li>
+                                                        </ul>
+                                                    </div>
+                                                @endif
                                                             <div class="row">
                                                     <div class="col-md-6">
                                                         <div class="form-group">
