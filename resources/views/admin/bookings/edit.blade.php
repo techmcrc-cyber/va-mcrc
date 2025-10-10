@@ -392,6 +392,98 @@
                                             @php $participantCount++; @endphp
                                         @endif
                                     @endforeach
+                                    
+                                    {{-- Render newly added participants from old input (those without ID) --}}
+                                    @php
+                                        $oldParticipants = old('participants', []);
+                                        $existingCount = $participantCount;
+                                    @endphp
+                                    
+                                    @foreach($oldParticipants as $index => $oldParticipant)
+                                        @if(!isset($oldParticipant['id']) && !empty($oldParticipant['firstname']))
+                                            <div class="participant-section mb-4" id="participant-{{ $index }}" data-participant-index="{{ $index }}">
+                                                <div class="participant-header d-flex justify-content-between align-items-center mb-3">
+                                                    <h5 class="participant-title m-0">Participant #{{ $index + 2 }}</h5>
+                                                    <button type="button" class="btn btn-sm btn-danger remove-participant text-white" data-participant="{{ $index }}">
+                                                        <i class="fas fa-times"></i> Remove
+                                                    </button>
+                                                </div>
+                                                @if($errors->has("participants.{$index}.criteria"))
+                                                    <div class="alert alert-danger alert-dismissible">
+                                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                                        <i class="icon fas fa-exclamation-triangle"></i> Criteria validation failed:
+                                                        <ul class="mb-0 mt-2">
+                                                            <li>{{ $errors->first("participants.{$index}.criteria") }}</li>
+                                                        </ul>
+                                                    </div>
+                                                @endif
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label>First Name <span class="text-danger">*</span></label>
+                                                            <input type="text" class="form-control" name="participants[{{ $index }}][firstname]" value="{{ $oldParticipant['firstname'] ?? '' }}" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label>Last Name <span class="text-danger">*</span></label>
+                                                            <input type="text" class="form-control" name="participants[{{ $index }}][lastname]" value="{{ $oldParticipant['lastname'] ?? '' }}" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            <label>WhatsApp Number <span class="text-danger">*</span></label>
+                                                            <div class="input-group">
+                                                                <div class="input-group-prepend">
+                                                                    <span class="input-group-text">+91</span>
+                                                                </div>
+                                                                <input type="text" class="form-control participant-whatsapp" name="participants[{{ $index }}][whatsapp_number]" value="{{ $oldParticipant['whatsapp_number'] ?? '' }}" minlength="10" maxlength="10" pattern="[0-9]{10}" required>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            <label>Age <span class="text-danger">*</span></label>
+                                                            <input type="number" class="form-control" name="participants[{{ $index }}][age]" value="{{ $oldParticipant['age'] ?? '' }}" min="1" max="120" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            <label>Gender <span class="text-danger">*</span></label>
+                                                            <select class="form-control" name="participants[{{ $index }}][gender]" required>
+                                                                <option value="">-- Select Gender --</option>
+                                                                <option value="male" {{ ($oldParticipant['gender'] ?? '') === 'male' ? 'selected' : '' }}>Male</option>
+                                                                <option value="female" {{ ($oldParticipant['gender'] ?? '') === 'female' ? 'selected' : '' }}>Female</option>
+                                                                <option value="other" {{ ($oldParticipant['gender'] ?? '') === 'other' ? 'selected' : '' }}>Other</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            <label>Marital Status</label>
+                                                            <select class="form-control" name="participants[{{ $index }}][married]">
+                                                                <option value="">-- Select Status --</option>
+                                                                <option value="yes" {{ ($oldParticipant['married'] ?? '') === 'yes' ? 'selected' : '' }}>Married</option>
+                                                                <option value="no" {{ ($oldParticipant['married'] ?? '') === 'no' ? 'selected' : '' }}>Unmarried</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-8">
+                                                        <div class="form-group">
+                                                            <label>Congregation (For Priests/Sisters)</label>
+                                                            <input type="text" class="form-control" name="participants[{{ $index }}][congregation]" value="{{ $oldParticipant['congregation'] ?? '' }}">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-12">
+                                                        <div class="form-group">
+                                                            <label>Email Address <span class="text-danger">*</span></label>
+                                                            <input type="email" class="form-control" name="participants[{{ $index }}][email]" value="{{ $oldParticipant['email'] ?? '' }}" required>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endif
+                                    @endforeach
                                 </div>
                             </div>
                         </div>
