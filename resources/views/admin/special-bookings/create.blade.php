@@ -394,13 +394,14 @@
         // Repopulate form with old input if validation fails
         @if(old('additional_participants', 0) > 0)
             // Show the participants container
-            $('#participants-container').show();
-            $('#add-more-members-prompt').hide();
+            $('#add-more-members-prompt').addClass('d-none');
+            $('#additional-participants-section').removeClass('d-none');
             
             // Add participants based on old input
             const oldParticipants = @json(old('participants', []));
-            oldParticipants.forEach(function(participant, index) {
-                addParticipant(participant, index);
+            Object.keys(oldParticipants).forEach(function(key) {
+                const participant = oldParticipants[key];
+                addParticipant(participant, parseInt(key));
             });
         @endif
         
@@ -483,13 +484,13 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>First Name <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" name="participants[${participantCount}][firstname]" required>
+                                <input type="text" class="form-control" name="participants[${participantCount}][firstname]" value="${participantData ? participantData.firstname || '' : ''}" required>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>Last Name <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" name="participants[${participantCount}][lastname]" required>
+                                <input type="text" class="form-control" name="participants[${participantCount}][lastname]" value="${participantData ? participantData.lastname || '' : ''}" required>
                             </div>
                         </div>
                         <div class="col-md-4">
@@ -499,14 +500,14 @@
                                     <div class="input-group-prepend">
                                         <span class="input-group-text">+91</span>
                                     </div>
-                                    <input type="text" class="form-control participant-whatsapp" name="participants[${participantCount}][whatsapp_number]" minlength="10" maxlength="10" pattern="[0-9]{10}" required>
+                                    <input type="text" class="form-control participant-whatsapp" name="participants[${participantCount}][whatsapp_number]" value="${participantData ? participantData.whatsapp_number || '' : ''}" minlength="10" maxlength="10" pattern="[0-9]{10}" required>
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label>Age <span class="text-danger">*</span></label>
-                                <input type="number" class="form-control" name="participants[${participantCount}][age]" min="1" max="120" required>
+                                <input type="number" class="form-control" name="participants[${participantCount}][age]" value="${participantData ? participantData.age || '' : ''}" min="1" max="120" required>
                             </div>
                         </div>
                         <div class="col-md-4">
@@ -514,9 +515,9 @@
                                 <label>Gender <span class="text-danger">*</span></label>
                                 <select class="form-control" name="participants[${participantCount}][gender]" required>
                                     <option value="">-- Select Gender --</option>
-                                    <option value="male">Male</option>
-                                    <option value="female">Female</option>
-                                    <option value="other">Other</option>
+                                    <option value="male" ${participantData && participantData.gender === 'male' ? 'selected' : ''}>Male</option>
+                                    <option value="female" ${participantData && participantData.gender === 'female' ? 'selected' : ''}>Female</option>
+                                    <option value="other" ${participantData && participantData.gender === 'other' ? 'selected' : ''}>Other</option>
                                 </select>
                             </div>
                         </div>
@@ -525,21 +526,21 @@
                                 <label>Marital Status</label>
                                 <select class="form-control" name="participants[${participantCount}][married]">
                                     <option value="">-- Select Status --</option>
-                                    <option value="yes">Married</option>
-                                    <option value="no">Unmarried</option>
+                                    <option value="yes" ${participantData && participantData.married === 'yes' ? 'selected' : ''}>Married</option>
+                                    <option value="no" ${participantData && participantData.married === 'no' ? 'selected' : ''}>Unmarried</option>
                                 </select>
                             </div>
                         </div>
                         <div class="col-md-8">
                             <div class="form-group">
                                 <label>Congregation (For Priests/Sisters)</label>
-                                <input type="text" class="form-control" name="participants[${participantCount}][congregation]">
+                                <input type="text" class="form-control" name="participants[${participantCount}][congregation]" value="${participantData ? participantData.congregation || '' : ''}">
                             </div>
                         </div>
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label>Email Address <span class="text-danger">*</span></label>
-                                <input type="email" class="form-control" name="participants[${participantCount}][email]" required>
+                                <input type="email" class="form-control" name="participants[${participantCount}][email]" value="${participantData ? participantData.email || '' : ''}" required>
                             </div>
                         </div>
                     </div>

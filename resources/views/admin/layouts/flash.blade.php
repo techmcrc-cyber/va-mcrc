@@ -26,7 +26,7 @@
     </div>
 @endif
 
-@if ($errors->any())
+@if ($errors->any() && !in_array(Route::currentRouteName(), ['admin.bookings.create', 'admin.bookings.store', 'admin.bookings.edit', 'admin.bookings.update']))
     <div class="alert alert-danger alert-dismissible fade show" role="alert">
         <h6 class="alert-heading"><i class="fas fa-exclamation-triangle me-2"></i> Please fix the following errors:</h6>
         <ul class="mb-0">

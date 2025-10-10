@@ -146,6 +146,15 @@
                         <div class="row mt-4">
                             <div class="col-md-12">
                                 <h4>Primary Participant</h4>
+                                @if ($errors->has('criteria'))
+                                    <div class="alert alert-danger alert-dismissible">
+                                       
+                                        <i class="icon fas fa-exclamation-triangle"></i> Please fix the following errors:
+                                        <ul class="mb-0 mt-2">
+                                            <li>{{ $errors->first('criteria') }}</li>
+                                        </ul>
+                                    </div>
+                                @endif
                                 <hr>
                             </div>
                             
@@ -387,19 +396,6 @@
             }
         }
         
-        // Repopulate form with old input if validation fails
-        @if(old('additional_participants', 0) > 0)
-            // Show the participants container
-            $('#participants-container').show();
-            $('#add-more-members-prompt').hide();
-            
-            // Add participants based on old input
-            const oldParticipants = @json(old('participants', []));
-            oldParticipants.forEach(function(participant, index) {
-                addParticipant(participant, index);
-            });
-        @endif
-        
         // Initialize datepicker after all scripts are loaded
         $(window).on('load', function() {
             $('.datepicker').datepicker({
@@ -461,6 +457,9 @@
             
             const partIndex = index !== null ? index : nextParticipantNumber;
             
+            // Use the provided index for field names, or participantCount for new participants
+            const fieldIndex = index !== null ? index : participantCount;
+            
             // Only increment counters if this is a new participant
             if (index === null) {
                 participantCount++;
@@ -468,24 +467,31 @@
             }
             
             const participantHtml = `
-                <div class="participant-section mb-4" id="participant-${partIndex}">
+                <div class="participant-section mb-4" id="participant-${partIndex}" data-participant-index="${fieldIndex}">
                     <div class="participant-header">
-                        <h5 class="participant-title">Participant #${partIndex}</h5>
-                        <span class="remove-participant text-danger" style="cursor: pointer;" data-participant="${participantCount}">
+                        <h5 class="participant-title">Participant #${partIndex + 1}</h5>
+                        <span class="remove-participant text-danger" style="cursor: pointer;" data-participant="${fieldIndex}">
                             <i class="fas fa-times"></i> Remove
                         </span>
+                    </div>
+                    <div class="participant-errors-${fieldIndex}" style="display:none;">
+                        <div class="alert alert-danger alert-dismissible">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                            <i class="icon fas fa-exclamation-triangle"></i> Please fix the following errors:
+                            <ul class="mb-0 mt-2 participant-error-list-${fieldIndex}"></ul>
+                        </div>
                     </div>
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>First Name <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" name="participants[${participantCount}][firstname]" required>
+                                <input type="text" class="form-control" name="participants[${fieldIndex}][firstname]" value="${participantData ? participantData.firstname || '' : ''}" required>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>Last Name <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" name="participants[${participantCount}][lastname]" required>
+                                <input type="text" class="form-control" name="participants[${fieldIndex}][lastname]" value="${participantData ? participantData.lastname || '' : ''}" required>
                             </div>
                         </div>
                         <div class="col-md-4">
@@ -495,47 +501,47 @@
                                     <div class="input-group-prepend">
                                         <span class="input-group-text">+91</span>
                                     </div>
-                                    <input type="text" class="form-control participant-whatsapp" name="participants[${participantCount}][whatsapp_number]" minlength="10" maxlength="10" pattern="[0-9]{10}" required>
+                                    <input type="text" class="form-control participant-whatsapp" name="participants[${fieldIndex}][whatsapp_number]" value="${participantData ? participantData.whatsapp_number || '' : ''}" minlength="10" maxlength="10" pattern="[0-9]{10}" required>
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label>Age <span class="text-danger">*</span></label>
-                                <input type="number" class="form-control" name="participants[${participantCount}][age]" min="1" max="120" required>
+                                <input type="number" class="form-control" name="participants[${fieldIndex}][age]" value="${participantData ? participantData.age || '' : ''}" min="1" max="120" required>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label>Gender <span class="text-danger">*</span></label>
-                                <select class="form-control" name="participants[${participantCount}][gender]" required>
+                                <select class="form-control" name="participants[${fieldIndex}][gender]" required>
                                     <option value="">-- Select Gender --</option>
-                                    <option value="male">Male</option>
-                                    <option value="female">Female</option>
-                                    <option value="other">Other</option>
+                                    <option value="male" ${participantData && participantData.gender === 'male' ? 'selected' : ''}>Male</option>
+                                    <option value="female" ${participantData && participantData.gender === 'female' ? 'selected' : ''}>Female</option>
+                                    <option value="other" ${participantData && participantData.gender === 'other' ? 'selected' : ''}>Other</option>
                                 </select>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label>Marital Status</label>
-                                <select class="form-control" name="participants[${participantCount}][married]">
+                                <select class="form-control" name="participants[${fieldIndex}][married]">
                                     <option value="">-- Select Status --</option>
-                                    <option value="yes">Married</option>
-                                    <option value="no">Unmarried</option>
+                                    <option value="yes" ${participantData && participantData.married === 'yes' ? 'selected' : ''}>Married</option>
+                                    <option value="no" ${participantData && participantData.married === 'no' ? 'selected' : ''}>Unmarried</option>
                                 </select>
                             </div>
                         </div>
                         <div class="col-md-8">
                             <div class="form-group">
                                 <label>Congregation (For Priests/Sisters)</label>
-                                <input type="text" class="form-control" name="participants[${participantCount}][congregation]">
+                                <input type="text" class="form-control" name="participants[${fieldIndex}][congregation]" value="${participantData ? participantData.congregation || '' : ''}">
                             </div>
                         </div>
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label>Email Address <span class="text-danger">*</span></label>
-                                <input type="email" class="form-control" name="participants[${participantCount}][email]" required>
+                                <input type="email" class="form-control" name="participants[${fieldIndex}][email]" value="${participantData ? participantData.email || '' : ''}" required>
                             </div>
                         </div>
                     </div>
@@ -576,6 +582,107 @@
         $(document).on('click', '.add-another-participant', function() {
             addParticipant();
         });
+        
+        // Repopulate form with old input if validation fails
+        @php
+            $oldParticipants = old('participants', []);
+            $hasOldParticipants = !empty($oldParticipants);
+        @endphp
+        
+        @if($hasOldParticipants)
+            // Show the participants container
+            $('#add-more-members-prompt').addClass('d-none');
+            $('#additional-participants-section').removeClass('d-none');
+            
+            // Add participants based on old input
+            const oldParticipants = @json($oldParticipants);
+            const validationErrors = @json($errors->messages());
+            
+            Object.keys(oldParticipants).forEach(function(key) {
+                const participant = oldParticipants[key];
+                addParticipant(participant, parseInt(key));
+            });
+            
+            // Display validation errors for each participant field
+            setTimeout(function() {
+                // Group errors by participant index
+                const participantErrors = {};
+                
+                console.log('All validation errors:', validationErrors);
+                
+                Object.keys(validationErrors).forEach(function(fieldName) {
+                    const errorMessages = validationErrors[fieldName];
+                    
+                    console.log('Processing error field:', fieldName, errorMessages);
+                    
+                    // Check if this is a participant field (e.g., participants.0.firstname)
+                    const participantMatch = fieldName.match(/^participants\.(\d+)\./);
+                    
+                    if (participantMatch) {
+                        const participantIndex = participantMatch[1];
+                        
+                        console.log('Found participant error for index:', participantIndex);
+                        
+                        if (!participantErrors[participantIndex]) {
+                            participantErrors[participantIndex] = [];
+                        }
+                        
+                        // Get field label
+                        const fieldPart = fieldName.split('.').pop();
+                        const fieldLabels = {
+                            'firstname': 'First Name',
+                            'lastname': 'Last Name',
+                            'whatsapp_number': 'WhatsApp Number',
+                            'age': 'Age',
+                            'gender': 'Gender',
+                            'email': 'Email Address'
+                        };
+                        const fieldLabel = fieldLabels[fieldPart] || fieldPart;
+                        
+                        participantErrors[participantIndex].push(fieldLabel + ': ' + errorMessages[0]);
+                        
+                        // Mark field as invalid
+                        const $field = $('[name="' + fieldName + '"]');
+                        if ($field.length > 0) {
+                            $field.addClass('is-invalid');
+                        }
+                    }
+                    
+                    // Also check for criteria errors that mention participant numbers
+                    if (fieldName === 'criteria' && errorMessages[0].includes('Participant')) {
+                        // Extract participant number from message like "Participant 2 does not meet..."
+                        const match = errorMessages[0].match(/Participant (\d+)/);
+                        if (match) {
+                            const participantNum = parseInt(match[1]);
+                            const participantIndex = participantNum - 2; // Participant 2 is index 0
+                            
+                            console.log('Found criteria error for participant:', participantNum, 'index:', participantIndex);
+                            
+                            if (!participantErrors[participantIndex]) {
+                                participantErrors[participantIndex] = [];
+                            }
+                            participantErrors[participantIndex].push(errorMessages[0]);
+                        }
+                    }
+                });
+                
+                console.log('Grouped participant errors:', participantErrors);
+                
+                // Display errors in each participant's box
+                Object.keys(participantErrors).forEach(function(participantIndex) {
+                    const errors = participantErrors[participantIndex];
+                    const $errorContainer = $('.participant-errors-' + participantIndex);
+                    const $errorList = $('.participant-error-list-' + participantIndex);
+                    
+                    if ($errorContainer.length > 0 && errors.length > 0) {
+                        errors.forEach(function(error) {
+                            $errorList.append('<li>' + error + '</li>');
+                        });
+                        $errorContainer.show();
+                    }
+                });
+            }, 100);
+        @endif
         
         // Add validation rules for dynamically added participants
         function addParticipantValidation(participantIndex) {
