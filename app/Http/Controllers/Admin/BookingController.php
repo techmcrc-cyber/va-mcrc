@@ -411,6 +411,8 @@ class BookingController extends Controller
                 'age' => $participant['age'] ?? null,
                 'email' => $participant['email'] ?? null,
                 'gender' => $participant['gender'] ?? 'other',
+                'married' => $participant['married'] ?? null,
+                'congregation' => $participant['congregation'] ?? null,
                 'participant_number' => $participantNumber,
                 'flag' => $participantValidation['flag_string'],
                 'created_by' => $userId,

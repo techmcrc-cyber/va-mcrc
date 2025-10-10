@@ -516,6 +516,22 @@
                                 </select>
                             </div>
                         </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Marital Status</label>
+                                <select class="form-control" name="participants[${participantCount}][married]">
+                                    <option value="">-- Select Status --</option>
+                                    <option value="yes">Married</option>
+                                    <option value="no">Unmarried</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                <label>Congregation (For Priests/Sisters)</label>
+                                <input type="text" class="form-control" name="participants[${participantCount}][congregation]">
+                            </div>
+                        </div>
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label>Email Address <span class="text-danger">*</span></label>
@@ -672,6 +688,22 @@
                                     <option value="female">Female</option>
                                     <option value="other">Other</option>
                                 </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Marital Status</label>
+                                <select class="form-control" name="participants[${participantCount}][married]">
+                                    <option value="">-- Select Status --</option>
+                                    <option value="yes">Married</option>
+                                    <option value="no">Unmarried</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                <label>Congregation (For Priests/Sisters)</label>
+                                <input type="text" class="form-control" name="participants[${participantCount}][congregation]">
                             </div>
                         </div>
                         <div class="col-md-12">

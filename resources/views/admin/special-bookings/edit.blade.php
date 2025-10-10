@@ -344,6 +344,22 @@
                                                             </select>
                                                         </div>
                                                     </div>
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            <label>Marital Status</label>
+                                                            <select class="form-control" name="participants[{{ $participantCount }}][married]">
+                                                                <option value="">-- Select Status --</option>
+                                                                <option value="yes" {{ old('participants.' . $participantCount . '.married', $participant->married) === 'yes' ? 'selected' : '' }}>Married</option>
+                                                                <option value="no" {{ old('participants.' . $participantCount . '.married', $participant->married) === 'no' ? 'selected' : '' }}>Unmarried</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-8">
+                                                        <div class="form-group">
+                                                            <label>Congregation (For Priests/Sisters)</label>
+                                                            <input type="text" class="form-control" name="participants[{{ $participantCount }}][congregation]" value="{{ old('participants.' . $participantCount . '.congregation', $participant->congregation) }}">
+                                                        </div>
+                                                    </div>
                                                     <div class="col-md-12">
                                                         <div class="form-group">
                                                             <label>Email Address <span class="text-danger">*</span></label>
@@ -642,6 +658,22 @@
                                     <option value="female" ${participantData && participantData.gender === 'female' ? 'selected' : ''}>Female</option>
                                     <option value="other" ${participantData && participantData.gender === 'other' ? 'selected' : ''}>Other</option>
                                 </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Marital Status</label>
+                                <select class="form-control" name="participants[${partIndex}][married]">
+                                    <option value="">-- Select Status --</option>
+                                    <option value="yes" ${participantData && participantData.married === 'yes' ? 'selected' : ''}>Married</option>
+                                    <option value="no" ${participantData && participantData.married === 'no' ? 'selected' : ''}>Unmarried</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                <label>Congregation (For Priests/Sisters)</label>
+                                <input type="text" class="form-control" name="participants[${partIndex}][congregation]" value="${participantData ? participantData.congregation : ''}">
                             </div>
                         </div>
                         <div class="col-md-12">
