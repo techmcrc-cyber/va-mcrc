@@ -103,8 +103,8 @@ class Booking extends Model
     }
 
     /**
-     * Check if the user has attended a retreat in the past year based on exact match.
-     * Checks combination of firstname, lastname, whatsapp_number within the past year.
+     * Check if the user has attended a retreat in the current calendar year based on exact match.
+     * Checks combination of firstname, lastname, whatsapp_number within the current year.
      * Excludes the current booking if booking ID is provided.
      */
     public static function hasAttendedInPastYear(string $whatsappNumber, string $firstName, string $lastName, string $currentBookingId = null): bool
@@ -113,7 +113,7 @@ class Booking extends Model
             ->where('firstname', $firstName)
             ->where('lastname', $lastName)
             ->where('is_active', true)
-            ->where('created_at', '>=', now()->subYear());
+            ->whereYear('created_at', now()->year); // Check only current calendar year
         
         // Exclude the current booking if provided (for updates)
         if ($currentBookingId) {

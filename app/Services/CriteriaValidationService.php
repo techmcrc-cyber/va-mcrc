@@ -130,7 +130,7 @@ class CriteriaValidationService
         return [
             'is_recurrent' => $hasAttended,
             'flag' => $hasAttended ? 'RECURRENT_BOOKING' : null,
-            'message' => $hasAttended ? 'Participant has attended a retreat in the past year' : null
+            'message' => $hasAttended ? 'Participant has already attended a retreat this year' : null
         ];
     }
 
@@ -172,8 +172,8 @@ class CriteriaValidationService
             $allMessages[] = $recurrentCheck['message'];
         }
 
-        // In strict mode, validation fails if criteria fails (but not for recurrent booking)
-        $isValid = $strictMode ? $criteriaValidation['valid'] : true;
+        // In strict mode, validation fails if criteria fails OR if recurrent booking detected
+        $isValid = $strictMode ? ($criteriaValidation['valid'] && !$recurrentCheck['is_recurrent']) : true;
 
         return [
             'valid' => $isValid,
