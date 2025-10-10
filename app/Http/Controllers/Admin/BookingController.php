@@ -108,9 +108,9 @@ class BookingController extends Controller
             
             return response()->json($json_data);
         }
-        
+
         // Get active retreats for filter dropdown
-        $retreats = Retreat::where('end_date', '>=', now())
+        $retreats = Retreat::where('end_date', '>=', now()->toDateString())
             ->whereHas('bookings', function($query) {
                 $query->where('participant_number', 1)
                       ->where('is_active', true);
@@ -128,7 +128,7 @@ class BookingController extends Controller
                 ->where('participant_number', 1)
                 ->where('is_active', true)
                 ->whereHas('retreat', function($q) {
-                    $q->where('end_date', '<', now());
+                    $q->where('end_date', '<', now()->toDateString());
                 });
             
             // Handle search
@@ -200,7 +200,7 @@ class BookingController extends Controller
                 "recordsTotal"    => intval(Booking::where('participant_number', 1)
                     ->where('is_active', true)
                     ->whereHas('retreat', function($q) {
-                        $q->where('end_date', '<', now());
+                        $q->where('end_date', '<', now()->toDateString());
                     })->count()),
                 "recordsFiltered" => intval($totalData),
                 "data"            => $data
@@ -210,7 +210,7 @@ class BookingController extends Controller
         }
         
         // Get archived retreats for filter dropdown
-        $retreats = Retreat::where('end_date', '<', now())
+        $retreats = Retreat::where('end_date', '<', now()->toDateString())
             ->whereHas('bookings', function($query) {
                 $query->where('participant_number', 1)
                       ->where('is_active', true);
@@ -311,7 +311,7 @@ class BookingController extends Controller
     public function create()
     {
         $retreats = Retreat::where('is_active', true)
-            ->where('end_date', '>=', now())
+            ->where('end_date', '>=', now()->toDateString())
             ->orderBy('start_date')
             ->get();
             
@@ -451,7 +451,7 @@ class BookingController extends Controller
         
         $retreats = Retreat::where(function ($query) {
                 $query->where('is_active', true)
-                      ->where('end_date', '>=', now());
+                      ->where('end_date', '>=', now()->toDateString());
             })
             ->orWhere('id', $booking->retreat_id) // Include current retreat even if inactive
             ->orderBy('start_date')
@@ -619,8 +619,8 @@ class BookingController extends Controller
         // Mark all participants with the same booking_id as inactive
         Booking::where('booking_id', $booking->booking_id)->update(['is_active' => false]);
         
-        // Determine redirect based on retreat end date
-        $isArchived = $booking->retreat->end_date < now();
+        // Determine redirect based on retreat end date (before today)
+        $isArchived = $booking->retreat->end_date->toDateString() < now()->toDateString();
         $redirectRoute = $isArchived ? 'admin.bookings.archive' : 'admin.bookings.active';
         
         return redirect()

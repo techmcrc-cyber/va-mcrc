@@ -58,8 +58,8 @@ class SpecialBookingController extends Controller
                 $nestedData['flags'] = $booking->flag ? '<span class="badge bg-warning">' . str_replace(',', '</span> <span class="badge bg-warning">', $booking->flag) . '</span>' : '-';
                 $nestedData['created_at'] = $booking->created_at->format('M d, Y');
                 
-                // Check if retreat has ended
-                $hasEnded = $booking->retreat && $booking->retreat->end_date < now();
+                // Check if retreat has ended (before today)
+                $hasEnded = $booking->retreat && $booking->retreat->end_date->toDateString() < now()->toDateString();
                 
                 // Actions - matching normal bookings design
                 $actions = '<div class="btn-row mb-1">';

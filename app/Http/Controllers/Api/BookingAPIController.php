@@ -38,8 +38,8 @@ class BookingAPIController extends BaseAPIController
                 return $this->sendNotFound('Retreat not found or inactive');
             }
 
-            if ($retreat->end_date->isPast()) {
-                return $this->sendError('This retreat has already started or ended', 'RETREAT_PAST');
+            if ($retreat->end_date->toDateString() < now()->toDateString()) {
+                return $this->sendError('This retreat has already ended', 'RETREAT_PAST');
             }
 
             $currentBookings = $retreat->bookings->count();
@@ -361,11 +361,11 @@ class BookingAPIController extends BaseAPIController
             $participantRole = $participant->participant_number === 1 ? 'primary' : 'secondary';
             $primaryBooking = $allParticipants->where('participant_number', 1)->first();
 
-            $now = now();
+            $today = now()->toDateString();
             $retreatStatus = 'upcoming';
-            if ($retreat->end_date->isPast()) {
+            if ($retreat->end_date->toDateString() < $today) {
                 $retreatStatus = 'completed';
-            } elseif ($retreat->start_date->isPast() && $retreat->end_date->isFuture()) {
+            } elseif ($retreat->start_date->toDateString() <= $today && $retreat->end_date->toDateString() >= $today) {
                 $retreatStatus = 'ongoing';
             }
 

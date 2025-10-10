@@ -78,8 +78,8 @@ class RetreatController extends Controller
                     ? '<span class="badge bg-success">Active</span>' 
                     : '<span class="badge bg-secondary">Inactive</span>';
                 
-                // Check if retreat has ended
-                $hasEnded = $retreat->end_date < now();
+                // Check if retreat has ended (before today)
+                $hasEnded = $retreat->end_date->toDateString() < now()->toDateString();
                 
                 // Actions
                 $actions = '<div class="btn-group" role="group">';
