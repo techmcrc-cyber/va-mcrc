@@ -105,16 +105,16 @@
                         </div>
                     </div>
 
-                    <!-- Statistics -->
+
+
                     @php
                         $successCount = collect($previewData)->where('status', 'success')->count();
                         $errorCount = collect($previewData)->where('status', 'error')->count();
-                        $warningCount = collect($previewData)->where('validation.warnings')->flatten()->count();
                     @endphp
                     
                     <div class="stats-row">
                         <div class="row text-center">
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <div class="d-flex align-items-center justify-content-center">
                                     <div class="me-3">
                                         <i class="fas fa-check-circle text-success" style="font-size: 2rem;"></i>
@@ -125,7 +125,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <div class="d-flex align-items-center justify-content-center">
                                     <div class="me-3">
                                         <i class="fas fa-exclamation-circle text-danger" style="font-size: 2rem;"></i>
@@ -136,18 +136,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-3">
-                                <div class="d-flex align-items-center justify-content-center">
-                                    <div class="me-3">
-                                        <i class="fas fa-exclamation-triangle text-warning" style="font-size: 2rem;"></i>
-                                    </div>
-                                    <div>
-                                        <h4 class="mb-0 text-warning">{{ $warningCount }}</h4>
-                                        <small class="text-muted">Warnings</small>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <div class="d-flex align-items-center justify-content-center">
                                     <div class="me-3">
                                         <i class="fas fa-percentage text-info" style="font-size: 2rem;"></i>
@@ -173,9 +162,6 @@
                                 </button>
                                 <button type="button" class="btn btn-outline-danger" data-filter="error">
                                     Errors ({{ $errorCount }})
-                                </button>
-                                <button type="button" class="btn btn-outline-warning" data-filter="warning">
-                                    With Warnings ({{ collect($previewData)->filter(function($item) { return !empty($item['validation']['warnings']); })->count() }})
                                 </button>
                             </div>
                         </div>
