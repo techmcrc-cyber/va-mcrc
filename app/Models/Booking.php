@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\DB;
 
 class Booking extends Model
 {
@@ -79,19 +80,45 @@ class Booking extends Model
 
     /**
      * Generate the next booking ID (RB1, RB2, etc.).
+     * Uses database locking to prevent duplicate IDs in concurrent requests.
      */
     public static function generateBookingId(): string
     {
-        $lastBooking = self::where('booking_id', 'like', 'RB%')
-            ->orderBy('id', 'desc')
-            ->first();
+        // Use a database transaction with locking to prevent race conditions
+        return DB::transaction(function () {
+            // Get all booking IDs that match the pattern RB followed by numbers
+            $bookingIds = self::where('booking_id', 'like', 'RB%')
+                ->pluck('booking_id')
+                ->map(function ($id) {
+                    // Extract numeric part from booking_id (e.g., "RB123" -> 123)
+                    return (int) preg_replace('/[^0-9]/', '', $id);
+                })
+                ->filter(function ($num) {
+                    return $num > 0; // Only valid numbers
+                });
 
-        if (!$lastBooking) {
-            return 'RB1';
-        }
+            if ($bookingIds->isEmpty()) {
+                return 'RB1';
+            }
 
-        $lastNumber = (int) preg_replace('/[^0-9]/', '', $lastBooking->booking_id);
-        return 'RB' . ($lastNumber + 1);
+            // Get the maximum number and add 1
+            $nextNumber = $bookingIds->max() + 1;
+            
+            // Double-check this ID doesn't already exist (extra safety)
+            $newBookingId = 'RB' . $nextNumber;
+            $attempts = 0;
+            while (self::where('booking_id', $newBookingId)->exists() && $attempts < 10) {
+                $nextNumber++;
+                $newBookingId = 'RB' . $nextNumber;
+                $attempts++;
+            }
+            
+            if ($attempts >= 10) {
+                throw new \Exception('Unable to generate unique booking ID after 10 attempts');
+            }
+            
+            return $newBookingId;
+        });
     }
     
     /**

@@ -75,12 +75,9 @@ class BookingAPIController extends BaseAPIController
 
             // Validate business rules (criteria + recurrent booking) with STRICT mode
             try {
-                $businessRuleFlags = $this->validateBusinessRules($participants, $retreat);
-                if (!empty($businessRuleFlags)) {
-                    \Log::info('Recurrent booking flags detected: ' . json_encode($businessRuleFlags));
-                }
+                $this->validateBusinessRules($participants, $retreat);
             } catch (\Exception $e) {
-                return $this->sendError($e->getMessage(), 'CRITERIA_VALIDATION_FAILED', 400);
+                return $this->sendError($e->getMessage(), 'VALIDATION_FAILED', 400);
             }
 
             DB::beginTransaction();
@@ -93,9 +90,6 @@ class BookingAPIController extends BaseAPIController
 
                 foreach ($participants as $index => $participantData) {
                     $serialNumber = $index + 1;
-
-                    $participantFlags = $businessRuleFlags[$index] ?? [];
-                    $flagValue = !empty($participantFlags) ? implode(',', $participantFlags) : null;
 
                     $booking = Booking::create([
                         'booking_id' => $bookingId,
@@ -119,7 +113,7 @@ class BookingAPIController extends BaseAPIController
                         'special_remarks' => $participantData['special_remarks'] ?? null,
                         'participant_number' => $serialNumber,
                         'is_active' => true,
-                        'flag' => $flagValue, // Store business rule violation flags
+                        'flag' => null, // No flags - strict validation blocks invalid bookings
                         'created_by' => null, // API bookings don't have user context
                         'updated_by' => null,
                     ]);
@@ -151,39 +145,17 @@ class BookingAPIController extends BaseAPIController
                         'end_date' => $retreat->end_date->format('Y-m-d'),
                     ],
                     'participants' => collect($allBookings)->map(function ($booking) {
-                        $participantData = [
+                        return [
                             'serial_number' => $booking->participant_number,
                             'name' => $booking->firstname . ' ' . $booking->lastname,
                             'email' => $booking->email,
                             'whatsapp_number' => $booking->whatsapp_number,
                             'role' => $booking->participant_number === 1 ? 'primary' : 'secondary',
                         ];
-
-                        if ($booking->flag) {
-                            $participantData['flag_status'] = $booking->flag;
-                            $participantData['flag_descriptions'] = collect(explode(',', $booking->flag))->map(function ($flag) {
-                                return match ($flag) {
-                                    'CRITERIA_FAILED' => 'Does not meet retreat criteria',
-                                    'RECURRENT_BOOKING' => 'Has attended retreat in past year',
-                                    default => $flag,
-                                };
-                            })->implode(', ');
-                        }
-
-                        return $participantData;
                     }),
                     'total_participants' => count($allBookings),
-                    'booking_summary' => [
-                        'total_violations' => collect($allBookings)->whereNotNull('flag')->count(),
-                        'participants_with_flags' => collect($allBookings)->whereNotNull('flag')->pluck('participant_number')->values(),
-                    ],
                     'remarks' => 'Booking confirmed successfully. Confirmation email sent to primary participant.',
                 ];
-
-                $participantsWithFlags = collect($allBookings)->whereNotNull('flag')->count();
-                if ($participantsWithFlags > 0) {
-                    $responseData['remarks'] = "Booking confirmed with {$participantsWithFlags} participant(s) having validation flags. Please check participant details for flag information. Confirmation email sent to primary participant.";
-                }
 
                 return $this->sendCreated($responseData, 'Booking created successfully');
 
@@ -228,48 +200,30 @@ class BookingAPIController extends BaseAPIController
         return $rules;
     }
 
-    private function validateBusinessRules(array $participants, Retreat $retreat): array
+    private function validateBusinessRules(array $participants, Retreat $retreat): void
     {
         $validationService = new \App\Services\CriteriaValidationService();
-        $allValidations = [];
-        $hasFailures = false;
+        $errorMessages = [];
 
         // Validate each participant with STRICT mode
         foreach ($participants as $index => $participant) {
             $validation = $validationService->validateWithRecurrentCheck(
                 $participant,
                 $retreat->criteria,
-                true // Strict mode
+                true // Strict mode - blocks both criteria failures AND recurrent bookings
             );
 
-            $allValidations[$index] = $validation;
-
-            // If criteria validation fails, mark as having failures
+            // If validation fails (criteria OR recurrent booking), collect error
             if (!$validation['valid']) {
-                $hasFailures = true;
+                $participantName = ($participant['firstname'] ?? '') . ' ' . ($participant['lastname'] ?? '');
+                $errorMessages[] = "Participant " . ($index + 1) . " ({$participantName}): " . implode(', ', $validation['messages']);
             }
         }
 
-        // If any participant fails criteria validation, throw error
-        if ($hasFailures) {
-            $errorMessages = [];
-            foreach ($allValidations as $index => $validation) {
-                if (!$validation['valid']) {
-                    $errorMessages[] = "Participant " . ($index + 1) . ": " . implode(', ', $validation['messages']);
-                }
-            }
-            throw new \Exception("Booking validation failed: " . implode('; ', $errorMessages));
+        // If any participant fails validation, throw error with all messages
+        if (!empty($errorMessages)) {
+            throw new \Exception(implode('; ', $errorMessages));
         }
-
-        // Return only flags (RECURRENT_BOOKING) for participants who passed criteria
-        $flags = [];
-        foreach ($allValidations as $index => $validation) {
-            if (!empty($validation['flags'])) {
-                $flags[$index] = $validation['flags'];
-            }
-        }
-
-        return $flags;
     }
     
     public function show(Request $request): JsonResponse
