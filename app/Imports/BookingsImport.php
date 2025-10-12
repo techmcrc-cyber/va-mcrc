@@ -122,19 +122,22 @@ class BookingsImport implements ToCollection, WithHeadingRow
         $criteriaValidation = $validationService->validateWithRecurrentCheck(
             $data,
             $retreat->criteria,
-            true // Strict mode - must pass criteria
+            true // Strict mode - blocks both criteria failures AND recurrent bookings
         );
 
-        // If criteria validation fails, add to errors (not warnings)
+        // If validation fails (criteria OR recurrent booking), add to errors
         if (!$criteriaValidation['valid']) {
-            $errors = array_merge($errors, $criteriaValidation['messages']);
+            $participantName = $data['firstname'] . ' ' . $data['lastname'];
+            foreach ($criteriaValidation['messages'] as $message) {
+                $errors[] = "{$participantName}: {$message}";
+            }
         }
 
         return [
             'is_valid' => empty($errors),
             'errors' => $errors,
             'warnings' => [], // No warnings in strict mode
-            'flags' => $criteriaValidation['flag_string']
+            'flags' => null // No flags - strict validation blocks invalid bookings
         ];
     }
 
@@ -221,8 +224,6 @@ class BookingsImport implements ToCollection, WithHeadingRow
         
         foreach ($sortedParticipants as $participant) {
             $data = $participant['data'];
-            // Only store RECURRENT_BOOKING flag (criteria failures prevent import in strict mode)
-            $flags = $participant['validation']['flags'] ?? null;
             
             Booking::create([
                 'booking_id' => $bookingId,
@@ -244,7 +245,7 @@ class BookingsImport implements ToCollection, WithHeadingRow
                 'emergency_contact_phone' => $data['emergency_contact_phone'],
                 'additional_participants' => $participantNumber === 1 ? $additionalCount : 0,
                 'special_remarks' => $data['special_remarks'],
-                'flag' => $flags,
+                'flag' => null, // No flags - strict validation blocks invalid bookings
                 'participant_number' => $participantNumber,
                 'created_by' => $userId,
                 'updated_by' => $userId,
