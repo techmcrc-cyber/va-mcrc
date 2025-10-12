@@ -35,6 +35,7 @@ class BookingsExport implements FromCollection, WithHeadings, WithMapping, WithC
                     'whatsapp_number' => '9876543210',
                     'age' => 35,
                     'gender' => 'male',
+                    'married' => 'yes',
                     'address' => '123 Main Street, Apartment 4B',
                     'city' => 'Mumbai',
                     'state' => 'Maharashtra',
@@ -54,6 +55,7 @@ class BookingsExport implements FromCollection, WithHeadings, WithMapping, WithC
                     'whatsapp_number' => '9876543211',
                     'age' => 32,
                     'gender' => 'female',
+                    'married' => 'yes',
                     'address' => '123 Main Street, Apartment 4B',
                     'city' => 'Mumbai',
                     'state' => 'Maharashtra',
@@ -73,6 +75,7 @@ class BookingsExport implements FromCollection, WithHeadings, WithMapping, WithC
                     'whatsapp_number' => '',
                     'age' => 12,
                     'gender' => 'male',
+                    'married' => 'no',
                     'address' => '123 Main Street, Apartment 4B',
                     'city' => 'Mumbai',
                     'state' => 'Maharashtra',
@@ -92,6 +95,7 @@ class BookingsExport implements FromCollection, WithHeadings, WithMapping, WithC
                     'whatsapp_number' => '9876543212',
                     'age' => 28,
                     'gender' => 'female',
+                    'married' => 'no',
                     'address' => '456 Church Lane',
                     'city' => 'Delhi',
                     'state' => 'Delhi',
@@ -120,6 +124,7 @@ class BookingsExport implements FromCollection, WithHeadings, WithMapping, WithC
                 'WhatsApp Number',
                 'Age',
                 'Gender',
+                'Married',
                 'Address',
                 'City',
                 'State',
@@ -144,6 +149,7 @@ class BookingsExport implements FromCollection, WithHeadings, WithMapping, WithC
             'WhatsApp Number',
             'Age',
             'Gender',
+            'Married',
             'Address',
             'City',
             'State',
@@ -171,6 +177,7 @@ class BookingsExport implements FromCollection, WithHeadings, WithMapping, WithC
                 $booking['whatsapp_number'],
                 $booking['age'],
                 $booking['gender'],
+                $booking['married'],
                 $booking['address'],
                 $booking['city'],
                 $booking['state'],
@@ -195,6 +202,7 @@ class BookingsExport implements FromCollection, WithHeadings, WithMapping, WithC
             $booking->whatsapp_number ?: '',
             $booking->age,
             ucfirst($booking->gender),
+            $booking->married ?? '',
             $booking->address,
             $booking->city,
             $booking->state,
@@ -222,15 +230,16 @@ class BookingsExport implements FromCollection, WithHeadings, WithMapping, WithC
                 'E' => 15, // WhatsApp Number
                 'F' => 8,  // Age
                 'G' => 10, // Gender
-                'H' => 30, // Address
-                'I' => 15, // City
-                'J' => 15, // State
-                'K' => 18, // Diocese
-                'L' => 18, // Parish
-                'M' => 18, // Congregation
-                'N' => 20, // Emergency Contact Name
-                'O' => 18, // Emergency Contact Phone
-                'P' => 25, // Special Remarks
+                'H' => 10, // Married
+                'I' => 30, // Address
+                'J' => 15, // City
+                'K' => 15, // State
+                'L' => 18, // Diocese
+                'M' => 18, // Parish
+                'N' => 18, // Congregation
+                'O' => 20, // Emergency Contact Name
+                'P' => 18, // Emergency Contact Phone
+                'Q' => 25, // Special Remarks
             ];
         }
         
@@ -246,18 +255,19 @@ class BookingsExport implements FromCollection, WithHeadings, WithMapping, WithC
             'H' => 15, // WhatsApp Number
             'I' => 8,  // Age
             'J' => 10, // Gender
-            'K' => 30, // Address
-            'L' => 15, // City
-            'M' => 15, // State
-            'N' => 20, // Diocese
-            'O' => 20, // Parish
-            'P' => 20, // Congregation
-            'Q' => 20, // Emergency Contact Name
-            'R' => 18, // Emergency Contact Phone
-            'S' => 30, // Special Remarks
-            'T' => 20, // Flag
-            'U' => 18, // Booking Date
-            'V' => 10, // Status
+            'K' => 10, // Married
+            'L' => 30, // Address
+            'M' => 15, // City
+            'N' => 15, // State
+            'O' => 20, // Diocese
+            'P' => 20, // Parish
+            'Q' => 20, // Congregation
+            'R' => 20, // Emergency Contact Name
+            'S' => 18, // Emergency Contact Phone
+            'T' => 30, // Special Remarks
+            'U' => 20, // Flag
+            'V' => 18, // Booking Date
+            'W' => 10, // Status
         ];
     }
 
@@ -285,8 +295,8 @@ class BookingsExport implements FromCollection, WithHeadings, WithMapping, WithC
                 'font' => ['italic' => true],
             ];
             
-            // Add data validation for Gender column (F)
-            $sheet->getCell('F1')->getDataValidation()
+            // Add data validation for Gender column (G)
+            $sheet->getCell('G1')->getDataValidation()
                 ->setType(\PhpOffice\PhpSpreadsheet\Cell\DataValidation::TYPE_LIST)
                 ->setErrorStyle(\PhpOffice\PhpSpreadsheet\Cell\DataValidation::STYLE_STOP)
                 ->setAllowBlank(false)
@@ -297,6 +307,19 @@ class BookingsExport implements FromCollection, WithHeadings, WithMapping, WithC
                 ->setPromptTitle('Select Gender')
                 ->setPrompt('Choose from the dropdown: male, female, or other')
                 ->setFormula1('"male,female,other"');
+            
+            // Add data validation for Married column (H)
+            $sheet->getCell('H1')->getDataValidation()
+                ->setType(\PhpOffice\PhpSpreadsheet\Cell\DataValidation::TYPE_LIST)
+                ->setErrorStyle(\PhpOffice\PhpSpreadsheet\Cell\DataValidation::STYLE_STOP)
+                ->setAllowBlank(true)
+                ->setShowInputMessage(true)
+                ->setShowErrorMessage(true)
+                ->setErrorTitle('Invalid Marital Status')
+                ->setError('Please select: yes or no')
+                ->setPromptTitle('Select Marital Status')
+                ->setPrompt('Choose from the dropdown: yes (married) or no (unmarried)')
+                ->setFormula1('"yes,no"');
             
             // Add comments for important fields
             $sheet->getComment('A1')->getText()->createTextRun('Group ID: Use same number for family/group bookings (e.g., 1,1,1 for family of 3)');
