@@ -257,13 +257,45 @@ class BookingController extends Controller
             }
             $nestedData['participants'] = $participants;
             
-            // Status
+            // Status - collect flags from all participants
+            $allFlags = [];
+            
+            // Get all participants for this booking
+            $allParticipants = Booking::where('booking_id', $booking->booking_id)
+                ->where('is_active', true)
+                ->orderBy('participant_number')
+                ->get();
+            
+            foreach ($allParticipants as $participant) {
+                if ($participant->flag) {
+                    $participantFlags = explode(',', $participant->flag);
+                    foreach ($participantFlags as $flag) {
+                        $flag = trim($flag);
+                        if (!empty($flag)) {
+                            // Store flag with participant full name
+                            $participantName = $participant->firstname . ' ' . $participant->lastname;
+                            
+                            if (!isset($allFlags[$flag])) {
+                                $allFlags[$flag] = [];
+                            }
+                            $allFlags[$flag][] = $participantName;
+                        }
+                    }
+                }
+            }
+            
             $status = '';
-            if ($booking->flag) {
-                $flags = explode(',', $booking->flag);
-                foreach ($flags as $flag) {
+            if (!empty($allFlags)) {
+                foreach ($allFlags as $flag => $participants) {
                     $status .= '<div class="mb-1">';
-                    $status .= '<span class="badge bg-warning">' . e(Str::title(str_replace('_', ' ', trim($flag)))) . '</span>';
+                    $flagLabel = Str::title(str_replace('_', ' ', $flag));
+                    // Create list format for tooltip
+                    $participantList = implode("\n", array_map(function($name) {
+                        return '• ' . $name;
+                    }, $participants));
+                    $status .= '<span class="badge bg-warning" data-toggle="tooltip" data-html="true" title="' . e(str_replace("\n", "<br>", $participantList)) . '">';
+                    $status .= e($flagLabel) . ' <small>(' . count($participants) . ')</small>';
+                    $status .= '</span>';
                     $status .= '</div>';
                 }
             } else {

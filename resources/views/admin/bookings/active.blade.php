@@ -252,11 +252,11 @@ $(document).ready(function() {
         },
         columns: [
             { data: 'booking_id', name: 'booking_id', width: '10%' },
-            { data: 'retreat', name: 'retreat.title', width: '25%' },
-            { data: 'guest_info', name: 'firstname', width: '30%', orderable: false, searchable: false },
+            { data: 'retreat', name: 'retreat.title', width: '20%' },
+            { data: 'guest_info', name: 'firstname', width: '25%', orderable: false, searchable: false },
             { data: 'participants', name: 'additional_participants', width: '10%', className: 'text-center', orderable: true, searchable: false },
-            { data: 'status', name: 'flag', width: '15%', orderable: true, searchable: false },
-            { data: 'actions', name: 'actions', width: '10%', orderable: false, searchable: false, className: 'text-center' }
+            { data: 'status', name: 'flag', width: '20%', orderable: true, searchable: false },
+            { data: 'actions', name: 'actions', width: '15%', orderable: false, searchable: false, className: 'text-center' }
         ],
         order: [[0, 'desc']],
         pageLength: 25,
@@ -282,7 +282,9 @@ $(document).ready(function() {
         },
         responsive: true,
         drawCallback: function() {
-            $('[data-toggle="tooltip"]').tooltip();
+            $('[data-toggle="tooltip"]').tooltip({
+                html: true
+            });
         },
         initComplete: function() {
             var filterHtml = `
@@ -340,7 +342,9 @@ $(document).ready(function() {
         }
     });
     
-    $('[data-toggle="tooltip"]').tooltip();
+    $('[data-toggle="tooltip"]').tooltip({
+        html: true
+    });
 });
 </script>
 @endpush
