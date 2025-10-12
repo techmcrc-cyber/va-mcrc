@@ -313,9 +313,8 @@
                                         </button>
                                     </div>
                                                 @if($errors->has("participants.{$participantCount}.criteria"))
-                                                    <div class="alert alert-danger alert-dismissible">
-                                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                                                        <i class="icon fas fa-exclamation-triangle"></i> Criteria validation failed:
+                                                    <div class="alert alert-danger">
+                                                        <i class="icon fas fa-exclamation-triangle"></i> Please fix the following errors:
                                                         <ul class="mb-0 mt-2">
                                                             <li>{{ $errors->first("participants.{$participantCount}.criteria") }}</li>
                                                         </ul>
@@ -409,9 +408,8 @@
                                                     </button>
                                                 </div>
                                                 @if($errors->has("participants.{$index}.criteria"))
-                                                    <div class="alert alert-danger alert-dismissible">
-                                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                                                        <i class="icon fas fa-exclamation-triangle"></i> Criteria validation failed:
+                                                    <div class="alert alert-danger">
+                                                        <i class="icon fas fa-exclamation-triangle"></i> Please fix the following errors:
                                                         <ul class="mb-0 mt-2">
                                                             <li>{{ $errors->first("participants.{$index}.criteria") }}</li>
                                                         </ul>

@@ -478,8 +478,7 @@
                         </span>
                     </div>
                     <div class="participant-errors-${fieldIndex}" style="display:none;">
-                        <div class="alert alert-danger alert-dismissible">
-                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                        <div class="alert alert-danger">
                             <i class="icon fas fa-exclamation-triangle"></i> Please fix the following errors:
                             <ul class="mb-0 mt-2 participant-error-list-${fieldIndex}"></ul>
                         </div>
@@ -632,20 +631,35 @@
                     
                     console.log('Processing error field:', fieldName, errorMessages);
                     
-                    // Check if this is a participant field (e.g., participants.0.firstname)
-                    const participantMatch = fieldName.match(/^participants\.(\d+)\./);
+                    // Check for criteria errors first (participants.{index}.criteria)
+                    const criteriaMatch = fieldName.match(/^participants\.(\d+)\.criteria$/);
+                    if (criteriaMatch) {
+                        const participantIndex = criteriaMatch[1];
+                        
+                        console.log('Found criteria error for participant index:', participantIndex);
+                        
+                        if (!participantErrors[participantIndex]) {
+                            participantErrors[participantIndex] = [];
+                        }
+                        // Add the error message as-is
+                        participantErrors[participantIndex].push(errorMessages[0]);
+                        return; // Skip further processing for this field
+                    }
+                    
+                    // Check if this is a participant field (e.g., participants.0.firstname) but NOT criteria
+                    const participantMatch = fieldName.match(/^participants\.(\d+)\.(?!criteria)(.+)$/);
                     
                     if (participantMatch) {
                         const participantIndex = participantMatch[1];
+                        const fieldPart = participantMatch[2];
                         
-                        console.log('Found participant error for index:', participantIndex);
+                        console.log('Found participant field error for index:', participantIndex, 'field:', fieldPart);
                         
                         if (!participantErrors[participantIndex]) {
                             participantErrors[participantIndex] = [];
                         }
                         
                         // Get field label
-                        const fieldPart = fieldName.split('.').pop();
                         const fieldLabels = {
                             'firstname': 'First Name',
                             'lastname': 'Last Name',
@@ -663,19 +677,6 @@
                         if ($field.length > 0) {
                             $field.addClass('is-invalid');
                         }
-                    }
-                    
-                    // Check for criteria errors (participants.{index}.criteria)
-                    const criteriaMatch = fieldName.match(/^participants\.(\d+)\.criteria$/);
-                    if (criteriaMatch) {
-                        const participantIndex = criteriaMatch[1];
-                        
-                        console.log('Found criteria error for participant index:', participantIndex);
-                        
-                        if (!participantErrors[participantIndex]) {
-                            participantErrors[participantIndex] = [];
-                        }
-                        participantErrors[participantIndex].push('Criteria validation failed: ' + errorMessages[0]);
                     }
                 });
                 
