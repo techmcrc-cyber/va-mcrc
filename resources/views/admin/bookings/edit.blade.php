@@ -109,18 +109,6 @@
                     @csrf
                     @method('PUT')
                     <div class="card-body">
-                        @if ($errors->any())
-                            <div class="alert alert-danger alert-dismissible">
-                                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                                <h5><i class="icon fas fa-ban"></i> Validation Errors!</h5>
-                                <ul class="mb-0">
-                                    @foreach ($errors->all() as $error)
-                                        <li>{{ $error }}</li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                        @endif
-                        
                         <div class="row">
                             <div class="col-md-12">
                                 <h4>Retreat Information</h4>
@@ -162,6 +150,14 @@
                         <div class="row mt-4">
                             <div class="col-md-12">
                                 <h4>Primary Participant</h4>
+                                @if ($errors->has('criteria'))
+                                    <div class="alert alert-danger">
+                                        <i class="icon fas fa-exclamation-triangle"></i> Please fix the following errors:
+                                        <ul class="mb-0 mt-2">
+                                            <li>{{ $errors->first('criteria') }}</li>
+                                        </ul>
+                                    </div>
+                                @endif
                                 <hr>
                             </div>
                             
