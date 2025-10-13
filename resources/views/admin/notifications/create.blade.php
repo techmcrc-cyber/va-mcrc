@@ -115,8 +115,7 @@
                             <label for="body" class="form-label">Email Body <span class="text-danger">*</span></label>
                             <textarea name="body" id="body" 
                                       class="form-control @error('body') is-invalid @enderror" 
-                                      rows="10" 
-                                      required>{{ old('body') }}</textarea>
+                                      rows="10">{{ old('body') }}</textarea>
                             @error('body')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -185,8 +184,21 @@
             $('#need').trigger('change');
         }
 
-        // Form submission with loading state
-        $('#notification-form').on('submit', function() {
+        // Form submission with loading state and CKEditor validation
+        $('#notification-form').on('submit', function(e) {
+            // Update CKEditor data to textarea
+            if (editor) {
+                const editorData = editor.getData();
+                $('#body').val(editorData);
+                
+                // Validate body is not empty
+                if (!editorData.trim()) {
+                    e.preventDefault();
+                    alert('Please enter the email body content.');
+                    return false;
+                }
+            }
+            
             $('#submit-btn').prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-1"></i> Sending...');
         });
     });
