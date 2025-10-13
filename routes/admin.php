@@ -102,6 +102,13 @@ Route::middleware(['auth:web'])->group(function () {
         Route::delete('/{criterion}', [\App\Http\Controllers\Admin\CriteriaController::class, 'destroy'])->name('destroy');
     });
 
+    // Notifications Management
+    Route::prefix('notifications')->name('admin.notifications.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\NotificationController::class, 'index'])->name('index');
+        Route::get('/create', [\App\Http\Controllers\Admin\NotificationController::class, 'create'])->name('create');
+        Route::post('/', [\App\Http\Controllers\Admin\NotificationController::class, 'store'])->name('store');
+    });
+
     // Roles Management
     Route::prefix('roles')->name('admin.roles.')->group(function () {
         Route::get('/', [\App\Http\Controllers\Admin\RoleController::class, 'index'])->name('index');

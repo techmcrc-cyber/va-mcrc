@@ -83,6 +83,12 @@
                 <i class="fas fa-filter me-2"></i> Criteria
             </a>
             @endcan
+
+            <!-- Notifications -->
+            <a href="{{ route('admin.notifications.index') }}" 
+               class="list-group-item list-group-item-action {{ request()->is('admin/notifications*') ? 'active' : '' }}">
+                <i class="fas fa-bell me-2"></i> Notifications
+            </a>
         
             @can('view-users')
             <a href="{{ route('admin.users.index') }}" 
