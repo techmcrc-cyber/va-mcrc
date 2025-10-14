@@ -50,7 +50,7 @@
                         <!-- Per Page Selector -->
                         <div class="mb-3">
                             <label for="per-page" class="me-2">Show:</label>
-                            <select id="per-page" class="form-select form-select-sm d-inline-block w-auto">
+                            <select id="per-page" class="form-select form-select-sm d-inline-block" style="width: 80px;">
                                 <option value="15" {{ request('per_page', 15) == 15 ? 'selected' : '' }}>15</option>
                                 <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25</option>
                                 <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
@@ -85,16 +85,14 @@
                                             </td>
                                             <td>
                                                 @if($notification->retreat)
-                                                    <a href="{{ route('admin.retreats.show', $notification->retreat->id) }}" class="text-decoration-none">
-                                                        {{ Str::limit($notification->retreat->title, 30) }}
-                                                    </a>
+                                                    {{ Str::limit($notification->retreat->title, 30) }}
                                                 @else
                                                     <span class="text-muted">-</span>
                                                 @endif
                                             </td>
                                             <td>{{ Str::limit($notification->subject, 40) }}</td>
                                             <td class="text-center">
-                                                <span class="badge bg-dark fs-6 px-3 py-2">{{ $notification->total_recipients }}</span>
+                                                <span class="badge fs-6 px-3 py-2" style="background-color: #4a90e2; color: white;">{{ $notification->total_recipients }}</span>
                                             </td>
                                             <td>
                                                 @php
