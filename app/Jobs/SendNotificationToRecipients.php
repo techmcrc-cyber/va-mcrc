@@ -37,17 +37,23 @@ class SendNotificationToRecipients implements ShouldQueue
             $this->notification->update(['status' => 'processing']);
 
             // Send notification to each recipient
-            $customNotification = new CustomEmailNotification(
-                $this->notification->heading,
-                $this->notification->subject,
-                $this->notification->body
-            );
-
-            foreach ($this->recipients as $email) {
+            foreach ($this->recipients as $recipient) {
                 try {
+                    $email = is_array($recipient) ? $recipient['email'] : $recipient;
+                    $name = is_array($recipient) ? $recipient['name'] : null;
+                    
+                    $customNotification = new CustomEmailNotification(
+                        $this->notification->heading,
+                        $this->notification->subject,
+                        $this->notification->body,
+                        $name,
+                        $this->notification->greeting
+                    );
+                    
                     NotificationFacade::route('mail', $email)
                         ->notify($customNotification);
                 } catch (\Exception $e) {
+                    $email = is_array($recipient) ? $recipient['email'] : $recipient;
                     Log::error('Failed to send notification to ' . $email, [
                         'notification_id' => $this->notification->id,
                         'error' => $e->getMessage(),

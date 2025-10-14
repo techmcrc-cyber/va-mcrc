@@ -82,6 +82,22 @@
 
                         <hr class="my-4">
 
+                        <!-- Greeting -->
+                        <div class="mb-3">
+                            <label for="greeting" class="form-label">Email Greeting</label>
+                            <textarea name="greeting" id="greeting" 
+                                      class="form-control @error('greeting') is-invalid @enderror" 
+                                      rows="3" 
+                                      placeholder="e.g., Dear {name}, or Hello {name}, hope you're doing well!">{{ old('greeting', 'Dear {name},') }}</textarea>
+                            @error('greeting')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            <small class="form-text text-muted">
+                                Use {name} as placeholder for recipient's name. You can use HTML formatting. 
+                                Leave empty to use default "Dear Friend," format.
+                            </small>
+                        </div>
+
                         <!-- Heading -->
                         <div class="mb-3">
                             <label for="heading" class="form-label">Email Heading <span class="text-danger">*</span></label>

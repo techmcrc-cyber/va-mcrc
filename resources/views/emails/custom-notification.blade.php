@@ -56,7 +56,7 @@
         .content h1 {
             color: #b53d5e;
             margin-top: 0;
-            font-size: 28px;
+            font-size: 20px;
             border-bottom: 2px solid #b53d5e;
             padding-bottom: 10px;
         }
@@ -114,14 +114,17 @@
         <div class="header">
             <img src="https://mountcarmelretreatcentre.org/wp-content/uploads/2022/02/logo_mcrc_new-1-100x118.png" alt="Mount Carmel Retreat Centre Logo">
             <div class="header-text">
-                <h2>{{ $heading }}</h2>
                 <p>Mount Carmel Retreat Centre</p>
             </div>
         </div>
 
         <div class="content">
+            {!! $greeting !!}
+            
+            <h1>{{ $heading }}</h1>
+
             <div class="body-content">
-                {!! nl2br(e($body)) !!}
+                {!! $body !!}
             </div>
 
             <p style="margin-top: 30px;">

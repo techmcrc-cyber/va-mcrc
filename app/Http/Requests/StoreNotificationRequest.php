@@ -27,6 +27,7 @@ class StoreNotificationRequest extends FormRequest
             'heading' => 'required|string|max:255',
             'subject' => 'required|string|max:255',
             'body' => 'required|string',
+            'greeting' => 'nullable|string|max:255',
             'additional_users_emails' => 'nullable|string',
         ];
     }

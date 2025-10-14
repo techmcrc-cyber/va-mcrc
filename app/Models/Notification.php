@@ -13,6 +13,7 @@ class Notification extends Model
         'heading',
         'subject',
         'body',
+        'greeting',
         'additional_users_emails',
         'total_recipients',
         'status',

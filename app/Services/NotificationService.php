@@ -30,18 +30,33 @@ class NotificationService
         if ($notification->need === 'retreat' && $notification->retreat_id) {
             $recipients = array_merge(
                 $recipients,
-                $this->getRetreatParticipantEmails($notification->retreat_id)
+                $this->getRetreatParticipantDetails($notification->retreat_id)
             );
         }
 
         // Get additional emails
         if ($notification->additional_users_emails) {
             $additionalEmails = $this->parseEmails($notification->additional_users_emails);
-            $recipients = array_merge($recipients, $additionalEmails);
+            foreach ($additionalEmails as $email) {
+                $recipients[] = [
+                    'email' => $email,
+                    'name' => null
+                ];
+            }
         }
 
-        // Remove duplicates and return
-        return array_unique($recipients);
+        // Remove duplicates by email and return
+        $uniqueRecipients = [];
+        $seenEmails = [];
+        
+        foreach ($recipients as $recipient) {
+            if (!in_array($recipient['email'], $seenEmails)) {
+                $uniqueRecipients[] = $recipient;
+                $seenEmails[] = $recipient['email'];
+            }
+        }
+
+        return $uniqueRecipients;
     }
 
     /**
@@ -66,7 +81,28 @@ class NotificationService
     }
 
     /**
-     * Get retreat participant emails.
+     * Get retreat participant details.
+     */
+    private function getRetreatParticipantDetails(int $retreatId): array
+    {
+        return Booking::where('retreat_id', $retreatId)
+            ->where('is_active', true)
+            ->whereNotNull('email')
+            ->get(['email', 'firstname', 'lastname'])
+            ->filter(function ($booking) {
+                return !empty($booking->email) && filter_var($booking->email, FILTER_VALIDATE_EMAIL);
+            })
+            ->map(function ($booking) {
+                return [
+                    'email' => $booking->email,
+                    'name' => trim($booking->firstname . ' ' . $booking->lastname)
+                ];
+            })
+            ->toArray();
+    }
+
+    /**
+     * Get retreat participant emails (legacy method for count calculation).
      */
     private function getRetreatParticipantEmails(int $retreatId): array
     {
