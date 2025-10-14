@@ -39,7 +39,7 @@
             <p>Thank you for your retreat booking! Your booking has been <strong>confirmed</strong>.</p>
 
             @php
-                $participantsWithFlags = collect($allParticipants)->where('flag',null)->count();
+                $participantsWithFlags = collect($allParticipants)->whereNotNull('flag')->count();
             @endphp
 
             @if($participantsWithFlags > 0)
@@ -47,7 +47,7 @@
                     <h4>⚠️ Important Notice</h4>
                     <p><strong>{{ $participantsWithFlags }} participant(s)</strong> in your booking have validation flags that may require administrative review:</p>
                     <ul>
-                        @foreach($allParticipants->where('flag',null) as $participant)
+                        @foreach($allParticipants->whereNotNull('flag') as $participant)
                             <li><strong>{{ $participant->firstname }} {{ $participant->lastname }}</strong> (Serial #{{ $participant->participant_number }}):
                                 @php
                                     $flags = explode(',', $participant->flag);
