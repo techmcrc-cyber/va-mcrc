@@ -13,9 +13,11 @@
     <div class="card mb-3">
         <div class="card-header d-flex justify-content-between align-items-center" style="background-color: #f8f9fc; border-bottom: 1px solid #e3e6f0;">
             <h4 class="m-0 fw-bold" style="color: #b53d5e; font-size: 1.5rem;">Email Notifications</h4>
+            @can('create-notifications')
             <a href="{{ route('admin.notifications.create') }}" class="btn btn-sm btn-primary">
                 <i class="fas fa-envelope me-1"></i> Compose Mail
             </a>
+            @endcan
         </div>
     </div>
 
@@ -111,9 +113,12 @@
                                                 </span>
                                             </td>
                                             <td>
+                                                @can('view-notifications')
                                                 <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#viewModal{{ $notification->id }}" title="View Details">
                                                     <i class="fas fa-eye"></i>
                                                 </button>
+                                                @endcan
+                                                @can('delete-notifications')
                                                 <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete({{ $notification->id }})" title="Delete">
                                                     <i class="fas fa-trash"></i>
                                                 </button>
@@ -121,6 +126,7 @@
                                                     @csrf
                                                     @method('DELETE')
                                                 </form>
+                                                @endcan
                                             </td>
                                         </tr>
                                     @endforeach
