@@ -40,8 +40,8 @@ class SpecialBookingController extends Controller
                 });
             }
             
-            // Order by booking_id in descending order
-            $query->orderBy('booking_id', 'desc');
+            // Order by booking_id in descending order (numeric sorting)
+            $query->orderByRaw('CAST(SUBSTRING(booking_id, 3) AS UNSIGNED) DESC');
             
             $totalData = $query->count();
             $limit = $request->input('length', 25);

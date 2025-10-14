@@ -79,12 +79,12 @@ class BookingController extends Controller
                 $columns = ['booking_id', 'retreat_id', 'firstname', 'additional_participants', 'flag'];
                 
                 if (isset($columns[$column])) {
-                    $query->orderBy($columns[$column], $dir);
+                    if ($columns[$column] === 'booking_id') { $query->orderByRaw('CAST(SUBSTRING(booking_id, 3) AS UNSIGNED) ' . strtoupper($dir)); } else { $query->orderBy($columns[$column], $dir); }
                 } else {
-                    $query->latest();
+                    $query->orderByRaw('CAST(SUBSTRING(booking_id, 3) AS UNSIGNED) DESC');
                 }
             } else {
-                $query->latest();
+                $query->orderByRaw('CAST(SUBSTRING(booking_id, 3) AS UNSIGNED) DESC');
             }
             
             $totalData = $query->count();
@@ -179,12 +179,12 @@ class BookingController extends Controller
                 $columns = ['booking_id', 'retreat_id', 'firstname', 'additional_participants', 'flag'];
                 
                 if (isset($columns[$column])) {
-                    $query->orderBy($columns[$column], $dir);
+                    if ($columns[$column] === 'booking_id') { $query->orderByRaw('CAST(SUBSTRING(booking_id, 3) AS UNSIGNED) ' . strtoupper($dir)); } else { $query->orderBy($columns[$column], $dir); }
                 } else {
-                    $query->latest();
+                    $query->orderByRaw('CAST(SUBSTRING(booking_id, 3) AS UNSIGNED) DESC');
                 }
             } else {
-                $query->latest();
+                $query->orderByRaw('CAST(SUBSTRING(booking_id, 3) AS UNSIGNED) DESC');
             }
             
             $totalData = $query->count();
