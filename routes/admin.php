@@ -107,6 +107,8 @@ Route::middleware(['auth:web'])->group(function () {
         Route::get('/', [\App\Http\Controllers\Admin\NotificationController::class, 'index'])->name('index');
         Route::get('/create', [\App\Http\Controllers\Admin\NotificationController::class, 'create'])->name('create');
         Route::post('/', [\App\Http\Controllers\Admin\NotificationController::class, 'store'])->name('store');
+        Route::get('/{notification}', [\App\Http\Controllers\Admin\NotificationController::class, 'show'])->name('show');
+        Route::delete('/{notification}', [\App\Http\Controllers\Admin\NotificationController::class, 'destroy'])->name('destroy');
     });
 
     // Roles Management

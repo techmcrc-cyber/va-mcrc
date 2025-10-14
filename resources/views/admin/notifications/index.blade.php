@@ -47,8 +47,20 @@
                             </a>
                         </div>
                     @else
+                        <!-- Per Page Selector -->
+                        <div class="mb-3">
+                            <label for="per-page" class="me-2">Show:</label>
+                            <select id="per-page" class="form-select form-select-sm d-inline-block w-auto">
+                                <option value="15" {{ request('per_page', 15) == 15 ? 'selected' : '' }}>15</option>
+                                <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25</option>
+                                <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
+                                <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
+                            </select>
+                            <span class="ms-2 text-muted">entries per page</span>
+                        </div>
+
                         <div class="table-responsive">
-                            <table class="table table-bordered table-hover" id="notifications-table">
+                            <table class="table table-bordered table-hover">
                                 <thead>
                                     <tr>
                                         <th>ID</th>
@@ -57,8 +69,8 @@
                                         <th>Retreat</th>
                                         <th>Subject</th>
                                         <th>Recipients</th>
-                                        <th>Additional Emails</th>
                                         <th>Status</th>
+                                        <th width="120">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -74,7 +86,7 @@
                                             <td>
                                                 @if($notification->retreat)
                                                     <a href="{{ route('admin.retreats.show', $notification->retreat->id) }}" class="text-decoration-none">
-                                                        {{ $notification->retreat->title }}
+                                                        {{ Str::limit($notification->retreat->title, 30) }}
                                                     </a>
                                                 @else
                                                     <span class="text-muted">-</span>
@@ -82,16 +94,7 @@
                                             </td>
                                             <td>{{ Str::limit($notification->subject, 40) }}</td>
                                             <td class="text-center">
-                                                <span class="badge bg-primary">{{ $notification->total_recipients }}</span>
-                                            </td>
-                                            <td>
-                                                @if($notification->additional_users_emails)
-                                                    <small class="text-muted" title="{{ $notification->additional_users_emails }}">
-                                                        {{ Str::limit($notification->additional_users_emails, 30) }}
-                                                    </small>
-                                                @else
-                                                    <span class="text-muted">-</span>
-                                                @endif
+                                                <span class="badge bg-dark fs-6 px-3 py-2">{{ $notification->total_recipients }}</span>
                                             </td>
                                             <td>
                                                 @php
@@ -109,38 +112,177 @@
                                                     {{ $notification->formatted_status }}
                                                 </span>
                                             </td>
+                                            <td>
+                                                <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#viewModal{{ $notification->id }}" title="View Details">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete({{ $notification->id }})" title="Delete">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                                <form id="delete-form-{{ $notification->id }}" action="{{ route('admin.notifications.destroy', $notification->id) }}" method="POST" style="display: none;">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                </form>
+                                            </td>
                                         </tr>
                                     @endforeach
                                 </tbody>
                             </table>
                         </div>
 
-                        <div class="mt-3">
-                            {{ $notifications->links() }}
+                        <!-- Pagination -->
+                        <div class="d-flex justify-content-between align-items-center mt-4">
+                            <div class="text-muted">
+                                Showing {{ $notifications->firstItem() ?? 0 }} to {{ $notifications->lastItem() ?? 0 }} of {{ $notifications->total() }} entries
+                            </div>
+                            <div>
+                                {{ $notifications->links('pagination::bootstrap-5') }}
+                            </div>
                         </div>
                     @endif
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- View Modals -->
+    @if(!$notifications->isEmpty())
+    @foreach($notifications as $notification)
+<div class="modal fade" id="viewModal{{ $notification->id }}" tabindex="-1" aria-labelledby="viewModalLabel{{ $notification->id }}" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #b53d5e; color: white;">
+                <h5 class="modal-title" id="viewModalLabel{{ $notification->id }}">
+                    <i class="fas fa-envelope me-2"></i>Notification Details
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>ID:</strong> {{ $notification->id }}
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Status:</strong> 
+                        @php
+                            $statusColors = [
+                                'pending' => 'secondary',
+                                'queued' => 'info',
+                                'processing' => 'warning',
+                                'sent' => 'success',
+                                'failed' => 'danger',
+                                'partially_sent' => 'warning',
+                            ];
+                            $color = $statusColors[$notification->status] ?? 'secondary';
+                        @endphp
+                        <span class="badge bg-{{ $color }}">{{ $notification->formatted_status }}</span>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Type:</strong> 
+                        <span class="badge bg-{{ $notification->need === 'retreat' ? 'info' : 'secondary' }}">
+                            {{ ucfirst($notification->need) }}
+                        </span>
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Created:</strong> {{ $notification->created_at->format('M d, Y h:i A') }}
+                    </div>
+                </div>
+
+                @if($notification->retreat)
+                <div class="mb-3">
+                    <strong>Retreat:</strong> 
+                    <a href="{{ route('admin.retreats.show', $notification->retreat->id) }}" target="_blank">
+                        {{ $notification->retreat->title }}
+                    </a>
+                </div>
+                @endif
+
+                <div class="mb-3">
+                    <strong>Total Recipients:</strong> 
+                    <span class="badge bg-primary">{{ $notification->total_recipients }}</span>
+                </div>
+
+                @if($notification->additional_users_emails)
+                <div class="mb-3">
+                    <strong>Additional Emails:</strong>
+                    <div class="mt-1">
+                        <small class="text-muted">{{ $notification->additional_users_emails }}</small>
+                    </div>
+                </div>
+                @endif
+
+                @if($notification->greeting)
+                <div class="mb-3">
+                    <strong>Greeting:</strong>
+                    <div class="mt-1 p-2 bg-light rounded">
+                        <small>{{ $notification->greeting }}</small>
+                    </div>
+                </div>
+                @endif
+
+                <div class="mb-3">
+                    <strong>Heading:</strong>
+                    <div class="mt-1">
+                        {{ $notification->heading }}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <strong>Subject:</strong>
+                    <div class="mt-1">
+                        {{ $notification->subject }}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <strong>Body:</strong>
+                    <div class="mt-1 p-3 bg-light rounded" style="max-height: 300px; overflow-y: auto;">
+                        {!! $notification->body !!}
+                    </div>
+                </div>
+
+                @if($notification->sent_at)
+                <div class="mb-3">
+                    <strong>Sent At:</strong> {{ $notification->sent_at->format('M d, Y h:i A') }}
+                </div>
+                @endif
+
+                @if($notification->creator)
+                <div class="mb-3">
+                    <strong>Created By:</strong> {{ $notification->creator->name }}
+                </div>
+                @endif
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+@endforeach
+@endif
 </div>
 @endsection
 
 @push('scripts')
 <script>
-    $(document).ready(function() {
-        @if(!$notifications->isEmpty())
-        $('#notifications-table').DataTable({
-            "paging": false,
-            "searching": true,
-            "ordering": true,
-            "info": false,
-            "order": [[0, "desc"]],
-            "columnDefs": [
-                { "orderable": false, "targets": [6, 7] }
-            ]
-        });
-        @endif
+    // Per page selector
+    $('#per-page').on('change', function() {
+        const perPage = $(this).val();
+        const url = new URL(window.location.href);
+        url.searchParams.set('per_page', perPage);
+        url.searchParams.delete('page'); // Reset to first page
+        window.location.href = url.toString();
     });
+
+    // Confirm delete
+    function confirmDelete(id) {
+        if (confirm('Are you sure you want to delete this notification? This action cannot be undone.')) {
+            document.getElementById('delete-form-' + id).submit();
+        }
+    }
 </script>
 @endpush

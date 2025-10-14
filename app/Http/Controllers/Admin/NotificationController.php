@@ -24,11 +24,42 @@ class NotificationController extends Controller
      */
     public function index(): View
     {
+        $perPage = request('per_page', 15);
+        
         $notifications = Notification::with(['retreat', 'creator'])
             ->recent()
-            ->paginate(15);
+            ->paginate($perPage)
+            ->appends(['per_page' => $perPage]);
 
         return view('admin.notifications.index', compact('notifications'));
+    }
+
+    /**
+     * Display the specified notification.
+     */
+    public function show(Notification $notification): View
+    {
+        $notification->load(['retreat', 'creator']);
+        
+        return view('admin.notifications.show', compact('notification'));
+    }
+
+    /**
+     * Remove the specified notification from storage.
+     */
+    public function destroy(Notification $notification): RedirectResponse
+    {
+        try {
+            $notification->delete();
+
+            return redirect()
+                ->route('admin.notifications.index')
+                ->with('success', 'Notification deleted successfully.');
+        } catch (\Exception $e) {
+            return redirect()
+                ->back()
+                ->with('error', 'Failed to delete notification: ' . $e->getMessage());
+        }
     }
 
     /**
