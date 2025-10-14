@@ -84,11 +84,12 @@
             </a>
             @endcan
 
-            <!-- Notifications -->
+            @can('view-notification')
             <a href="{{ route('admin.notifications.index') }}" 
                class="list-group-item list-group-item-action {{ request()->is('admin/notifications*') ? 'active' : '' }}">
                 <i class="fas fa-bell me-2"></i> Notifications
             </a>
+            @endcan
         
             @can('view-users')
             <a href="{{ route('admin.users.index') }}" 

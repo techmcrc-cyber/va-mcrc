@@ -54,6 +54,11 @@ class RolePermissionSeeder extends Seeder
             ['name' => 'Create Criteria', 'slug' => 'create-criteria', 'module' => 'criteria'],
             ['name' => 'Edit Criteria', 'slug' => 'edit-criteria', 'module' => 'criteria'],
             ['name' => 'Delete Criteria', 'slug' => 'delete-criteria', 'module' => 'criteria'],
+
+            // Notification Management
+            ['name' => 'View Notifications', 'slug' => 'view-notifications', 'module' => 'notifications'],
+            ['name' => 'Create Notifications', 'slug' => 'create-notifications', 'module' => 'notifications'],
+            ['name' => 'Delete Notifications', 'slug' => 'delete-notifications', 'module' => 'notifications'],
             
         ];
 
