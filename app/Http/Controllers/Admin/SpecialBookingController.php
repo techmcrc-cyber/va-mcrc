@@ -7,8 +7,10 @@ use App\Http\Requests\BookingRequest;
 use App\Models\Booking;
 use App\Models\Retreat;
 use App\Services\CriteriaValidationService;
+use App\Mail\BookingConfirmation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 class SpecialBookingController extends Controller
 {
@@ -203,7 +205,23 @@ class SpecialBookingController extends Controller
             $participantNumber++;
         }
         
-        $warningMessage = 'Special booking created successfully.';
+        // Get all participants for email
+        $allBookings = Booking::where('booking_id', $bookingId)
+            ->where('is_active', true)
+            ->orderBy('participant_number')
+            ->get();
+        
+        // Send confirmation email
+        if ($primaryBooking->email) {
+            try {
+                Mail::to($primaryBooking->email)
+                    ->send(new BookingConfirmation($primaryBooking, $retreat, $allBookings));
+            } catch (\Exception $e) {
+                \Log::error('Failed to send special booking confirmation email: ' . $e->getMessage());
+            }
+        }
+        
+        $warningMessage = 'Special booking created successfully and confirmation email sent.';
         if ($primaryValidation['flag_string']) {
             $warningMessage .= ' Warning: ' . implode(', ', $primaryValidation['messages']);
         }

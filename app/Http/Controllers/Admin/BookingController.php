@@ -8,10 +8,12 @@ use App\Models\Booking;
 use App\Models\Retreat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\BookingsExport;
 use App\Imports\BookingsImport;
+use App\Mail\BookingConfirmation;
 use Illuminate\Support\Facades\Session;
 
 class BookingController extends Controller
@@ -460,9 +462,25 @@ class BookingController extends Controller
             $participantNumber++;
         }
         
+        // Get all participants for email
+        $allBookings = Booking::where('booking_id', $bookingId)
+            ->where('is_active', true)
+            ->orderBy('participant_number')
+            ->get();
+        
+        // Send confirmation email
+        if ($primaryBooking->email) {
+            try {
+                Mail::to($primaryBooking->email)
+                    ->send(new BookingConfirmation($primaryBooking, $retreat, $allBookings));
+            } catch (\Exception $e) {
+                \Log::error('Failed to send booking confirmation email: ' . $e->getMessage());
+            }
+        }
+        
         return redirect()
             ->route('admin.bookings.show', $primaryBooking->id)
-            ->with('success', 'Booking created successfully.');
+            ->with('success', 'Booking created successfully and confirmation email sent.');
     }
 
     public function show(Booking $booking)
