@@ -75,12 +75,15 @@ class BookingsImport implements ToCollection, WithHeadingRow
 
     protected function validateRow($data, $retreat)
     {
-        // Use the same validation rules as BookingRequest, but flexible for additional participants
+        // Match the validation rules from BookingRequest (admin form)
+        // All participants must have these required fields
         $rules = [
             'group_id' => ['required', 'integer', 'min:1'],
             'firstname' => ['required', 'string', 'max:255'],
             'lastname' => ['required', 'string', 'max:255'],
+            'whatsapp_number' => ['required', 'string', 'size:10', 'regex:/^[0-9]{10}$/'],
             'age' => ['required', 'integer', 'min:1', 'max:120'],
+            'email' => ['required', 'email', 'max:255'],
             'gender' => ['required', 'in:male,female,other'],
             'married' => ['nullable', 'in:yes,no'],
             'address' => ['required', 'string', 'max:500'],
@@ -88,26 +91,21 @@ class BookingsImport implements ToCollection, WithHeadingRow
             'state' => ['required', 'string', 'max:100'],
             'diocese' => ['nullable', 'string', 'max:255'],
             'parish' => ['nullable', 'string', 'max:255'],
-            'congregation' => ['nullable', 'string', 'max:255'],
             'emergency_contact_name' => ['required', 'string', 'max:255'],
             'emergency_contact_phone' => ['required', 'string', 'min:10', 'max:15'],
             'special_remarks' => ['nullable', 'string'],
         ];
         
+        // Congregation is required for priests_only and sisters_only retreats
+        if (in_array($retreat->criteria, ['priests_only', 'sisters_only'])) {
+            $rules['congregation'] = ['required', 'string', 'max:255'];
+        } else {
+            $rules['congregation'] = ['nullable', 'string', 'max:255'];
+        }
+        
         // Ensure phone fields are strings after sanitization
         $data['whatsapp_number'] = (string)$data['whatsapp_number'];
         $data['emergency_contact_phone'] = (string)$data['emergency_contact_phone'];
-        
-        // Email and WhatsApp are more flexible - not required for minors/additional participants
-        if (!empty($data['email'])) {
-            $rules['email'] = ['email', 'max:255'];
-        }
-        if (!empty($data['whatsapp_number'])) {
-            $rules['whatsapp_number'] = ['string', 'size:10', 'regex:/^[0-9]{10}$/'];
-        } else {
-            // Allow empty whatsapp_number but ensure it's a string if provided
-            $rules['whatsapp_number'] = ['nullable', 'string'];
-        }
 
         $validator = Validator::make($data, $rules);
         
