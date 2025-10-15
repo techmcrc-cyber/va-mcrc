@@ -211,17 +211,12 @@ class SpecialBookingController extends Controller
             ->orderBy('participant_number')
             ->get();
         
-        // Send confirmation email
+        // Queue confirmation email
         if ($primaryBooking->email) {
-            try {
-                Mail::to($primaryBooking->email)
-                    ->send(new BookingConfirmation($primaryBooking, $retreat, $allBookings));
-            } catch (\Exception $e) {
-                \Log::error('Failed to send special booking confirmation email: ' . $e->getMessage());
-            }
+            \App\Jobs\SendBookingConfirmationEmail::dispatch($primaryBooking, $retreat, $allBookings);
         }
         
-        $warningMessage = 'Special booking created successfully and confirmation email sent.';
+        $warningMessage = 'Special booking created successfully. Confirmation email will be sent shortly.';
         if ($primaryValidation['flag_string']) {
             $warningMessage .= ' Warning: ' . implode(', ', $primaryValidation['messages']);
         }

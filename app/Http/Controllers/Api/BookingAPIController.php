@@ -125,13 +125,9 @@ class BookingAPIController extends BaseAPIController
                     }
                 }
 
-                if ($primaryBooking) {
-                    try {
-                        Mail::to($primaryBooking->email)
-                            ->send(new BookingConfirmation($primaryBooking, $retreat, $allBookings));
-                    } catch (\Exception $e) {
-                        \Log::error('Failed to send booking confirmation email: ' . $e->getMessage());
-                    }
+                // Queue confirmation email
+                if ($primaryBooking && $primaryBooking->email) {
+                    \App\Jobs\SendBookingConfirmationEmail::dispatch($primaryBooking, $retreat, collect($allBookings));
                 }
 
                 DB::commit();

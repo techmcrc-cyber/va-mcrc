@@ -468,19 +468,14 @@ class BookingController extends Controller
             ->orderBy('participant_number')
             ->get();
         
-        // Send confirmation email
+        // Queue confirmation email
         if ($primaryBooking->email) {
-            try {
-                Mail::to($primaryBooking->email)
-                    ->send(new BookingConfirmation($primaryBooking, $retreat, $allBookings));
-            } catch (\Exception $e) {
-                \Log::error('Failed to send booking confirmation email: ' . $e->getMessage());
-            }
+            \App\Jobs\SendBookingConfirmationEmail::dispatch($primaryBooking, $retreat, $allBookings);
         }
         
         return redirect()
             ->route('admin.bookings.show', $primaryBooking->id)
-            ->with('success', 'Booking created successfully and confirmation email sent.');
+            ->with('success', 'Booking created successfully. Confirmation email will be sent shortly.');
     }
 
     public function show(Booking $booking)

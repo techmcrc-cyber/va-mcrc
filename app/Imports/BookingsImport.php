@@ -221,11 +221,13 @@ class BookingsImport implements ToCollection, WithHeadingRow
         
         $participantNumber = 1;
         $additionalCount = count($participants) - 1;
+        $primaryBooking = null;
+        $allBookings = [];
         
         foreach ($sortedParticipants as $participant) {
             $data = $participant['data'];
             
-            Booking::create([
+            $booking = Booking::create([
                 'booking_id' => $bookingId,
                 'retreat_id' => $this->retreatId,
                 'firstname' => $data['firstname'],
@@ -252,8 +254,20 @@ class BookingsImport implements ToCollection, WithHeadingRow
                 'is_active' => true,
             ]);
             
+            $allBookings[] = $booking;
+            
+            if ($participantNumber === 1) {
+                $primaryBooking = $booking;
+            }
+            
             $this->importResults['success']++;
             $participantNumber++;
+        }
+        
+        // Queue confirmation email to primary booking contact
+        if ($primaryBooking && $primaryBooking->email) {
+            $retreat = Retreat::find($this->retreatId);
+            \App\Jobs\SendBookingConfirmationEmail::dispatch($primaryBooking, $retreat, collect($allBookings));
         }
     }
 
