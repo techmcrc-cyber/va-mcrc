@@ -5,38 +5,113 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Booking Confirmation</title>
     <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-        .container { max-width: 75%; margin: 0 auto; padding: 20px; }
-        .header { background-color: #b53d5e; color: white; padding: 10px 30px; border-radius: 5px 5px 0 0; display: flex; align-items: center; justify-content: flex-start; }
-        .header img { max-width: 100px; height: auto; margin-right: 20px; flex-shrink: 0; }
-        .header-text { flex: 1; text-align: center; }
-        .header-text h2 { margin: 0 0 5px 0; }
-        .header-text p { margin: 0; }
-        .content { background-color: #f9f9f9; padding: 20px; border: 1px solid #ddd; }
-        .footer { background-color: #eee; padding: 15px; text-align: center; border-radius: 0 0 5px 5px; font-size: 12px; }
-        .booking-details { background-color: white; padding: 15px; margin: 10px 0; border-radius: 5px; border-left: 4px solid #b53d5e; }
-        .participant { background-color: white; padding: 10px; margin: 5px 0; border-radius: 3px; border-left: 3px solid #6b7280; }
-        .highlight { color: #b53d5e; font-weight: bold; }
-        .important { background-color: #fff3cd; border: 1px solid #ffeaa7; padding: 10px; border-radius: 5px; margin: 10px 0; }
-        .whatsapp-section { background-color: #e7f7ef; border: 2px solid #25d366; padding: 15px; border-radius: 5px; margin: 15px 0; text-align: center; }
-        .whatsapp-button { display: inline-block; background-color: #25d366; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: bold; margin-top: 10px; }
-        .whatsapp-button:hover { background-color: #20ba5a; }
+        body { 
+            font-family: Arial, sans-serif; 
+            line-height: 1.6; 
+            color: #333; 
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container { 
+            max-width: 75%; 
+            margin: 20px auto; 
+            background-color: #ffffff;
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .content { 
+            background-color: #f9f9f9; 
+            padding: 30px; 
+            border: 1px solid #ddd; 
+        }
+        .booking-details { 
+            background-color: white; 
+            padding: 15px; 
+            margin: 10px 0; 
+            border-radius: 5px; 
+            border-left: 4px solid #b53d5e; 
+        }
+        .participant { 
+            background-color: white; 
+            padding: 10px; 
+            margin: 5px 0; 
+            border-radius: 3px; 
+            border-left: 3px solid #6b7280; 
+        }
+        .highlight { 
+            color: #b53d5e; 
+            font-weight: bold; 
+        }
+        .important { 
+            background-color: #fff3cd; 
+            border: 1px solid #ffeaa7; 
+            padding: 10px; 
+            border-radius: 5px; 
+            margin: 10px 0; 
+        }
+        .whatsapp-section { 
+            background-color: #e7f7ef; 
+            border: 2px solid #25d366; 
+            padding: 15px; 
+            border-radius: 5px; 
+            margin: 15px 0; 
+            text-align: center; 
+        }
+        .whatsapp-button { 
+            display: inline-block; 
+            background-color: #25d366; 
+            color: white; 
+            padding: 12px 24px; 
+            text-decoration: none; 
+            border-radius: 5px; 
+            font-weight: bold; 
+            margin-top: 10px; 
+        }
+        .whatsapp-button:hover { 
+            background-color: #20ba5a; 
+        }
+        @media only screen and (max-width: 600px) {
+            .container {
+                max-width: 100%;
+                margin: 0;
+                border-radius: 0;
+            }
+            .content {
+                padding: 20px;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <img src="https://mountcarmelretreatcentre.org/wp-content/uploads/2022/02/logo_mcrc_new-1-100x118.png" alt="Mount Carmel Retreat Centre Logo">
-            <div class="header-text">
-                <h2>Retreat Booking Confirmation</h2>
-                <p>Mount Carmel Retreat Centre</p>
-            </div>
-        </div>
+        <!-- Header with table layout for email compatibility -->
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #b53d5e;">
+            <tr>
+                <td style="padding: 20px 30px;">
+                    <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                        <tr>
+                            <td width="120" valign="middle" style="padding-right: 20px;">
+                                <img src="https://mountcarmelretreatcentre.org/wp-content/uploads/2022/02/logo_mcrc_new-1-100x118.png" alt="Mount Carmel Retreat Centre Logo" style="max-width: 100px; height: auto; display: block;">
+                            </td>
+                            <td valign="middle" align="center" style="color: white; font-family: Arial, sans-serif;">
+                                <h2 style="margin: 0; font-size: 26px; font-weight: bold; color: white;">Retreat Booking Confirmation</h2>
+                                <p style="margin: 5px 0 0 0; font-size: 14px; color: white;">Mount Carmel Retreat Centre</p>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
 
-        <div class="content">
-            <p>Dear {{ $booking->firstname }} {{ $booking->lastname }},</p>
+        <!-- Content Section -->
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f9f9f9; border: 1px solid #ddd;">
+            <tr>
+                <td style="padding: 30px; font-family: Arial, sans-serif; color: #333; line-height: 1.6;">
+                    <p>Dear {{ $booking->firstname }} {{ $booking->lastname }},</p>
 
-            <p>Thank you for your retreat booking! Your booking has been <strong>confirmed</strong>.</p>
+                    <p>Thank you for your retreat booking! Your booking has been <strong>confirmed</strong>.</p>
 
             @php
                 $participantsWithFlags = collect($allParticipants)->whereNotNull('flag')->count();
@@ -180,8 +255,6 @@
                 <ul>
                     <li>Please save this email for your records</li>
                     <li>Your <strong>Booking ID ({{ $booking->booking_id }})</strong> and <strong>WhatsApp number</strong> are required for any future inquiries</li>
-                    <li>Arrive at least 30 minutes before the retreat starts</li>
-                    <li>Bring a valid photo ID for verification</li>
                     <li>Follow the retreat guidelines and dress code</li>
                 </ul>
             </div>
@@ -190,14 +263,29 @@
 
             <p>We look forward to welcoming you to this spiritual journey!</p>
 
-            <p>God bless,<br>
-            <strong>Mount Carmel Retreat Centre</strong></p>
-        </div>
+                    <p style="margin-top: 30px; margin-bottom: 0;">
+                        God bless,<br>
+                        <strong>Mount Carmel Retreat Centre</strong>
+                    </p>
+                </td>
+            </tr>
+        </table>
 
-        <div class="footer">
-            <p>Mount Carmel Retreat Centre | Email: info@mountcarmelretreat.org | Phone: +91-XXXXXXXXXX</p>
-            <p>This is an automated message. Please do not reply to this email.</p>
-        </div>
+        <!-- Footer Section -->
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #eee;">
+            <tr>
+                <td style="padding: 20px; text-align: center; font-family: Arial, sans-serif; font-size: 12px; color: #666;">
+                    <p style="margin: 5px 0;"><strong>Mount Carmel Retreat Centre</strong></p>
+                    <p style="margin: 5px 0;">
+                        Email: <a href="mailto:info@mountcarmelretreat.org" style="color: #b53d5e; text-decoration: none;">info@mountcarmelretreat.org</a> | 
+                        Phone: +91-XXXXXXXXXX
+                    </p>
+                    <p style="margin-top: 10px; margin-bottom: 5px; color: #999;">
+                        This is an automated message. Please do not reply to this email.
+                    </p>
+                </td>
+            </tr>
+        </table>
     </div>
 </body>
 </html>
