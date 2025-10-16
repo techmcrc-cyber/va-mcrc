@@ -96,8 +96,8 @@
                                 <img src="https://mountcarmelretreatcentre.org/wp-content/uploads/2022/02/logo_mcrc_new-1-100x118.png" alt="Mount Carmel Retreat Centre Logo" style="max-width: 100px; height: auto; display: block;">
                             </td>
                             <td valign="middle" align="center" style="color: white; font-family: Arial, sans-serif;">
-                                <h2 style="margin: 0; font-size: 26px; font-weight: bold; color: white;">Retreat Booking Confirmation</h2>
-                                <p style="margin: 5px 0 0 0; font-size: 14px; color: white;">Mount Carmel Retreat Centre</p>
+                                <h2 style="margin: 0; font-size: 32px; font-weight: bold; color: white;">Retreat Booking Confirmation</h2>
+                                <p style="margin: 5px 0 0 0; font-size: 18px; color: white;">Mount Carmel Retreat Centre</p>
                             </td>
                         </tr>
                     </table>
