@@ -116,7 +116,7 @@
                                 <img src="https://mountcarmelretreatcentre.org/wp-content/uploads/2022/02/logo_mcrc_new-1-100x118.png" alt="Mount Carmel Retreat Centre Logo" style="max-width: 100px; height: auto; display: block;">
                             </td>
                             <td valign="middle" align="center" style="color: white; font-family: Arial, sans-serif;">
-                                <h2 style="margin: 0; font-size: 26px; font-weight: bold; color: white;">Mount Carmel Retreat Centre</h2>
+                                <h2 style="margin: 0; font-size: 32px; font-weight: bold; color: white;">Mount Carmel Retreat Centre</h2>
                             </td>
                         </tr>
                     </table>
@@ -132,7 +132,9 @@
                         {!! $greeting !!}
                     </div>
                     
-                    <h1 style="color: #b53d5e; margin: 20px 0 10px 0; font-size: 20px; border-bottom: 2px solid #b53d5e; padding-bottom: 10px;">{{ $heading }}</h1>
+                    @if(!empty($heading))
+                        <h1 style="color: #b53d5e; margin: 20px 0 10px 0; font-size: 20px; border-bottom: 2px solid #b53d5e; padding-bottom: 10px;">{{ $heading }}</h1>
+                    @endif
 
                     <div style="background-color: white; padding: 20px; border-radius: 5px; margin: 20px 0; border-left: 4px solid #b53d5e;">
                         {!! $body !!}

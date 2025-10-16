@@ -15,7 +15,7 @@ class CustomEmailNotification extends Notification implements ShouldQueue
      * Create a new notification instance.
      */
     public function __construct(
-        public string $heading,
+        public ?string $heading,
         public string $subject,
         public string $body,
         public ?string $recipientName = null,

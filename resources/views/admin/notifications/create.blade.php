@@ -100,16 +100,15 @@
 
                         <!-- Heading -->
                         <div class="mb-3">
-                            <label for="heading" class="form-label">Email Heading <span class="text-danger">*</span></label>
+                            <label for="heading" class="form-label">Email Heading</label>
                             <input type="text" name="heading" id="heading" 
                                    class="form-control @error('heading') is-invalid @enderror" 
                                    value="{{ old('heading') }}" 
-                                   placeholder="e.g., Important Update" 
-                                   required>
+                                   placeholder="e.g., Important Update (optional)">
                             @error('heading')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
-                            <small class="form-text text-muted">This will appear as the main heading in the email</small>
+                            <small class="form-text text-muted">Optional: This will appear as the main heading in the email. Leave empty if not needed.</small>
                         </div>
 
                         <!-- Subject -->

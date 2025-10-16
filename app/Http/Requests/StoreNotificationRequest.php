@@ -24,7 +24,7 @@ class StoreNotificationRequest extends FormRequest
         return [
             'need' => 'required|in:retreat,custom',
             'retreat_id' => 'required_if:need,retreat|nullable|exists:retreats,id',
-            'heading' => 'required|string|max:255',
+            'heading' => 'nullable|string|max:255',
             'subject' => 'required|string|max:255',
             'body' => 'required|string',
             'greeting' => 'nullable|string|max:255',
@@ -73,7 +73,6 @@ class StoreNotificationRequest extends FormRequest
             'need.in' => 'Invalid notification type selected.',
             'retreat_id.required_if' => 'Please select a retreat.',
             'retreat_id.exists' => 'The selected retreat does not exist.',
-            'heading.required' => 'Please enter a heading.',
             'subject.required' => 'Please enter a subject.',
             'body.required' => 'Please enter the email body.',
         ];
