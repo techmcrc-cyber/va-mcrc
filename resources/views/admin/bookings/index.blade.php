@@ -421,8 +421,11 @@ $(document).ready(function() {
                             <select id="status-filter" class="form-select form-select-sm">
                                 <option value="">All Statuses</option>
                                 <option value="confirmed">Confirmed</option>
-                                <option value="pending">Pending</option>
-                                <option value="CRITERIA_FAILED">Criteria Failed</option>
+                                <option value="cancelled">Cancelled</option>
+                                <option value="GENDER_MISMATCH">Gender Mismatch</option>
+                                <option value="AGE_MISMATCH">Age Mismatch</option>
+                                <option value="MARRIED_MISMATCH">Married Mismatch</option>
+                                <option value="VOCATION_MISMATCH">Vocation Mismatch</option>
                                 <option value="RECURRENT_BOOKING">Recurrent Booking</option>
                             </select>
                         </div>

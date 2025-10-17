@@ -27,12 +27,19 @@ class BookingController extends Controller
     public function active(Request $request)
     {
         if ($request->ajax()) {
+            // Check if filtering for cancelled bookings
+            $showCancelled = $request->has('status_filter') && $request->status_filter === 'cancelled';
+            
             $query = Booking::with(['retreat', 'creator'])
                 ->where('participant_number', 1)
-                ->where('is_active', true)
                 ->whereHas('retreat', function($q) {
                     $q->where('end_date', '>=', now());
                 });
+            
+            // Only filter by is_active if not specifically looking for cancelled bookings
+            if (!$showCancelled) {
+                $query->where('is_active', true);
+            }
             
             // Handle search
             if ($request->has('search') && !empty($request->search['value'])) {
@@ -66,9 +73,16 @@ class BookingController extends Controller
                               $q->whereNull('flag')
                                 ->orWhere('flag', '');
                           });
-                } elseif ($status === 'pending') {
-                    $query->where('is_active', 2);
+                } elseif ($status === 'cancelled') {
+                    $query->where('is_active', 0);
+                } elseif ($status === 'AGE_MISMATCH') {
+                    // Age mismatch includes both MIN_AGE_FAILED and MAX_AGE_FAILED
+                    $query->where(function($q) {
+                        $q->where('flag', 'LIKE', '%MIN_AGE_FAILED%')
+                          ->orWhere('flag', 'LIKE', '%MAX_AGE_FAILED%');
+                    });
                 } else {
+                    // Filter by flag (GENDER_MISMATCH, MARRIED_MISMATCH, VOCATION_MISMATCH, RECURRENT_BOOKING)
                     $query->where(function($q) use ($status) {
                         $q->where('flag', 'LIKE', "%{$status}%");
                     });
@@ -127,12 +141,19 @@ class BookingController extends Controller
     public function archive(Request $request)
     {
         if ($request->ajax()) {
+            // Check if filtering for cancelled bookings
+            $showCancelled = $request->has('status_filter') && $request->status_filter === 'cancelled';
+            
             $query = Booking::with(['retreat', 'creator'])
                 ->where('participant_number', 1)
-                ->where('is_active', true)
                 ->whereHas('retreat', function($q) {
                     $q->where('end_date', '<', now()->toDateString());
                 });
+            
+            // Only filter by is_active if not specifically looking for cancelled bookings
+            if (!$showCancelled) {
+                $query->where('is_active', true);
+            }
             
             // Handle search
             if ($request->has('search') && !empty($request->search['value'])) {
@@ -166,9 +187,16 @@ class BookingController extends Controller
                               $q->whereNull('flag')
                                 ->orWhere('flag', '');
                           });
-                } elseif ($status === 'pending') {
-                    $query->where('is_active', 2);
+                } elseif ($status === 'cancelled') {
+                    $query->where('is_active', 0);
+                } elseif ($status === 'AGE_MISMATCH') {
+                    // Age mismatch includes both MIN_AGE_FAILED and MAX_AGE_FAILED
+                    $query->where(function($q) {
+                        $q->where('flag', 'LIKE', '%MIN_AGE_FAILED%')
+                          ->orWhere('flag', 'LIKE', '%MAX_AGE_FAILED%');
+                    });
                 } else {
+                    // Filter by flag (GENDER_MISMATCH, MARRIED_MISMATCH, VOCATION_MISMATCH, RECURRENT_BOOKING)
                     $query->where(function($q) use ($status) {
                         $q->where('flag', 'LIKE', "%{$status}%");
                     });
@@ -260,49 +288,54 @@ class BookingController extends Controller
             }
             $nestedData['participants'] = $participants;
             
-            // Status - collect flags from all participants
-            $allFlags = [];
-            
-            // Get all participants for this booking
-            $allParticipants = Booking::where('booking_id', $booking->booking_id)
-                ->where('is_active', true)
-                ->orderBy('participant_number')
-                ->get();
-            
-            foreach ($allParticipants as $participant) {
-                if ($participant->flag) {
-                    $participantFlags = explode(',', $participant->flag);
-                    foreach ($participantFlags as $flag) {
-                        $flag = trim($flag);
-                        if (!empty($flag)) {
-                            // Store flag with participant full name
-                            $participantName = $participant->firstname . ' ' . $participant->lastname;
-                            
-                            if (!isset($allFlags[$flag])) {
-                                $allFlags[$flag] = [];
+            // Status - check if cancelled first
+            if (!$booking->is_active) {
+                $status = '<span class="badge bg-danger">Cancelled</span>';
+            } else {
+                // Status - collect flags from all participants
+                $allFlags = [];
+                
+                // Get all participants for this booking
+                $allParticipants = Booking::where('booking_id', $booking->booking_id)
+                    ->where('is_active', true)
+                    ->orderBy('participant_number')
+                    ->get();
+                
+                foreach ($allParticipants as $participant) {
+                    if ($participant->flag) {
+                        $participantFlags = explode(',', $participant->flag);
+                        foreach ($participantFlags as $flag) {
+                            $flag = trim($flag);
+                            if (!empty($flag)) {
+                                // Store flag with participant full name
+                                $participantName = $participant->firstname . ' ' . $participant->lastname;
+                                
+                                if (!isset($allFlags[$flag])) {
+                                    $allFlags[$flag] = [];
+                                }
+                                $allFlags[$flag][] = $participantName;
                             }
-                            $allFlags[$flag][] = $participantName;
                         }
                     }
                 }
-            }
-            
-            $status = '';
-            if (!empty($allFlags)) {
-                foreach ($allFlags as $flag => $participants) {
-                    $status .= '<div class="mb-1">';
-                    $flagLabel = Str::title(str_replace('_', ' ', $flag));
-                    // Create list format for tooltip
-                    $participantList = implode("\n", array_map(function($name) {
-                        return '• ' . $name;
-                    }, $participants));
-                    $status .= '<span class="badge bg-warning" data-toggle="tooltip" data-html="true" title="' . e(str_replace("\n", "<br>", $participantList)) . '">';
-                    $status .= e($flagLabel) . ' <small>(' . count($participants) . ')</small>';
-                    $status .= '</span>';
-                    $status .= '</div>';
+                
+                $status = '';
+                if (!empty($allFlags)) {
+                    foreach ($allFlags as $flag => $participants) {
+                        $status .= '<div class="mb-1">';
+                        $flagLabel = Str::title(str_replace('_', ' ', $flag));
+                        // Create list format for tooltip
+                        $participantList = implode("\n", array_map(function($name) {
+                            return '• ' . $name;
+                        }, $participants));
+                        $status .= '<span class="badge bg-warning" data-toggle="tooltip" data-html="true" title="' . e(str_replace("\n", "<br>", $participantList)) . '">';
+                        $status .= e($flagLabel) . ' <small>(' . count($participants) . ')</small>';
+                        $status .= '</span>';
+                        $status .= '</div>';
+                    }
+                } else {
+                    $status = '<span class="badge bg-success">Confirmed</span>';
                 }
-            } else {
-                $status = '<span class="badge bg-success">Confirmed</span>';
             }
             $nestedData['status'] = $status;
             
