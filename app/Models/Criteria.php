@@ -23,4 +23,12 @@ class Criteria extends Model
         'min_age' => 'integer',
         'max_age' => 'integer',
     ];
+
+    /**
+     * Get the retreats that use this criteria.
+     */
+    public function retreats()
+    {
+        return $this->hasMany(Retreat::class, 'criteria');
+    }
 }

@@ -147,6 +147,11 @@ class CriteriaController extends Controller
     {
         $this->authorize('delete-criteria');
         
+        // Check if criteria is being used by any retreats
+        if ($criterion->retreats()->exists()) {
+            return back()->with('error', 'Cannot delete criteria that is assigned to retreats. Please remove it from all retreats first.');
+        }
+        
         $criterion->delete();
         return redirect()->route('admin.criteria.index')
             ->with('success', 'Criteria deleted successfully');

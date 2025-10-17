@@ -257,6 +257,21 @@ class UserController extends Controller
             return back()->with('error', 'You cannot delete your own account.');
         }
 
+        // Check if user has created any bookings
+        if ($user->createdBookings()->exists()) {
+            return back()->with('error', 'Cannot delete user who has created bookings. Please reassign or remove the bookings first.');
+        }
+
+        // Check if user has created any retreats
+        if ($user->createdRetreats()->exists()) {
+            return back()->with('error', 'Cannot delete user who has created retreats. Please reassign or remove the retreats first.');
+        }
+
+        // Check if user has created any notifications
+        if ($user->createdNotifications()->exists()) {
+            return back()->with('error', 'Cannot delete user who has created notifications. Please remove the notifications first.');
+        }
+
         $user->delete();
 
         return redirect()

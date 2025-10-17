@@ -134,4 +134,44 @@ class User extends Authenticatable
     {
         return $this->role && $this->role->is_super_admin;
     }
+
+    /**
+     * Get the bookings created by this user.
+     */
+    public function createdBookings()
+    {
+        return $this->hasMany(Booking::class, 'created_by');
+    }
+
+    /**
+     * Get the bookings updated by this user.
+     */
+    public function updatedBookings()
+    {
+        return $this->hasMany(Booking::class, 'updated_by');
+    }
+
+    /**
+     * Get the retreats created by this user.
+     */
+    public function createdRetreats()
+    {
+        return $this->hasMany(Retreat::class, 'created_by');
+    }
+
+    /**
+     * Get the retreats updated by this user.
+     */
+    public function updatedRetreats()
+    {
+        return $this->hasMany(Retreat::class, 'updated_by');
+    }
+
+    /**
+     * Get the notifications created by this user.
+     */
+    public function createdNotifications()
+    {
+        return $this->hasMany(Notification::class, 'created_by');
+    }
 }
