@@ -14,6 +14,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\BookingsExport;
 use App\Imports\BookingsImport;
 use App\Mail\BookingConfirmation;
+use App\Jobs\SendBookingCancellationEmail;
 use Illuminate\Support\Facades\Session;
 
 class BookingController extends Controller
@@ -667,8 +668,24 @@ class BookingController extends Controller
 
     public function destroy(Booking $booking)
     {        
+        // Get all participants before marking inactive
+        $allParticipants = Booking::where('booking_id', $booking->booking_id)->get();
+        $primaryBooking = $allParticipants->where('participant_number', 1)->first();
+        $retreat = $booking->retreat;
+        
         // Mark all participants with the same booking_id as inactive
         Booking::where('booking_id', $booking->booking_id)->update(['is_active' => false]);
+        
+        // Send complete cancellation email to primary participant via queue
+        if ($primaryBooking) {
+            SendBookingCancellationEmail::dispatch(
+                $primaryBooking,
+                $retreat,
+                $primaryBooking,
+                collect(), // No remaining participants
+                'full'
+            );
+        }
         
         // Determine redirect based on retreat end date (before today)
         $isArchived = $booking->retreat->end_date->toDateString() < now()->toDateString();
@@ -676,7 +693,7 @@ class BookingController extends Controller
         
         return redirect()
             ->route($redirectRoute)
-            ->with('success', 'Booking cancelled successfully.');
+            ->with('success', 'Booking cancelled successfully. Cancellation email sent to primary participant.');
     }
     
     /**
@@ -690,17 +707,41 @@ class BookingController extends Controller
             return $this->destroy($participant);
         }
         
+        // Get all participants and retreat before marking inactive
+        $allParticipants = Booking::where('booking_id', $participant->booking_id)
+            ->where('is_active', true)
+            ->get();
+        $primaryBooking = $allParticipants->where('participant_number', 1)->first();
+        $retreat = $participant->retreat;
+        
         // Mark only this participant as inactive
         $participant->update(['is_active' => false]);
         
-        // Get the primary booking to redirect back to
-        $primaryBooking = Booking::where('booking_id', $participant->booking_id)
-            ->where('participant_number', 1)
-            ->first();
+        // Get remaining active participants after cancellation
+        $remainingParticipants = $allParticipants->where('id', '!=', $participant->id);
+        
+        // Update additional_participants count for primary booking
+        if ($primaryBooking && $primaryBooking->is_active) {
+            $activeCount = $remainingParticipants->count();
+            $primaryBooking->update([
+                'additional_participants' => max(0, $activeCount - 1),
+            ]);
+        }
+        
+        // Send partial cancellation email to primary participant via queue
+        if ($primaryBooking) {
+            SendBookingCancellationEmail::dispatch(
+                $primaryBooking,
+                $retreat,
+                $participant,
+                $remainingParticipants->values(),
+                'partial'
+            );
+        }
         
         return redirect()
             ->route('admin.bookings.show', $primaryBooking->id)
-            ->with('success', 'Participant cancelled successfully.');
+            ->with('success', 'Participant cancelled successfully. Cancellation email sent to primary participant.');
     }
 
     /**

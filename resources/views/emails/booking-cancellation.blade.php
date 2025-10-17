@@ -5,28 +5,101 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Booking Cancellation</title>
     <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-        .header { background-color: #dc3545; color: white; padding: 20px; text-align: center; border-radius: 5px 5px 0 0; }
-        .content { background-color: #f9f9f9; padding: 20px; border: 1px solid #ddd; }
-        .footer { background-color: #eee; padding: 15px; text-align: center; border-radius: 0 0 5px 5px; font-size: 12px; }
-        .cancellation-details { background-color: #fff; padding: 15px; margin: 10px 0; border-radius: 5px; border-left: 4px solid #dc3545; }
-        .remaining-participant { background-color: #d4edda; border: 1px solid #c3e6cb; padding: 10px; margin: 5px 0; border-radius: 3px; }
-        .cancelled-participant { background-color: #f8d7da; border: 1px solid #f5c6cb; padding: 10px; margin: 5px 0; border-radius: 3px; }
-        .highlight { color: #dc3545; font-weight: bold; }
-        .success-highlight { color: #28a745; font-weight: bold; }
-        .important { background-color: #fff3cd; border: 1px solid #ffeaa7; padding: 10px; border-radius: 5px; margin: 10px 0; }
+        body { 
+            font-family: Arial, sans-serif; 
+            line-height: 1.6; 
+            color: #333; 
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container { 
+            max-width: 75%; 
+            margin: 20px auto; 
+            background-color: #ffffff;
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .content { 
+            background-color: #f9f9f9; 
+            padding: 30px; 
+            border: 1px solid #ddd; 
+        }
+        .cancellation-details { 
+            background-color: white; 
+            padding: 15px; 
+            margin: 10px 0; 
+            border-radius: 5px; 
+            border-left: 4px solid #dc3545; 
+        }
+        .remaining-participant { 
+            background-color: #d4edda; 
+            border: 1px solid #c3e6cb; 
+            padding: 10px; 
+            margin: 5px 0; 
+            border-radius: 3px; 
+        }
+        .cancelled-participant { 
+            background-color: #f8d7da; 
+            border: 1px solid #f5c6cb; 
+            padding: 10px; 
+            margin: 5px 0; 
+            border-radius: 3px; 
+        }
+        .highlight { 
+            color: #dc3545; 
+            font-weight: bold; 
+        }
+        .success-highlight { 
+            color: #28a745; 
+            font-weight: bold; 
+        }
+        .important { 
+            background-color: #fff3cd; 
+            border: 1px solid #ffeaa7; 
+            padding: 10px; 
+            border-radius: 5px; 
+            margin: 10px 0; 
+        }
+        @media only screen and (max-width: 600px) {
+            .container {
+                max-width: 100%;
+                margin: 0;
+                border-radius: 0;
+            }
+            .content {
+                padding: 20px;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h2>❌ Retreat Booking {{ $cancellationType === 'full' ? 'Complete Cancellation' : 'Participant Cancellation' }}</h2>
-            <p>Mount Carmel Retreat Centre</p>
-        </div>
+        <!-- Header with table layout for email compatibility -->
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #b53d5e;">
+            <tr>
+                <td style="padding: 20px 30px;">
+                    <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                        <tr>
+                            <td width="120" valign="middle" style="padding-right: 20px;">
+                                <img src="https://mountcarmelretreatcentre.org/wp-content/uploads/2022/02/logo_mcrc_new-1-100x118.png" alt="Mount Carmel Retreat Centre Logo" style="max-width: 100px; height: auto; display: block;">
+                            </td>
+                            <td valign="middle" align="center" style="color: white; font-family: Arial, sans-serif;">
+                                <h2 style="margin: 0; font-size: 28px; font-weight: bold; color: white;">Retreat Booking {{ $cancellationType === 'full' ? 'Complete Cancellation' : 'Participant Cancellation' }}</h2>
+                                <p style="margin: 5px 0 0 0; font-size: 22px; color: white; font-weight: bold;">Mount Carmel Retreat Centre</p>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
 
-        <div class="content">
-            <p>Dear {{ $primaryBooking->firstname }} {{ $primaryBooking->lastname }},</p>
+        <!-- Content Section -->
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f9f9f9; border: 1px solid #ddd;">
+            <tr>
+                <td style="padding: 30px; font-family: Arial, sans-serif; color: #333; line-height: 1.6;">
+                    <p>Dear {{ $primaryBooking->firstname }} {{ $primaryBooking->lastname }},</p>
             
             @if($cancellationType === 'full')
                 <p>Your complete retreat booking has been <strong class="highlight">cancelled</strong>.</p>
@@ -92,10 +165,10 @@
                 </div>
             @endif
 
-            @if($retreat->instructions)
+            @if($retreat->instructions && $cancellationType === 'partial' && count($remainingParticipants) > 0)
                 <div class="cancellation-details">
                     <h4>📋 Retreat Instructions (For Remaining Participants)</h4>
-                    <p>{{ $retreat->instructions }}</p>
+                    <div>{!! $retreat->instructions !!}</div>
                 </div>
             @endif
 
@@ -120,14 +193,29 @@
                 <p>We look forward to welcoming your remaining participants to this spiritual journey!</p>
             @endif
 
-            <p>God bless,<br>
-            <strong>Mount Carmel Retreat Centre</strong></p>
-        </div>
+                    <p style="margin-top: 30px; margin-bottom: 0;">
+                        God bless,<br>
+                        <strong>Mount Carmel Retreat Centre</strong>
+                    </p>
+                </td>
+            </tr>
+        </table>
 
-        <div class="footer">
-            <p>Mount Carmel Retreat Centre | Email: info@mountcarmelretreat.org | Phone: +91-XXXXXXXXXX</p>
-            <p>This is an automated message. Please do not reply to this email.</p>
-        </div>
+        <!-- Footer Section -->
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #eee;">
+            <tr>
+                <td style="padding: 20px; text-align: center; font-family: Arial, sans-serif; font-size: 12px; color: #666;">
+                    <p style="margin: 5px 0;"><strong>Mount Carmel Retreat Centre</strong></p>
+                    <p style="margin: 5px 0;">
+                        Email: <a href="mailto:info@mountcarmelretreat.org" style="color: #b53d5e; text-decoration: none;">info@mountcarmelretreat.org</a> | 
+                        Phone: +91-XXXXXXXXXX
+                    </p>
+                    <p style="margin-top: 10px; margin-bottom: 5px; color: #999;">
+                        This is an automated message. Please do not reply to this email.
+                    </p>
+                </td>
+            </tr>
+        </table>
     </div>
 </body>
 </html>

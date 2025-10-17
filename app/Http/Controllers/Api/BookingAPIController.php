@@ -7,6 +7,7 @@ use App\Models\BookingParticipant;
 use App\Models\Retreat;
 use App\Mail\BookingConfirmation;
 use App\Mail\BookingCancellation;
+use App\Jobs\SendBookingCancellationEmail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
@@ -578,21 +579,16 @@ class BookingAPIController extends BaseAPIController
                 ]);
             }
 
-            // Send cancellation confirmation email to primary participant
-            try {
-                Mail::to($primaryBooking->email)
-                    ->send(new BookingCancellation(
-                        $primaryBooking,
-                        $retreat,
-                        $participantToCancel,
-                        $remainingParticipants->values(),
-                        'partial'
-                    ));
-            } catch (\Exception $e) {
-                \Log::error('Failed to send cancellation confirmation email: ' . $e->getMessage());
-            }
-
             DB::commit();
+
+            // Send cancellation confirmation email to primary participant via queue
+            SendBookingCancellationEmail::dispatch(
+                $primaryBooking,
+                $retreat,
+                $participantToCancel,
+                $remainingParticipants->values(),
+                'partial'
+            );
 
             // Prepare response
             $responseData = [
@@ -659,21 +655,16 @@ class BookingAPIController extends BaseAPIController
                 ]);
             }
 
-            // Send cancellation confirmation email to primary participant
-            try {
-                Mail::to($primaryBooking->email)
-                    ->send(new BookingCancellation(
-                        $primaryBooking,
-                        $retreat,
-                        $participantToCancel,
-                        $remainingParticipants->values(),
-                        'partial'
-                    ));
-            } catch (\Exception $e) {
-                \Log::error('Failed to send cancellation confirmation email: ' . $e->getMessage());
-            }
-
             DB::commit();
+
+            // Send cancellation confirmation email to primary participant via queue
+            SendBookingCancellationEmail::dispatch(
+                $primaryBooking,
+                $retreat,
+                $participantToCancel,
+                $remainingParticipants->values(),
+                'partial'
+            );
 
             // Prepare response
             $responseData = [
@@ -731,19 +722,14 @@ class BookingAPIController extends BaseAPIController
                 $primaryBooking = $participantToCancel; // Fallback if primary not found
             }
 
-            // Send complete cancellation email
-            try {
-                Mail::to($primaryBooking->email)
-                    ->send(new BookingCancellation(
-                        $primaryBooking,
-                        $retreat,
-                        $participantToCancel,
-                        collect(), // No remaining participants
-                        'full'
-                    ));
-            } catch (\Exception $e) {
-                \Log::error('Failed to send complete cancellation email: ' . $e->getMessage());
-            }
+            // Send complete cancellation email via queue
+            SendBookingCancellationEmail::dispatch(
+                $primaryBooking,
+                $retreat,
+                $participantToCancel,
+                collect(), // No remaining participants
+                'full'
+            );
 
             DB::commit();
 
