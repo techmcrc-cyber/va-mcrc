@@ -7,9 +7,11 @@
     <div class="card mb-2">
         <div class="card-header d-flex justify-content-between align-items-center" style="background-color: #f8f9fc; border-bottom: 1px solid #e3e6f0;">
             <h4 class="m-0 fw-bold" style="color: #b53d5e; font-size: 1.5rem;">Criteria</h4>
+            @can('create-criteria')
             <a href="{{ route('admin.criteria.create') }}" class="btn btn-sm btn-primary">
                 <i class="fas fa-plus me-1"></i> Create New Criteria
             </a>
+            @endcan
         </div>
     </div>
 

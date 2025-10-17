@@ -374,21 +374,29 @@ class BookingController extends Controller
                 $actions .= '<i class="fas fa-eye"></i></a>';
                 $actions .= '</div>';
             } else {
-                // For active list, show all buttons
+                // For active list, show all buttons based on permissions
                 $actions .= '<div class="btn-row mb-1">';
                 $actions .= '<a href="' . route('admin.bookings.show', $booking->id) . '" class="btn btn-sm btn-info me-1" title="View">';
                 $actions .= '<i class="fas fa-eye"></i></a> ';
-                $actions .= '<a href="' . route('admin.bookings.edit', $booking->id) . '" class="btn btn-sm btn-primary" title="Edit">';
-                $actions .= '<i class="fas fa-edit"></i></a>';
+                
+                // Edit button - check permission
+                if (Auth::user()->can('edit-bookings')) {
+                    $actions .= '<a href="' . route('admin.bookings.edit', $booking->id) . '" class="btn btn-sm btn-primary" title="Edit">';
+                    $actions .= '<i class="fas fa-edit"></i></a>';
+                }
                 $actions .= '</div>';
-                $actions .= '<div class="btn-row">';
-                $actions .= '<form action="' . route('admin.bookings.destroy', $booking->id) . '" method="POST" class="d-inline w-100">';
-                $actions .= csrf_field();
-                $actions .= method_field('DELETE');
-                $actions .= '<button type="submit" class="btn btn-sm btn-danger w-100" title="Cancel Booking" ';
-                $actions .= 'onclick="return confirm(\'Are you sure you want to cancel this booking? This will deactivate all participants in this booking.\')">';
-                $actions .= '<i class="fas fa-ban"></i></button></form>';
-                $actions .= '</div>';
+                
+                // Delete button - check permission
+                if (Auth::user()->can('delete-bookings')) {
+                    $actions .= '<div class="btn-row">';
+                    $actions .= '<form action="' . route('admin.bookings.destroy', $booking->id) . '" method="POST" class="d-inline w-100">';
+                    $actions .= csrf_field();
+                    $actions .= method_field('DELETE');
+                    $actions .= '<button type="submit" class="btn btn-sm btn-danger w-100" title="Cancel Booking" ';
+                    $actions .= 'onclick="return confirm(\'Are you sure you want to cancel this booking? This will deactivate all participants in this booking.\')">';
+                    $actions .= '<i class="fas fa-ban"></i></button></form>';
+                    $actions .= '</div>';
+                }
             }
             
             $actions .= '</div>';

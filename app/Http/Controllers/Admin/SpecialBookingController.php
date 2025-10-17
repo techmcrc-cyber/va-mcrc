@@ -63,11 +63,12 @@ class SpecialBookingController extends Controller
                 // Check if retreat has ended (before today)
                 $hasEnded = $booking->retreat && $booking->retreat->end_date->toDateString() < now()->toDateString();
                 
-                // Actions - matching normal bookings design
+                // Actions - matching normal bookings design with permission checks
                 $actions = '<div class="btn-row mb-1">';
                 $actions .= '<a href="' . route('admin.special-bookings.show', $booking) . '" class="btn btn-sm btn-info me-1" title="View">';
                 $actions .= '<i class="fas fa-eye"></i></a> ';
                 
+                // Edit button - Super Admin only (already protected by route middleware)
                 if ($hasEnded) {
                     // Disabled Edit button for past retreats
                     $actions .= '<button class="btn btn-sm btn-primary" title="Cannot edit past retreat" disabled>';
@@ -79,6 +80,7 @@ class SpecialBookingController extends Controller
                 }
                 $actions .= '</div>';
                 
+                // Delete button - Super Admin only (already protected by route middleware)
                 $actions .= '<div class="btn-row">';
                 if ($hasEnded) {
                     // Disabled Cancel button for past retreats

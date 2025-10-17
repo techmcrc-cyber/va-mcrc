@@ -12,6 +12,8 @@ use Illuminate\View\View;
 
 class NotificationController extends Controller
 {
+    use \Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+    
     protected NotificationService $notificationService;
 
     public function __construct(NotificationService $notificationService)
@@ -24,6 +26,7 @@ class NotificationController extends Controller
      */
     public function index(): View
     {
+        $this->authorize('view-notifications');
         $perPage = request('per_page', 15);
         
         $notifications = Notification::with(['retreat', 'creator'])
@@ -39,6 +42,7 @@ class NotificationController extends Controller
      */
     public function show(Notification $notification): View
     {
+        $this->authorize('view-notifications');
         $notification->load(['retreat', 'creator']);
         
         return view('admin.notifications.show', compact('notification'));
@@ -49,6 +53,7 @@ class NotificationController extends Controller
      */
     public function destroy(Notification $notification): RedirectResponse
     {
+        $this->authorize('delete-notifications');
         try {
             $notification->delete();
 
@@ -67,6 +72,7 @@ class NotificationController extends Controller
      */
     public function create(): View
     {
+        $this->authorize('create-notifications');
         $activeRetreats = Retreat::active()
             ->orderBy('start_date', 'desc')
             ->get();
@@ -79,6 +85,7 @@ class NotificationController extends Controller
      */
     public function store(StoreNotificationRequest $request): RedirectResponse
     {
+        $this->authorize('create-notifications');
         try {
             $notification = $this->notificationService->createNotification($request->validated());
             

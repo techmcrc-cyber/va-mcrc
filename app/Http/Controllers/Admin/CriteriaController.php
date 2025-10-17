@@ -8,8 +8,12 @@ use Illuminate\Http\Request;
 
 class CriteriaController extends Controller
 {
+    use \Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+
     public function index(Request $request)
     {
+        $this->authorize('view-criteria');
+        
         if ($request->ajax()) {
             $query = Criteria::query();
             
@@ -51,14 +55,23 @@ class CriteriaController extends Controller
                     : '<span class="badge bg-secondary">Inactive</span>';
                 
                 $actions = '<div class="btn-group" role="group">';
-                $actions .= '<a href="' . route('admin.criteria.edit', $criterion) . '" class="btn btn-primary btn-sm" title="Edit">';
-                $actions .= '<i class="fas fa-edit"></i></a> ';
-                $actions .= '<form action="' . route('admin.criteria.destroy', $criterion) . '" method="POST" class="d-inline">';
-                $actions .= csrf_field();
-                $actions .= method_field('DELETE');
-                $actions .= '<button type="submit" class="btn btn-danger btn-sm" title="Delete" ';
-                $actions .= 'onclick="return confirm(\'Are you sure you want to delete this criteria?\')">';
-                $actions .= '<i class="fas fa-trash"></i></button></form>';
+                
+                // Edit button - check permission
+                if (auth()->user()->can('edit-criteria')) {
+                    $actions .= '<a href="' . route('admin.criteria.edit', $criterion) . '" class="btn btn-primary btn-sm" title="Edit">';
+                    $actions .= '<i class="fas fa-edit"></i></a> ';
+                }
+                
+                // Delete button - check permission
+                if (auth()->user()->can('delete-criteria')) {
+                    $actions .= '<form action="' . route('admin.criteria.destroy', $criterion) . '" method="POST" class="d-inline">';
+                    $actions .= csrf_field();
+                    $actions .= method_field('DELETE');
+                    $actions .= '<button type="submit" class="btn btn-danger btn-sm" title="Delete" ';
+                    $actions .= 'onclick="return confirm(\'Are you sure you want to delete this criteria?\')">';
+                    $actions .= '<i class="fas fa-trash"></i></button></form>';
+                }
+                
                 $actions .= '</div>';
                 
                 $nestedData['actions'] = $actions;
@@ -78,11 +91,15 @@ class CriteriaController extends Controller
 
     public function create()
     {
+        $this->authorize('create-criteria');
+        
         return view('admin.criteria.create');
     }
 
     public function store(Request $request)
     {
+        $this->authorize('create-criteria');
+        
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'gender' => 'nullable|in:male,female',
@@ -101,11 +118,15 @@ class CriteriaController extends Controller
 
     public function edit(Criteria $criterion)
     {
+        $this->authorize('edit-criteria');
+        
         return view('admin.criteria.edit', compact('criterion'));
     }
 
     public function update(Request $request, Criteria $criterion)
     {
+        $this->authorize('edit-criteria');
+        
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'gender' => 'nullable|in:male,female',
@@ -124,6 +145,8 @@ class CriteriaController extends Controller
 
     public function destroy(Criteria $criterion)
     {
+        $this->authorize('delete-criteria');
+        
         $criterion->delete();
         return redirect()->route('admin.criteria.index')
             ->with('success', 'Criteria deleted successfully');

@@ -63,10 +63,15 @@ class PermissionController extends Controller
                     : '<span class="badge bg-secondary text-white"><i class="fas fa-times-circle me-1"></i> Inactive</span>';
                 
                 $actions = '<div class="btn-group" role="group">';
-                $actions .= '<a href="' . route('admin.permissions.edit', $permission) . '" class="btn btn-sm btn-primary">';
-                $actions .= '<i class="fas fa-edit"></i></a>';
                 
-                if($permission->is_deletable) {
+                // Edit button - check permission
+                if (auth()->user()->can('edit-permissions')) {
+                    $actions .= '<a href="' . route('admin.permissions.edit', $permission) . '" class="btn btn-sm btn-primary">';
+                    $actions .= '<i class="fas fa-edit"></i></a>';
+                }
+                
+                // Delete button - check permission and if deletable
+                if (auth()->user()->can('delete-permissions') && $permission->is_deletable) {
                     $actions .= '<form action="' . route('admin.permissions.destroy', $permission) . '" method="POST" class="d-inline">';
                     $actions .= csrf_field();
                     $actions .= method_field('DELETE');

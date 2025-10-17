@@ -10,9 +10,11 @@
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h3 class="card-title">Booking Details: {{ $booking->booking_id }}</h3>
                     <div>
+                        @can('edit-bookings')
                         <a href="{{ route('admin.bookings.edit', $booking->id) }}" class="btn btn-primary btn-sm">
                             <i class="fas fa-edit"></i> Edit
                         </a>
+                        @endcan
                         <a href="{{ route('admin.bookings.index') }}" class="btn btn-default btn-sm">
                             <i class="fas fa-arrow-left"></i> Back to List
                         </a>
@@ -205,6 +207,7 @@
                                                             @endif
                                                         </td>
                                                         <td>
+                                                            @can('delete-bookings')
                                                             <form action="{{ route('admin.bookings.cancel-participant', $participant->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to cancel this participant?');">
                                                                 @csrf
                                                                 @method('DELETE')
@@ -212,6 +215,7 @@
                                                                     <i class="fas fa-user-times"></i>
                                                                 </button>
                                                             </form>
+                                                            @endcan
                                                         </td>
                                                     </tr>
                                                 @endif
@@ -231,9 +235,12 @@
                                 </div>
                                 <div class="card-body">
                                     <div>
+                                        @can('edit-bookings')
                                         <a href="{{ route('admin.bookings.edit', $booking->id) }}" class="btn btn-primary me-2">
                                             <i class="fas fa-edit"></i> Edit Booking
                                         </a>
+                                        @endcan
+                                        @can('delete-bookings')
                                         <form action="{{ route('admin.bookings.destroy', $booking->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to cancel this entire booking? This will deactivate all participants in this booking.');">
                                             @csrf
                                             @method('DELETE')
@@ -241,6 +248,7 @@
                                                 <i class="fas fa-ban"></i> Cancel Booking
                                             </button>
                                         </form>
+                                        @endcan
                                     </div>
                                 </div>
                             </div>

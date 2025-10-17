@@ -85,10 +85,15 @@ class RoleController extends Controller
                 
                 // Actions
                 $actions = '<div class="btn-group" role="group">';
-                $actions .= '<a href="' . route('admin.roles.edit', $role) . '" class="btn btn-sm btn-primary">';
-                $actions .= '<i class="fas fa-edit"></i></a>';
                 
-                if (!$role->is_super_admin) {
+                // Edit button - check permission
+                if (auth()->user()->can('edit-roles')) {
+                    $actions .= '<a href="' . route('admin.roles.edit', $role) . '" class="btn btn-sm btn-primary">';
+                    $actions .= '<i class="fas fa-edit"></i></a>';
+                }
+                
+                // Delete button - check permission and if not super admin
+                if (auth()->user()->can('delete-roles') && !$role->is_super_admin) {
                     $actions .= '<form action="' . route('admin.roles.destroy', $role) . '" method="POST" class="d-inline">';
                     $actions .= csrf_field();
                     $actions .= method_field('DELETE');

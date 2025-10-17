@@ -62,7 +62,7 @@
                         <i class="fas fa-file-import me-2"></i> Import
                     </a>
                     @endcan
-                    @can('view-bookings')
+                    @can('create-bookings')
                     <a href="{{ route('admin.bookings.export') }}" 
                        class="list-group-item list-group-item-action ps-4 {{ request()->routeIs('admin.bookings.export*') ? 'active' : '' }}">
                         <i class="fas fa-file-export me-2"></i> Export

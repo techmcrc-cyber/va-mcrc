@@ -109,10 +109,15 @@ class UserController extends Controller
                 
                 // Actions
                 $actions = '<div class="btn-group" role="group">';
-                $actions .= '<a href="' . route('admin.users.edit', $user) . '" class="btn btn-sm btn-primary">';
-                $actions .= '<i class="fas fa-edit"></i></a>';
                 
-                if (!$user->isSuperAdmin() && auth()->id() !== $user->id) {
+                // Edit button - check permission
+                if (auth()->user()->can('edit-users')) {
+                    $actions .= '<a href="' . route('admin.users.edit', $user) . '" class="btn btn-sm btn-primary">';
+                    $actions .= '<i class="fas fa-edit"></i></a>';
+                }
+                
+                // Delete button - check permission and additional conditions
+                if (auth()->user()->can('delete-users') && !$user->isSuperAdmin() && auth()->id() !== $user->id) {
                     $actions .= '<form action="' . route('admin.users.destroy', $user) . '" method="POST" class="d-inline">';
                     $actions .= csrf_field();
                     $actions .= method_field('DELETE');

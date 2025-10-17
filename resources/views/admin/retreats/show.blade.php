@@ -10,9 +10,11 @@
                 <div class="card-header">
                     <h3 class="card-title">Retreat Details: {{ $retreat->title }}</h3>
                     <div class="card-tools">
+                        @can('edit-retreats')
                         <a href="{{ route('admin.retreats.edit', $retreat) }}" class="btn btn-primary btn-sm">
                             <i class="fas fa-edit"></i> Edit
                         </a>
+                        @endcan
                         <a href="{{ route('admin.retreats.index') }}" class="btn btn-secondary btn-sm">
                             <i class="fas fa-arrow-left"></i> Back to List
                         </a>
@@ -97,10 +99,12 @@
                                         <form action="{{ route('admin.retreats.destroy', $retreat) }}" method="POST" 
                                               onsubmit="return confirm('Are you sure you want to delete this retreat?')">
                                             @csrf
+                                            @can('delete-retreats')
                                             @method('DELETE')
                                             <button type="submit" class="btn btn-danger">
                                                 <i class="fas fa-trash"></i> Delete Retreat
                                             </button>
+                                            @endcan
                                         </form>
                                     </div>
                                 </div>

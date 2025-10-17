@@ -7,9 +7,11 @@
     <div class="card mb-2">
         <div class="card-header d-flex justify-content-between align-items-center" style="background-color: #f8f9fc; border-bottom: 1px solid #e3e6f0;">
             <h4 class="m-0 fw-bold" style="color: #b53d5e; font-size: 1.5rem;">Retreats</h4>
+            @can('create-retreats')
             <a href="{{ route('admin.retreats.create') }}" class="btn btn-sm btn-primary">
                 <i class="fas fa-plus me-1"></i> Create New Retreat
             </a>
+            @endcan
         </div>
     </div>
 
