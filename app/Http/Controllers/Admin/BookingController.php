@@ -74,7 +74,13 @@ class BookingController extends Controller
                                 ->orWhere('flag', '');
                           });
                 } elseif ($status === 'cancelled') {
-                    $query->where('is_active', 0);
+                    // Show bookings that have ANY cancelled participants
+                    $query->whereIn('booking_id', function($subQuery) {
+                        $subQuery->select('booking_id')
+                            ->from('bookings')
+                            ->where('is_active', 0)
+                            ->distinct();
+                    });
                 } elseif ($status === 'AGE_MISMATCH') {
                     // Age mismatch includes both MIN_AGE_FAILED and MAX_AGE_FAILED
                     $query->where(function($q) {
@@ -188,7 +194,13 @@ class BookingController extends Controller
                                 ->orWhere('flag', '');
                           });
                 } elseif ($status === 'cancelled') {
-                    $query->where('is_active', 0);
+                    // Show bookings that have ANY cancelled participants
+                    $query->whereIn('booking_id', function($subQuery) {
+                        $subQuery->select('booking_id')
+                            ->from('bookings')
+                            ->where('is_active', 0)
+                            ->distinct();
+                    });
                 } elseif ($status === 'AGE_MISMATCH') {
                     // Age mismatch includes both MIN_AGE_FAILED and MAX_AGE_FAILED
                     $query->where(function($q) {
@@ -281,11 +293,24 @@ class BookingController extends Controller
             
             $nestedData['guest_info'] = $guestInfo;
             
-            // Participants
-            $participants = '<span class="badge bg-primary">' . ($booking->additional_participants + 1) . '</span>';
-            if ($booking->additional_participants > 0) {
-                $participants .= '<br><small class="text-muted">(+' . $booking->additional_participants . ')</small>';
+            // Participants - count only active participants
+            $activeParticipantsCount = Booking::where('booking_id', $booking->booking_id)
+                ->where('is_active', true)
+                ->count();
+            
+            $participants = '<span class="badge bg-primary">' . $activeParticipantsCount . '</span>';
+            if ($activeParticipantsCount > 1) {
+                $participants .= '<br><small class="text-muted">(+' . ($activeParticipantsCount - 1) . ')</small>';
             }
+            
+            // Show cancelled count if any
+            $cancelledCount = Booking::where('booking_id', $booking->booking_id)
+                ->where('is_active', false)
+                ->count();
+            if ($cancelledCount > 0) {
+                $participants .= '<br><small class="text-danger">(' . $cancelledCount . ' cancelled)</small>';
+            }
+            
             $nestedData['participants'] = $participants;
             
             // Status - check if cancelled first
