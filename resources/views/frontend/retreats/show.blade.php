@@ -11,7 +11,7 @@
             <div class="card mb-4">
                 <div class="card-body">
                     <h5 class="card-title">About This Retreat</h5>
-                    <p class="card-text">{{ $retreat['description'] }}</p>
+                    <div class="card-text">{!! $retreat['description'] !!}</div>
                 </div>
             </div>
 
@@ -19,7 +19,7 @@
             <div class="card mb-4">
                 <div class="card-body">
                     <h5 class="card-title"><i class="fas fa-info-circle"></i> Instructions</h5>
-                    <p class="card-text">{{ $retreat['details']['instructions'] }}</p>
+                    <div class="card-text">{!! $retreat['details']['instructions'] !!}</div>
                 </div>
             </div>
             @endif
@@ -27,7 +27,7 @@
             @if(!empty($retreat['details']['special_remarks']))
             <div class="alert alert-warning">
                 <strong><i class="fas fa-exclamation-triangle"></i> Special Remarks:</strong>
-                <p class="mb-0 mt-2">{{ $retreat['details']['special_remarks'] }}</p>
+                <div class="mb-0 mt-2">{!! $retreat['details']['special_remarks'] !!}</div>
             </div>
             @endif
         </div>

@@ -58,7 +58,8 @@ class BookingAPIController extends BaseAPIController
             $participants = $request->participants;
 
             foreach ($participants as $index => $participant) {
-                $participantRules = $this->getParticipantValidationRules($retreat);
+                $isPrimary = ($index === 0); // First participant is primary
+                $participantRules = $this->getParticipantValidationRules($retreat, $isPrimary);
                 $validator = Validator::make($participant, $participantRules, [
                     'whatsapp_number.digits' => 'WhatsApp number must be exactly 10 digits.',
                     'whatsapp_number.numeric' => 'WhatsApp number must contain only digits.',
@@ -89,9 +90,18 @@ class BookingAPIController extends BaseAPIController
                 $allBookings = [];
                 $primaryBooking = null;
 
+                $primaryParticipantData = null;
+
                 foreach ($participants as $index => $participantData) {
                     $serialNumber = $index + 1;
+                    $isPrimary = ($serialNumber === 1);
 
+                    // Store primary participant data for secondary participants
+                    if ($isPrimary) {
+                        $primaryParticipantData = $participantData;
+                    }
+
+                    // For secondary participants, use primary's address and emergency contact
                     $booking = Booking::create([
                         'booking_id' => $bookingId,
                         'retreat_id' => $retreat->id,
@@ -100,28 +110,28 @@ class BookingAPIController extends BaseAPIController
                         'whatsapp_number' => $participantData['whatsapp_number'],
                         'age' => $participantData['age'],
                         'email' => $participantData['email'],
-                        'address' => $participantData['address'],
+                        'address' => $isPrimary ? $participantData['address'] : $primaryParticipantData['address'],
                         'gender' => $participantData['gender'],
                         'married' => $participantData['married'] ?? null,
-                        'city' => $participantData['city'],
-                        'state' => $participantData['state'],
-                        'diocese' => $participantData['diocese'] ?? null,
-                        'parish' => $participantData['parish'] ?? null,
+                        'city' => $isPrimary ? $participantData['city'] : $primaryParticipantData['city'],
+                        'state' => $isPrimary ? $participantData['state'] : $primaryParticipantData['state'],
+                        'diocese' => $isPrimary ? ($participantData['diocese'] ?? null) : ($primaryParticipantData['diocese'] ?? null),
+                        'parish' => $isPrimary ? ($participantData['parish'] ?? null) : ($primaryParticipantData['parish'] ?? null),
                         'congregation' => $participantData['congregation'] ?? null,
-                        'emergency_contact_name' => $participantData['emergency_contact_name'],
-                        'emergency_contact_phone' => $participantData['emergency_contact_phone'],
-                        'additional_participants' => count($participants) - 1, // For primary participant only
-                        'special_remarks' => $participantData['special_remarks'] ?? null,
+                        'emergency_contact_name' => $isPrimary ? $participantData['emergency_contact_name'] : $primaryParticipantData['emergency_contact_name'],
+                        'emergency_contact_phone' => $isPrimary ? $participantData['emergency_contact_phone'] : $primaryParticipantData['emergency_contact_phone'],
+                        'additional_participants' => count($participants) - 1,
+                        'special_remarks' => $isPrimary ? ($participantData['special_remarks'] ?? null) : null,
                         'participant_number' => $serialNumber,
                         'is_active' => true,
-                        'flag' => null, // No flags - strict validation blocks invalid bookings
-                        'created_by' => null, // API bookings don't have user context
+                        'flag' => null,
+                        'created_by' => null,
                         'updated_by' => null,
                     ]);
 
                     $allBookings[] = $booking;
 
-                    if ($serialNumber === 1) {
+                    if ($isPrimary) {
                         $primaryBooking = $booking;
                     }
                 }
@@ -168,28 +178,33 @@ class BookingAPIController extends BaseAPIController
         }
     }
 
-    private function getParticipantValidationRules(Retreat $retreat): array
+    private function getParticipantValidationRules(Retreat $retreat, $isPrimary = true): array
     {
-
+        // Base rules for all participants
         $rules = [
             'firstname' => 'required|string|max:255',
             'lastname' => 'required|string|max:255',
             'whatsapp_number' => 'required|numeric|digits:10',
             'age' => 'required|integer|min:1|max:120',
             'email' => 'required|email|max:255',
-            'address' => 'required|string|max:500',
             'gender' => 'required|in:male,female,other',
             'married' => 'nullable|in:yes,no',
-            'city' => 'required|string|max:255',
-            'state' => 'required|string|max:255',
-            'diocese' => 'nullable|string|max:255',
-            'parish' => 'nullable|string|max:255',
             'congregation' => 'nullable|string|max:255',
-            'emergency_contact_name' => 'required|string|max:255',
-            'emergency_contact_phone' => 'required|string|max:20',
-            'special_remarks' => 'nullable|string|max:1000',
         ];
 
+        // Additional rules only for primary participant
+        if ($isPrimary) {
+            $rules['address'] = 'required|string|max:500';
+            $rules['city'] = 'required|string|max:255';
+            $rules['state'] = 'required|string|max:255';
+            $rules['diocese'] = 'nullable|string|max:255';
+            $rules['parish'] = 'nullable|string|max:255';
+            $rules['emergency_contact_name'] = 'required|string|max:255';
+            $rules['emergency_contact_phone'] = 'required|string|max:20';
+            $rules['special_remarks'] = 'nullable|string|max:1000';
+        }
+
+        // Congregation required for priests/sisters retreats
         if (in_array($retreat->criteria, ['priests_only', 'sisters_only'])) {
             $rules['congregation'] = 'required|string|max:255';
         }

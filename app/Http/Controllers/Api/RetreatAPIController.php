@@ -86,7 +86,8 @@ class RetreatAPIController extends BaseAPIController
             // Check if retreat is available (not past and has available spots)
             $bookedSeats = $retreat->bookings->count();
             $availableSpots = $retreat->seats - $bookedSeats;
-            $isAvailable = $retreat->start_date->isFuture() && $availableSpots > 0;
+            // Available if end date is today or future (retreat hasn't ended yet) AND has available spots
+            $isAvailable = ($retreat->end_date->isToday() || $retreat->end_date->isFuture()) && $availableSpots > 0;
 
             // Prepare detailed response
             $retreatDetails = [
