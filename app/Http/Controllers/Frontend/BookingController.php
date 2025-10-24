@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\API\BookingAPIController;
+use App\Http\Controllers\Api\BookingAPIController;
 use App\Models\Retreat;
 use App\Models\Booking;
 use Illuminate\Http\Request;

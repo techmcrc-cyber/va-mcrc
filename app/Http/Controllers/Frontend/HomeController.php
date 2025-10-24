@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\API\RetreatAPIController;
+use App\Http\Controllers\Api\RetreatAPIController;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
