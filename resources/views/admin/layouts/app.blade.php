@@ -110,7 +110,7 @@
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancel</button>
-                    <form method="POST" action="{{ route('admin.logout') }}">
+                    <form method="POST" action="">
                         @csrf
                         <button type="submit" class="btn btn-primary">Logout</button>
                     </form>

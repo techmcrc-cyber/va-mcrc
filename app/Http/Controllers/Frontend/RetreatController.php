@@ -11,7 +11,7 @@ class RetreatController extends Controller
     public function index()
     {
         $retreats = Retreat::active()
-            ->where('start_date', '>=', now())
+            ->where('end_date', '>=', now())
             ->orderBy('start_date', 'asc')
             ->paginate(12);
 
