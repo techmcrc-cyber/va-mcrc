@@ -61,15 +61,15 @@
         <div class="col-md-4">
             <div class="card h-100">
                 <div class="card-body">
-                    <h5 class="card-title">{{ $retreat->title }}</h5>
+                    <h5 class="card-title">{{ $retreat['retreat_name'] }}</h5>
                     <p class="card-text text-muted">
                         <i class="fas fa-calendar"></i> 
-                        {{ $retreat->start_date->format('M d, Y') }} - {{ $retreat->end_date->format('M d, Y') }}
+                        {{ \Carbon\Carbon::parse($retreat['start_date'])->format('M d, Y') }} - {{ \Carbon\Carbon::parse($retreat['end_date'])->format('M d, Y') }}
                     </p>
-                    <p class="card-text">{{ Str::limit($retreat->short_description, 100) }}</p>
+                    <p class="card-text">{{ $retreat['criteria_label'] ?? 'Open to all' }}</p>
                     <div class="d-flex justify-content-between align-items-center">
-                        <span class="badge bg-info">{{ $retreat->seats - $retreat->bookings()->active()->count() }} seats left</span>
-                        <a href="{{ route('retreats.show', $retreat->id) }}" class="btn btn-sm btn-primary">View Details</a>
+                        <span class="badge bg-info">{{ $retreat['available_spots'] }} seats left</span>
+                        <a href="{{ route('retreats.show', $retreat['retreat_id']) }}" class="btn btn-sm btn-primary">View Details</a>
                     </div>
                 </div>
             </div>

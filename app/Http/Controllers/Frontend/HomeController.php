@@ -3,19 +3,30 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
-use App\Models\Retreat;
+use App\Http\Controllers\API\RetreatAPIController;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
-    public function index()
+    protected $retreatAPI;
+
+    public function __construct(RetreatAPIController $retreatAPI)
     {
-        // Get upcoming active retreats
-        $upcomingRetreats = Retreat::active()
-            ->where('start_date', '>=', now())
-            ->orderBy('start_date', 'asc')
-            ->take(6)
-            ->get();
+        $this->retreatAPI = $retreatAPI;
+    }
+
+    public function index(Request $request)
+    {
+        // Use the API controller to get retreats
+        $response = $this->retreatAPI->index($request);
+        $responseData = json_decode($response->getContent(), true);
+
+        $upcomingRetreats = collect([]);
+        
+        if ($response->isSuccessful() && isset($responseData['data']['retreats'])) {
+            // Take only first 6 for homepage
+            $upcomingRetreats = collect($responseData['data']['retreats'])->take(6);
+        }
 
         return view('frontend.home', compact('upcomingRetreats'));
     }

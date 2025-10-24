@@ -25,12 +25,12 @@ class BookingController extends Controller
         if ($retreatId) {
             $retreat = Retreat::active()
                 ->where('id', $retreatId)
-                ->where('start_date', '>=', now())
+                ->whereDate('start_date', '>=', now()->toDateString())
                 ->first();
         }
 
         $retreats = Retreat::active()
-            ->where('start_date', '>=', now())
+            ->whereDate('start_date', '>=', now()->toDateString())
             ->orderBy('start_date', 'asc')
             ->get();
 

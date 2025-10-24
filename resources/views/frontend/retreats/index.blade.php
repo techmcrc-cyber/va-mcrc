@@ -12,22 +12,23 @@
         <div class="col-md-6 col-lg-4">
             <div class="card h-100">
                 <div class="card-body">
-                    <h5 class="card-title">{{ $retreat->title }}</h5>
+                    <h5 class="card-title">{{ $retreat['retreat_name'] }}</h5>
                     <p class="card-text text-muted">
                         <i class="fas fa-calendar"></i> 
-                        {{ $retreat->start_date->format('M d, Y') }} - {{ $retreat->end_date->format('M d, Y') }}
+                        {{ \Carbon\Carbon::parse($retreat['start_date'])->format('M d, Y') }} - {{ \Carbon\Carbon::parse($retreat['end_date'])->format('M d, Y') }}
                     </p>
-                    <p class="card-text">{{ Str::limit($retreat->short_description, 120) }}</p>
+                    <p class="card-text">{{ $retreat['criteria_label'] ?? 'Open to all' }}</p>
                     
                     <div class="mb-3">
                         @php
-                            $bookedSeats = $retreat->bookings()->active()->count();
-                            $availableSeats = $retreat->seats - $bookedSeats;
-                            $percentage = ($bookedSeats / $retreat->seats) * 100;
+                            $availableSeats = $retreat['available_spots'];
+                            $totalSeats = $retreat['total_seats'];
+                            $bookedSeats = $totalSeats - $availableSeats;
+                            $percentage = $totalSeats > 0 ? ($bookedSeats / $totalSeats) * 100 : 0;
                         @endphp
                         <div class="d-flex justify-content-between mb-1">
                             <small>Availability</small>
-                            <small>{{ $availableSeats }} / {{ $retreat->seats }} seats</small>
+                            <small>{{ $availableSeats }} / {{ $totalSeats }} seats</small>
                         </div>
                         <div class="progress">
                             <div class="progress-bar {{ $percentage > 80 ? 'bg-danger' : ($percentage > 50 ? 'bg-warning' : 'bg-success') }}" 
@@ -36,8 +37,8 @@
                     </div>
 
                     <div class="d-flex justify-content-between align-items-center">
-                        <span class="badge bg-secondary">{{ ucfirst(str_replace('_', ' ', $retreat->criteria)) }}</span>
-                        <a href="{{ route('retreats.show', $retreat->id) }}" class="btn btn-sm btn-primary">
+                        <span class="badge bg-secondary">{{ ucfirst(str_replace('_', ' ', $retreat['criteria'])) }}</span>
+                        <a href="{{ route('retreats.show', $retreat['retreat_id']) }}" class="btn btn-sm btn-primary">
                             View Details <i class="fas fa-arrow-right"></i>
                         </a>
                     </div>
@@ -47,10 +48,6 @@
         @endforeach
     </div>
 
-    <!-- Pagination -->
-    <div class="mt-4">
-        {{ $retreats->links() }}
-    </div>
     @else
     <div class="alert alert-info">
         <i class="fas fa-info-circle"></i> No upcoming retreats available at the moment. Please check back later.

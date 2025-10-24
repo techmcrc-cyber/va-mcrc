@@ -33,7 +33,8 @@ class BookingController extends Controller
             $query = Booking::with(['retreat', 'creator'])
                 ->where('participant_number', 1)
                 ->whereHas('retreat', function($q) {
-                    $q->where('end_date', '>=', now());
+                    // Compare only dates, not time - retreat is active if end_date is today or future
+                    $q->whereDate('end_date', '>=', now()->toDateString());
                 });
             
             // Only filter by is_active if not specifically looking for cancelled bookings
@@ -123,7 +124,7 @@ class BookingController extends Controller
                 "recordsTotal"    => intval(Booking::where('participant_number', 1)
                     ->where('is_active', true)
                     ->whereHas('retreat', function($q) {
-                        $q->where('end_date', '>=', now());
+                        $q->whereDate('end_date', '>=', now()->toDateString());
                     })->count()),
                 "recordsFiltered" => intval($totalData),
                 "data"            => $data
@@ -816,7 +817,7 @@ class BookingController extends Controller
     public function importForm()
     {
         $retreats = Retreat::where('is_active', true)
-            ->where('end_date', '>=', now())
+            ->whereDate('end_date', '>=', now()->toDateString())
             ->orderBy('start_date')
             ->get();
             
