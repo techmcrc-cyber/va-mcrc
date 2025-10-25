@@ -17,9 +17,6 @@ class HomeController extends Controller
 
     public function index(Request $request)
     {
-        echo "coming soon";
-        die();
-        
         // Use the API controller to get retreats
         $response = $this->retreatAPI->index($request);
         $responseData = json_decode($response->getContent(), true);

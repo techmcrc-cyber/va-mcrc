@@ -5,7 +5,7 @@
 @push('styles')
 <style>
     .registration-header {
-        background: linear-gradient(135deg, var(--primary-green), var(--dark-green));
+        background: var(--gradient-primary);
         color: white;
         padding: 2rem 0;
         margin-bottom: 2rem;
@@ -20,7 +20,7 @@
     }
     
     .participant-card .card-header {
-        background-color: var(--primary-green);
+        background: var(--gradient-primary);
         color: white;
         padding: 1rem 1.5rem;
         border: none;
@@ -53,23 +53,23 @@
     }
     
     .form-control:focus, .form-select:focus {
-        border-color: var(--primary-green);
-        box-shadow: 0 0 0 0.2rem rgba(45, 95, 79, 0.15);
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(186, 65, 101, 0.15);
     }
     
     .btn-add-participant {
-        background-color: var(--beige);
-        color: var(--primary-green);
-        border: 2px dashed var(--primary-green);
+        background-color: white;
+        color: var(--primary-color);
+        border: 2px dashed var(--primary-color);
         padding: 0.75rem 1.5rem;
         border-radius: 6px;
         transition: all 0.3s;
     }
     
     .btn-add-participant:hover {
-        background-color: var(--primary-green);
+        background: var(--gradient-primary);
         color: white;
-        border-color: var(--primary-green);
+        border-color: transparent;
     }
     
     .btn-remove {
@@ -86,7 +86,8 @@
     }
     
     .retreat-info-card {
-        background-color: var(--beige);
+        background-color: white;
+        border: 1px solid #e0e0e0;
         border-radius: 8px;
         padding: 1.5rem;
         margin-bottom: 2rem;
@@ -129,7 +130,7 @@
         <!-- Retreat Selection -->
         <div class="card mb-4" style="border: none; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.08);">
             <div class="card-body" style="padding: 2rem;">
-                <h5 class="mb-3" style="color: var(--primary-green); font-size: 1.3rem;">
+                <h5 class="mb-3" style="color: var(--primary-color); font-size: 1.3rem;">
                     <i class="fas fa-calendar-alt me-2"></i>Select Retreat
                 </h5>
                 <div class="mb-3">
@@ -155,7 +156,7 @@
                     </h6>
                     <div class="table-responsive">
                         <table class="table table-hover" style="font-size: 0.9rem;">
-                            <thead style="background-color: var(--beige);">
+                            <thead style="background-color: #f8f9fa;">
                                 <tr>
                                     <th>Retreat Name</th>
                                     <th>Dates</th>

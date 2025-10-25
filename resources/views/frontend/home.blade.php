@@ -5,28 +5,29 @@
 @push('styles')
 <style>
     .hero-section {
-        background: linear-gradient(135deg, var(--primary-green), var(--dark-green));
-        color: white;
+        background: #f8f9fa;
+        color: var(--text-dark);
         padding: 3rem 0;
         position: relative;
     }
     
     .hero-content h1 {
-        font-size: 3rem;
+        font-size: 3.5rem;
         line-height: 1.2;
         margin-bottom: 1rem;
         font-weight: 600;
+        color: var(--text-dark);
     }
     
     .hero-content p {
         font-size: 1rem;
         line-height: 1.6;
-        opacity: 0.95;
+        color: var(--text-light);
         margin-bottom: 1.5rem;
     }
     
     .booking-form-card {
-        background: white;
+        background: #fafafa;
         border-radius: 12px;
         padding: 1.5rem;
         box-shadow: 0 10px 40px rgba(0,0,0,0.15);
@@ -53,31 +54,32 @@
     }
     
     .booking-form-card .btn-primary {
-        background-color: var(--primary-green);
+        background: var(--gradient-primary);
         border: none;
     }
     
     .booking-form-card .btn-primary:hover {
-        background-color: var(--dark-green);
+        background: linear-gradient(136deg, #d15577 0%, #8a0000 100%);
         transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(45, 95, 79, 0.3);
+        box-shadow: 0 6px 20px rgba(186, 65, 101, 0.4);
     }
     
     .booking-form-card .btn-outline-primary {
-        border: 2px solid var(--primary-green);
-        color: var(--primary-green);
+        border: 2px solid var(--primary-color);
+        color: var(--primary-color);
         background-color: white;
     }
     
     .booking-form-card .btn-outline-primary:hover {
-        background-color: var(--primary-green);
+        background: var(--gradient-primary);
         color: white;
+        border-color: transparent;
         transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(45, 95, 79, 0.2);
+        box-shadow: 0 6px 20px rgba(186, 65, 101, 0.3);
     }
     
     .guide-section {
-        padding: 3rem 0;
+        padding: 2rem 0;
         background-color: white;
     }
     
@@ -91,7 +93,8 @@
         width: 200px;
         height: 200px;
         border-radius: 50%;
-        background-color: var(--beige);
+        background-color: white;
+        border: 3px solid var(--beige);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -100,7 +103,7 @@
     
     .guide-image i {
         font-size: 4rem;
-        color: var(--primary-green);
+        color: var(--primary-color);
     }
     
     .retreat-card {
@@ -111,14 +114,15 @@
     }
     
     .retreat-icon {
-        background-color: var(--beige);
+        background-color: white;
         padding: 3rem 0;
         text-align: center;
+        border-bottom: 1px solid #f0f0f0;
     }
     
     .retreat-icon i {
         font-size: 2.5rem;
-        color: var(--primary-green);
+        color: var(--primary-color);
     }
     
     .retreat-card-body {
@@ -143,7 +147,7 @@
     }
     
     .retreat-features li i {
-        color: var(--primary-green);
+        color: var(--primary-color);
         margin-right: 0.5rem;
     }
 </style>
@@ -173,7 +177,7 @@
                             Book a Retreat
                         </a>
                         
-                        <a href="{{ route('booking.check-status') }}" class="btn btn-outline-primary btn-lg">
+                        <a href="{{ route('booking.check-status') }}" class="btn btn-primary btn-lg">
                             <i class="fas fa-search me-2"></i>
                             Check Status & Cancellation
                         </a>
@@ -184,7 +188,7 @@
                             <i class="fas fa-info-circle me-1"></i> Need help?
                         </p>
                         <p class="text-center mb-0" style="font-size: 0.9rem;">
-                            <a href="mailto:info@myretreatbooking.com" style="color: var(--primary-green); text-decoration: none;">
+                            <a href="mailto:info@myretreatbooking.com" style="color: var(--primary-color); text-decoration: none;">
                                 Contact us at info@myretreatbooking.com
                             </a>
                         </p>
@@ -209,7 +213,7 @@
             </div>
             <div class="guide-text">
                 <h3 style="font-size: 1.8rem; margin-bottom: 0.5rem;">Rev. Sarah Mendoza</h3>
-                <p style="color: var(--primary-green); margin-bottom: 1.5rem;">Spiritual Director</p>
+                <p style="color: var(--primary-color); margin-bottom: 1.5rem;">Spiritual Director</p>
                 <p style="line-height: 1.8; color: var(--text-light); margin-bottom: 1rem;">
                     With over 15 years of experience in contemplative practices and spiritual direction, 
                     Rev. Sarah Mendoza brings a wealth of wisdom and compassion to each retreat. 
@@ -230,7 +234,7 @@
 
 <!-- Featured Retreats -->
 @if($upcomingRetreats->count() > 0)
-<div class="container mb-5" style="padding: 3rem 0;">
+<div class="container" style="padding: 3rem 0;">
     <div class="text-center mb-4">
         <h2 class="section-title">Featured Retreats</h2>
         <p class="section-subtitle">Choose the perfect spiritual experience for your journey</p>
@@ -240,9 +244,6 @@
         @foreach($upcomingRetreats->take(3) as $retreat)
         <div class="col-md-4">
             <div class="retreat-card">
-                <div class="retreat-icon">
-                    <i class="fas fa-mountain"></i>
-                </div>
                 <div class="retreat-card-body">
                     <h5>{{ $retreat['retreat_name'] }}</h5>
                     <p style="color: var(--text-light); font-size: 0.95rem; margin-bottom: 1rem;">
@@ -252,8 +253,7 @@
                     <ul class="retreat-features">
                         <li><i class="fas fa-check-circle"></i> {{ $retreat['criteria_label'] ?? 'Open to all' }}</li>
                         <li><i class="fas fa-check-circle"></i> {{ $retreat['available_spots'] }} spots available</li>
-                        <li><i class="fas fa-check-circle"></i> Guided meditation</li>
-                        <li><i class="fas fa-check-circle"></i> Peaceful setting</li>
+                        <li><i class="fas fa-clock"></i> {{ $retreat['timings'] ?? 'Check details' }}</li>
                     </ul>
                     <a href="{{ route('retreats.show', $retreat['retreat_id']) }}" class="btn btn-outline-primary w-100">
                         Book Now
@@ -273,7 +273,7 @@
 @endif
 
 <!-- Explore Other Spaces -->
-<div class="container mb-5" style="padding: 3rem 0; background-color: white; margin-left: 0; margin-right: 0; max-width: 100%;">
+<div class="container" style="padding: 3rem 0; background-color: white; margin-left: 0; margin-right: 0; max-width: 100%;">
     <div class="container">
         <div class="text-center mb-4">
             <h2 class="section-title">Explore Other Sacred Spaces</h2>
@@ -298,7 +298,7 @@
                     <h5 style="margin-bottom: 1rem;">Spirit Rock Meditation Center</h5>
                     <p style="color: var(--text-light); line-height: 1.8; margin-bottom: 1.5rem;">
                         A beautiful sanctuary for insight meditation and Buddhist teachings. 
-                        Located on 400 acres of rolling hills in Marin County.
+                        Located on 400 acres of rolling hills hdbeshd in Marin County.
                     </p>
                     <a href="{{ route('retreats.index') }}" class="btn btn-outline-primary">
                         Visit Website →

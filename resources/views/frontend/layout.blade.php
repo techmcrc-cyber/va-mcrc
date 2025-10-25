@@ -11,11 +11,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-green: #2d5f4f;
-            --dark-green: #1e3f33;
-            --light-green: #3d7f6f;
-            --cream: #f5f3ed;
-            --beige: #e8e4d9;
+            --primary-color: #ba4165;
+            --dark-color: #700000;
+            --light-color: #d15577;
+            --gradient-primary: linear-gradient(136deg, #ba4165 0%, #700000 100%);
+            --light-bg: #f8f9fa;
+            --cream: #ffffff;
+            --beige: #f5f5f5;
             --text-dark: #2c2c2c;
             --text-light: #6b6b6b;
         }
@@ -29,7 +31,7 @@
         body {
             font-family: 'Inter', sans-serif;
             color: var(--text-dark);
-            background-color: var(--cream);
+            background-color: var(--light-bg);
         }
         
         h1, h2, h3, h4, h5, h6 {
@@ -44,11 +46,18 @@
             padding: 1rem 0;
         }
         
+        .navbar .container {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        
         .navbar-brand {
             font-family: 'Playfair Display', serif;
             font-weight: 700;
             font-size: 1.3rem;
-            color: var(--primary-green) !important;
+            color: var(--primary-color) !important;
+            margin-right: auto;
+            padding-left: 0;
         }
         
         .navbar-nav .nav-link {
@@ -59,12 +68,12 @@
         }
         
         .navbar-nav .nav-link:hover {
-            color: var(--primary-green);
+            color: var(--primary-color);
         }
         
         /* Buttons */
         .btn-primary {
-            background-color: var(--primary-green);
+            background: var(--gradient-primary);
             border: none;
             padding: 0.75rem 2rem;
             font-weight: 500;
@@ -73,14 +82,14 @@
         }
         
         .btn-primary:hover {
-            background-color: var(--dark-green);
+            background: linear-gradient(136deg, #d15577 0%, #8a0000 100%);
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(45, 95, 79, 0.3);
+            box-shadow: 0 4px 12px rgba(186, 65, 101, 0.4);
         }
         
         .btn-outline-primary {
-            border: 2px solid var(--primary-green);
-            color: var(--primary-green);
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
             padding: 0.75rem 2rem;
             font-weight: 500;
             border-radius: 4px;
@@ -88,8 +97,9 @@
         }
         
         .btn-outline-primary:hover {
-            background-color: var(--primary-green);
+            background: var(--gradient-primary);
             color: white;
+            border-color: transparent;
         }
         
         /* Cards */
@@ -121,14 +131,13 @@
         
         /* Footer */
         footer {
-            background-color: var(--dark-green);
+            background: #1a1a1a;
             color: white;
             padding: 2.5rem 0 1.5rem;
-            margin-top: 3rem;
         }
         
         footer a {
-            color: var(--beige);
+            color: #e0e0e0;
             text-decoration: none;
             transition: color 0.3s;
         }
@@ -141,7 +150,8 @@
         .icon-box {
             width: 60px;
             height: 60px;
-            background-color: var(--beige);
+            background-color: white;
+            border: 2px solid #f0f0f0;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -151,7 +161,7 @@
         
         .icon-box i {
             font-size: 1.5rem;
-            color: var(--primary-green);
+            color: var(--primary-color);
         }
     </style>
     @stack('styles')
@@ -193,14 +203,14 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-4 mb-4">
-                    <h5 class="mb-3" style="font-family: 'Playfair Display', serif;">Sacred Retreats</h5>
-                    <p style="color: var(--beige); line-height: 1.8;">
+                    <h5 class="mb-3" style="font-family: 'Playfair Display', serif; color: white;">Sacred Retreats</h5>
+                    <p style="color: #e0e0e0; line-height: 1.8;">
                         Offering sacred spaces for spiritual growth and inner peace. 
                         Join us on a journey of self-discovery and renewal.
                     </p>
                 </div>
                 <div class="col-md-4 mb-4">
-                    <h6 class="mb-3">Quick Links</h6>
+                    <h6 class="mb-3" style="color: white;">Quick Links</h6>
                     <ul class="list-unstyled">
                         <li class="mb-2"><a href="{{ route('home') }}">Home</a></li>
                         <li class="mb-2"><a href="{{ route('retreats.index') }}">Retreats</a></li>
@@ -209,16 +219,16 @@
                     </ul>
                 </div>
                 <div class="col-md-4 mb-4">
-                    <h6 class="mb-3">Contact</h6>
-                    <p style="color: var(--beige);">
+                    <h6 class="mb-3" style="color: white;">Contact</h6>
+                    <p style="color: #e0e0e0;">
                         <i class="fas fa-envelope me-2"></i> info@myretreatbooking.com<br>
                         <i class="fas fa-phone me-2"></i> +1 (555) 123-4567<br>
                         <i class="fas fa-map-marker-alt me-2"></i> Find your journey here
                     </p>
                 </div>
             </div>
-            <hr style="border-color: rgba(255,255,255,0.1); margin: 2rem 0 1rem;">
-            <div class="text-center" style="color: var(--beige); font-size: 0.9rem;">
+            <hr style="border-color: rgba(255,255,255,0.2); margin: 2rem 0 1rem;">
+            <div class="text-center" style="color: #e0e0e0; font-size: 0.9rem;">
                 <p class="mb-0">&copy; {{ date('Y') }} Sacred Retreats - My Retreat Booking. All rights reserved.</p>
             </div>
         </div>
