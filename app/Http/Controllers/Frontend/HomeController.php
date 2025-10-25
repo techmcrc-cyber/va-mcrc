@@ -19,6 +19,7 @@ class HomeController extends Controller
     {
         echo "coming soon";
         die();
+        
         // Use the API controller to get retreats
         $response = $this->retreatAPI->index($request);
         $responseData = json_decode($response->getContent(), true);
