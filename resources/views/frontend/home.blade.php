@@ -93,17 +93,16 @@
         width: 200px;
         height: 200px;
         border-radius: 50%;
-        background-color: white;
+        background-color: #f0f0f0;
         border: 3px solid var(--beige);
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        overflow: hidden;
         flex-shrink: 0;
     }
     
-    .guide-image i {
-        font-size: 4rem;
-        color: var(--primary-color);
+    .guide-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
     }
     
     .retreat-card {
@@ -209,7 +208,7 @@
         
         <div class="guide-content">
             <div class="guide-image">
-                <i class="fas fa-user-circle"></i>
+                <img src="https://via.placeholder.com/200x200/ba4165/ffffff?text=Rev.+Sarah" alt="Rev. Sarah Mendoza">
             </div>
             <div class="guide-text">
                 <h3 style="font-size: 1.8rem; margin-bottom: 0.5rem;">Rev. Sarah Mendoza</h3>
@@ -251,8 +250,8 @@
                         {{ \Carbon\Carbon::parse($retreat['end_date'])->format('M d, Y') }}
                     </p>
                     <ul class="retreat-features">
-                        <li><i class="fas fa-check-circle"></i> {{ $retreat['criteria_label'] ?? 'Open to all' }}</li>
-                        <li><i class="fas fa-check-circle"></i> {{ $retreat['available_spots'] }} spots available</li>
+                        <li><i class="fas fa-filter"></i> Criteria: {{ $retreat['criteria_name'] ?? 'Open to all' }}</li>
+                        <li><i class="fas fa-users"></i> {{ $retreat['available_spots'] }} spots available</li>
                         <li><i class="fas fa-clock"></i> {{ $retreat['timings'] ?? 'Check details' }}</li>
                     </ul>
                     <a href="{{ route('retreats.show', $retreat['retreat_id']) }}" class="btn btn-outline-primary w-100">

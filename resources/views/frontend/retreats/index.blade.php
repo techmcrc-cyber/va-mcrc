@@ -13,11 +13,18 @@
             <div class="card h-100">
                 <div class="card-body">
                     <h5 class="card-title">{{ $retreat['retreat_name'] }}</h5>
-                    <p class="card-text text-muted">
+                    <p class="card-text text-muted mb-2">
                         <i class="fas fa-calendar"></i> 
                         {{ \Carbon\Carbon::parse($retreat['start_date'])->format('M d, Y') }} - {{ \Carbon\Carbon::parse($retreat['end_date'])->format('M d, Y') }}
                     </p>
-                    <p class="card-text">{{ $retreat['criteria_label'] ?? 'Open to all' }}</p>
+                    <p class="card-text text-muted mb-2">
+                        <i class="fas fa-clock"></i> 
+                        {{ $retreat['timings'] ?? 'Check details' }}
+                    </p>
+                    <p class="card-text mb-3">
+                        <i class="fas fa-filter"></i> 
+                        <strong>Criteria:</strong> {{ $retreat['criteria_name'] ?? 'Open to all' }}
+                    </p>
                     
                     <div class="mb-3">
                         @php
@@ -36,8 +43,7 @@
                         </div>
                     </div>
 
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span class="badge bg-secondary">{{ ucfirst(str_replace('_', ' ', $retreat['criteria'])) }}</span>
+                    <div class="text-end">
                         <a href="{{ route('retreats.show', $retreat['retreat_id']) }}" class="btn btn-sm btn-primary">
                             View Details <i class="fas fa-arrow-right"></i>
                         </a>

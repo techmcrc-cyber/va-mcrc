@@ -18,7 +18,7 @@ class RetreatAPIController extends BaseAPIController
         try {
             $retreats = Retreat::with(['bookings' => function($query) {
                     $query->whereIn('is_active', ['confirmed', 'pending']);
-                }])
+                }, 'criteriaRelation'])
                 ->active() // Only active retreats
                 ->upcoming() // Starting from current day
                 ->orderBy('start_date', 'asc')
@@ -37,9 +37,11 @@ class RetreatAPIController extends BaseAPIController
                     'retreat_name' => $retreat->title,
                     'start_date' => $retreat->start_date->format('Y-m-d'),
                     'end_date' => $retreat->end_date->format('Y-m-d'),
+                    'timings' => $retreat->timings,
                     'available_spots' => $retreat->seats - $bookedSeats,
                     'total_seats' => $retreat->seats,
                     'criteria' => $retreat->criteria,
+                    'criteria_name' => $retreat->criteriaRelation ? $retreat->criteriaRelation->name : 'Open to all',
                     'criteria_label' => $retreat->criteria_label,
                     'is_featured' => (bool) $retreat->is_featured
                 ];
@@ -74,7 +76,7 @@ class RetreatAPIController extends BaseAPIController
             // Find the retreat with bookings
             $retreat = Retreat::with(['bookings' => function($query) {
                     $query->whereIn('is_active', ['confirmed', 'pending']);
-                }])
+                }, 'criteriaRelation'])
                 ->where('id', $id)
                 ->active()
                 ->first();
@@ -126,6 +128,7 @@ class RetreatAPIController extends BaseAPIController
                 ],
                 'criteria' => [
                     'type' => $retreat->criteria,
+                    'name' => $retreat->criteriaRelation ? $retreat->criteriaRelation->name : 'Open to all',
                     'label' => $retreat->criteria_label,
                 ],
                 'details' => [

@@ -65,9 +65,7 @@
 
                     <div class="mb-3">
                         <strong><i class="fas fa-filter"></i> Criteria:</strong>
-                        <p class="mb-0">
-                            <span class="badge bg-secondary">{{ $retreat['criteria']['label'] }}</span>
-                        </p>
+                        <p class="mb-0">{{ $retreat['criteria']['name'] ?? 'Open to all' }}</p>
                     </div>
 
                     <hr>

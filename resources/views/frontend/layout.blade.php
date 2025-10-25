@@ -42,7 +42,7 @@
         /* Navigation */
         .navbar {
             background-color: white;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-bottom: 1px solid #e8e8e8;
             padding: 1rem 0;
         }
         
@@ -185,10 +185,10 @@
                         <a class="nav-link" href="{{ route('retreats.index') }}">Retreats</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('booking.check-status') }}">Check Status</a>
+                        <a class="nav-link" href="{{ route('booking.register') }}">Book Retreat</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('booking.register') }}">Contact</a>
+                        <a class="nav-link" href="{{ route('booking.check-status') }}">Check Status</a>
                     </li>
                 </ul>
             </div>
@@ -203,7 +203,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-4 mb-4">
-                    <h5 class="mb-3" style="font-family: 'Playfair Display', serif; color: white;">Sacred Retreats</h5>
+                    <h5 class="mb-3" style="font-family: 'Playfair Display', serif; color: white;">My Retreat Booking</h5>
                     <p style="color: #e0e0e0; line-height: 1.8;">
                         Offering sacred spaces for spiritual growth and inner peace. 
                         Join us on a journey of self-discovery and renewal.
@@ -229,7 +229,7 @@
             </div>
             <hr style="border-color: rgba(255,255,255,0.2); margin: 2rem 0 1rem;">
             <div class="text-center" style="color: #e0e0e0; font-size: 0.9rem;">
-                <p class="mb-0">&copy; {{ date('Y') }} Sacred Retreats - My Retreat Booking. All rights reserved.</p>
+                <p class="mb-0">&copy; {{ date('Y') }} My Retreat Booking. All rights reserved.</p>
             </div>
         </div>
     </footer>

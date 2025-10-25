@@ -5,10 +5,19 @@
 @push('styles')
 <style>
     .registration-header {
-        background: var(--gradient-primary);
-        color: white;
+        background: white;
+        color: var(--text-dark);
         padding: 2rem 0;
         margin-bottom: 2rem;
+        border-bottom: 1px solid #e8e8e8;
+    }
+    
+    .registration-header h1 {
+        color: var(--text-dark);
+    }
+    
+    .registration-header p {
+        color: var(--text-light);
     }
     
     .participant-card {
@@ -20,10 +29,11 @@
     }
     
     .participant-card .card-header {
-        background: var(--gradient-primary);
-        color: white;
+        background: #f8f9fa;
+        color: var(--text-dark);
         padding: 1rem 1.5rem;
         border: none;
+        border-bottom: 1px solid #e0e0e0;
     }
     
     .participant-card .card-body {
@@ -106,8 +116,8 @@
 <!-- Header -->
 <div class="registration-header">
     <div class="container">
-        <h1 class="mb-2" style="font-size: 2.5rem;">Register for Retreat</h1>
-        <p class="mb-0" style="opacity: 0.9;">Complete the form below to secure your spot</p>
+        <h1 class="mb-2" style="font-size: 2rem;">Register for Retreat</h1>
+        <p class="mb-0">Complete the form below to secure your spot</p>
     </div>
 </div>
 
@@ -135,7 +145,7 @@
                 </h5>
                 <div class="mb-3">
                     <label for="retreat_id" class="form-label required">Choose Your Retreat</label>
-                    <select name="retreat_id" id="retreat_id" class="form-select" required>
+                    <select name="retreat_id" id="retreat_id" class="form-select" required {{ $retreat ? 'disabled' : '' }}>
                         <option value="">-- Select a Retreat --</option>
                         @foreach($retreats as $r)
                             <option value="{{ $r->id }}" 
@@ -145,7 +155,12 @@
                             </option>
                         @endforeach
                     </select>
-                    <small class="text-muted mt-1 d-block">Select the retreat you wish to attend</small>
+                    @if($retreat)
+                        <input type="hidden" name="retreat_id" value="{{ $retreat->id }}">
+                        <small class="text-muted mt-1 d-block"><i class="fas fa-lock"></i> Retreat pre-selected from your previous selection</small>
+                    @else
+                        <small class="text-muted mt-1 d-block">Select the retreat you wish to attend</small>
+                    @endif
                 </div>
 
                 @if($retreats->count() > 0)

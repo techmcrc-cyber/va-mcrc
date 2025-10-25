@@ -24,8 +24,11 @@ class HomeController extends Controller
         $upcomingRetreats = collect([]);
         
         if ($response->isSuccessful() && isset($responseData['data']['retreats'])) {
-            // Take only first 6 for homepage
-            $upcomingRetreats = collect($responseData['data']['retreats'])->take(6);
+            // Sort by end_date ascending and take first 3 (ending soonest)
+            $upcomingRetreats = collect($responseData['data']['retreats'])
+                ->sortBy('end_date')
+                ->take(3)
+                ->values();
         }
 
         return view('frontend.home', compact('upcomingRetreats'));
