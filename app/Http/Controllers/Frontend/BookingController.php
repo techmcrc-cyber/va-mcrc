@@ -25,12 +25,13 @@ class BookingController extends Controller
         if ($retreatId) {
             $retreat = Retreat::active()
                 ->where('id', $retreatId)
-                ->whereDate('start_date', '>=', now()->toDateString())
+                ->whereDate('end_date', '>=', now()->toDateString())
                 ->first();
         }
 
-        $retreats = Retreat::active()
-            ->whereDate('start_date', '>=', now()->toDateString())
+        $retreats = Retreat::with('criteriaRelation')
+            ->active()
+            ->whereDate('end_date', '>=', now()->toDateString())
             ->orderBy('start_date', 'asc')
             ->get();
 
@@ -84,8 +85,14 @@ class BookingController extends Controller
             'whatsapp_number' => 'required|numeric|digits:10',
         ]);
 
+        // Create a new request with query parameters for the API
+        $apiRequest = Request::create('', 'GET', [
+            'booking_id' => $request->booking_id,
+            'whatsapp_number' => $request->whatsapp_number,
+        ]);
+
         // Use the API controller directly (same application)
-        $response = $this->bookingAPI->show($request);
+        $response = $this->bookingAPI->show($apiRequest);
         $responseData = json_decode($response->getContent(), true);
 
         if ($response->isSuccessful()) {

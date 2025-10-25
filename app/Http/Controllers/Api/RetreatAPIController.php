@@ -17,7 +17,7 @@ class RetreatAPIController extends BaseAPIController
     {
         try {
             $retreats = Retreat::with(['bookings' => function($query) {
-                    $query->whereIn('is_active', ['confirmed', 'pending']);
+                    $query->where('is_active', true);
                 }, 'criteriaRelation'])
                 ->active() // Only active retreats
                 ->upcoming() // Starting from current day
@@ -75,7 +75,7 @@ class RetreatAPIController extends BaseAPIController
 
             // Find the retreat with bookings
             $retreat = Retreat::with(['bookings' => function($query) {
-                    $query->whereIn('is_active', ['confirmed', 'pending']);
+                    $query->where('is_active', true);
                 }, 'criteriaRelation'])
                 ->where('id', $id)
                 ->active()

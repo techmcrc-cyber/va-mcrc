@@ -190,7 +190,7 @@
                                     <td>{{ $r->start_date->diffInDays($r->end_date) + 1 }} days</td>
                                     <td>
                                         @php
-                                            $booked = $r->bookings()->active()->count();
+                                            $booked = $r->bookings()->where('is_active', true)->count();
                                             $available = $r->seats - $booked;
                                         @endphp
                                         <span class="badge {{ $available > 5 ? 'bg-success' : ($available > 0 ? 'bg-warning' : 'bg-danger') }}">
@@ -198,7 +198,7 @@
                                         </span>
                                     </td>
                                     <td>
-                                        <small class="text-muted">{{ ucfirst(str_replace('_', ' ', $r->criteria)) }}</small>
+                                        <small class="text-muted">{{ $r->criteriaRelation ? $r->criteriaRelation->name : 'Open to all' }}</small>
                                     </td>
                                 </tr>
                                 @endforeach
@@ -226,6 +226,24 @@
                     @include('frontend.booking.participant-form', ['index' => 0, 'isPrimary' => true])
                 </div>
             </div>
+            
+            @if(old('participants'))
+                @foreach(old('participants') as $index => $participant)
+                    @if($index > 0)
+                    <div class="card participant-card" data-participant="{{ $index + 1 }}">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0"><i class="fas fa-user me-2"></i>Participant {{ $index + 1 }}</h5>
+                            <button type="button" class="btn btn-remove remove-participant">
+                                <i class="fas fa-trash-alt me-1"></i> Remove
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            @include('frontend.booking.participant-form', ['index' => $index, 'isPrimary' => false])
+                        </div>
+                    </div>
+                    @endif
+                @endforeach
+            @endif
         </div>
 
         <!-- Add Participant Button -->
@@ -260,7 +278,8 @@
 
 @push('scripts')
 <script>
-let participantCount = 1;
+// Initialize participant count based on existing cards (for validation errors)
+let participantCount = document.querySelectorAll('.participant-card').length;
 const maxParticipants = 4;
 
 document.getElementById('addParticipant').addEventListener('click', function() {

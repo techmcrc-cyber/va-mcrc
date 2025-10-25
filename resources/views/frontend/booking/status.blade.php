@@ -67,14 +67,14 @@
                     @if($bookingDetails['retreat']['instructions'])
                     <div class="alert alert-info">
                         <strong><i class="fas fa-info-circle"></i> Instructions:</strong>
-                        <p class="mb-0 mt-2">{{ $bookingDetails['retreat']['instructions'] }}</p>
+                        <div class="mt-2">{!! $bookingDetails['retreat']['instructions'] !!}</div>
                     </div>
                     @endif
 
                     @if($bookingDetails['retreat']['special_remarks'])
                     <div class="alert alert-warning">
                         <strong><i class="fas fa-exclamation-triangle"></i> Special Remarks:</strong>
-                        <p class="mb-0 mt-2">{{ $bookingDetails['retreat']['special_remarks'] }}</p>
+                        <div class="mt-2">{!! $bookingDetails['retreat']['special_remarks'] !!}</div>
                     </div>
                     @endif
                 </div>
@@ -96,6 +96,7 @@
                                     <th>Age</th>
                                     <th>Gender</th>
                                     <th>Role</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -106,11 +107,20 @@
                                     <td>{{ $participant['email'] }}</td>
                                     <td>{{ $participant['whatsapp_number'] }}</td>
                                     <td>{{ $participant['age'] }}</td>
-                                    <td>{{ $participant['gender'] }}</td>
+                                    <td>{{ ucfirst($participant['gender']) }}</td>
                                     <td>
                                         <span class="badge {{ $participant['role'] == 'primary' ? 'bg-primary' : 'bg-secondary' }}">
                                             {{ ucfirst($participant['role']) }}
                                         </span>
+                                    </td>
+                                    <td>
+                                        @if($bookingDetails['important_info']['is_cancellable'])
+                                            <button class="btn btn-sm btn-danger" onclick="confirmCancel('{{ $participant['serial_number'] }}', '{{ $participant['full_name'] }}')">
+                                                <i class="fas fa-times"></i> Cancel
+                                            </button>
+                                        @else
+                                            <span class="text-muted small">Not cancellable</span>
+                                        @endif
                                     </td>
                                 </tr>
                                 @endforeach
@@ -167,10 +177,16 @@
                     </div>
 
                     @if($bookingDetails['important_info']['is_cancellable'])
-                    <div class="alert alert-warning mt-3">
+                    <hr>
+                    <div class="d-grid">
+                        <button class="btn btn-danger" onclick="confirmCancelAll()">
+                            <i class="fas fa-times-circle"></i> Cancel Entire Booking
+                        </button>
+                    </div>
+                    <div class="alert alert-warning mt-3 mb-0">
                         <small>
                             <i class="fas fa-info-circle"></i> 
-                            To cancel this booking, please contact support at 
+                            You can cancel individual participants or the entire booking. For assistance, contact 
                             <a href="mailto:support@myretreatbooking.com">support@myretreatbooking.com</a>
                         </small>
                     </div>
@@ -181,3 +197,23 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+function confirmCancel(participantNumber, participantName) {
+    if (confirm(`Are you sure you want to cancel the booking for ${participantName}?\n\nThis action cannot be undone.`)) {
+        alert('Cancellation feature will be implemented. Please contact support at support@myretreatbooking.com for now.');
+        // TODO: Implement cancellation API call
+        // You can add AJAX call here to cancel individual participant
+    }
+}
+
+function confirmCancelAll() {
+    if (confirm('Are you sure you want to cancel the ENTIRE booking for all participants?\n\nThis action cannot be undone.')) {
+        alert('Cancellation feature will be implemented. Please contact support at support@myretreatbooking.com for now.');
+        // TODO: Implement cancellation API call
+        // You can add AJAX call here to cancel entire booking
+    }
+}
+</script>
+@endpush
