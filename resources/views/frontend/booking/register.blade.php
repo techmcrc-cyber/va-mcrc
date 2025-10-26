@@ -249,10 +249,10 @@
         <!-- Add Participant Button -->
         <div class="mb-4 text-center">
             <button type="button" class="btn-add-participant" id="addParticipant">
-                <i class="fas fa-plus-circle me-2"></i> Add Another Participant (Max 4)
+                <i class="fas fa-plus-circle me-2"></i> Add Another Participant (Max {{ $maxParticipants }})
             </button>
             <p class="text-muted mt-2 mb-0" style="font-size: 0.9rem;">
-                <i class="fas fa-info-circle"></i> You can register up to 4 participants in one booking
+                <i class="fas fa-info-circle"></i> You can register up to {{ $maxParticipants }} participants in one booking
             </p>
         </div>
 
@@ -280,11 +280,11 @@
 <script>
 // Initialize participant count based on existing cards (for validation errors)
 let participantCount = document.querySelectorAll('.participant-card').length;
-const maxParticipants = 4;
+const maxParticipants = {{ $maxParticipants }};
 
 document.getElementById('addParticipant').addEventListener('click', function() {
     if (participantCount >= maxParticipants) {
-        alert('Maximum 4 participants allowed');
+        alert('Maximum ' + maxParticipants + ' participants allowed');
         return;
     }
     

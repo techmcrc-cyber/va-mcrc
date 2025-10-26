@@ -183,13 +183,6 @@
                             <i class="fas fa-times-circle"></i> Cancel Entire Booking
                         </button>
                     </div>
-                    <div class="alert alert-warning mt-3 mb-0">
-                        <small>
-                            <i class="fas fa-info-circle"></i> 
-                            You can cancel individual participants or the entire booking. For assistance, contact 
-                            <a href="mailto:support@myretreatbooking.com">support@myretreatbooking.com</a>
-                        </small>
-                    </div>
                     @endif
                 </div>
             </div>

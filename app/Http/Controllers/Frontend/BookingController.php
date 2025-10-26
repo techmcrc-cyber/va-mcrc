@@ -41,7 +41,11 @@ class BookingController extends Controller
             ->orderBy('start_date', 'asc')
             ->get();
 
-        return view('frontend.booking.register', compact('retreats', 'retreat'));
+        // Get max participants from database settings
+        $maxAdditionalMembers = \App\Models\Setting::get('MAX_ADDITIONAL_MEMBERS', 3);
+        $maxParticipants = $maxAdditionalMembers + 1; // +1 for primary participant
+
+        return view('frontend.booking.register', compact('retreats', 'retreat', 'maxParticipants'));
     }
 
     public function store(Request $request)

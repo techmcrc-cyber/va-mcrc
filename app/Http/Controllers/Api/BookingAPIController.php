@@ -19,10 +19,14 @@ class BookingAPIController extends BaseAPIController
     public function store(Request $request): JsonResponse
     {
         try {
+            // Get max participants from database settings (1 primary + additional members)
+            $maxAdditionalMembers = \App\Models\Setting::get('MAX_ADDITIONAL_MEMBERS', 3);
+            $maxTotalParticipants = $maxAdditionalMembers + 1; // +1 for primary participant
+            
             // Validate request structure
             $initialValidator = Validator::make($request->all(), [
                 'retreat_id' => 'required|integer|exists:retreats,id',
-                'participants' => 'required|array|min:1|max:4',
+                'participants' => "required|array|min:1|max:{$maxTotalParticipants}",
             ]);
 
             if ($initialValidator->fails()) {
@@ -401,7 +405,7 @@ class BookingAPIController extends BaseAPIController
                     'days_until_retreat' => $retreat->start_date->isFuture() ?
                         (int) ceil(now()->diffInDays($retreat->start_date, false)) : null,
                     'is_cancellable' => $retreat->start_date->isFuture() &&
-                        now()->diffInDays($retreat->start_date) >= 1, // Can cancel up to 1 day before retreat
+                        now()->diffInDays($retreat->start_date) >= \App\Models\Setting::get('CANCELLATION_DEADLINE_DAYS', 1),
                     'check_in_time' => $retreat->start_date->format('M d, Y \a\t g:i A'),
                     'check_out_time' => $retreat->end_date->format('M d, Y \a\t g:i A'),
                     'duration_days' => $retreat->start_date->diffInDays($retreat->end_date) + 1,
