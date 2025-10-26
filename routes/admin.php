@@ -32,6 +32,11 @@ Route::middleware(['auth:web'])->group(function () {
         Route::get('payment', [\App\Http\Controllers\Admin\SettingController::class, 'payment'])->name('payment');
         Route::get('notification', [\App\Http\Controllers\Admin\SettingController::class, 'notification'])->name('notification');
         
+        // System settings (Super Admin only)
+        Route::get('system', [\App\Http\Controllers\Admin\SettingController::class, 'system'])->name('system');
+        Route::post('system', [\App\Http\Controllers\Admin\SettingController::class, 'storeSystemSetting'])->name('system.store');
+        Route::delete('system/{id}', [\App\Http\Controllers\Admin\SettingController::class, 'deleteSystemSetting'])->name('system.delete');
+        
         // Update settings
         Route::put('{type}', [\App\Http\Controllers\Admin\SettingController::class, 'update'])->name('update');
         

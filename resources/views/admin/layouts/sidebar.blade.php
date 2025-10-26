@@ -112,6 +112,13 @@
             </a>
             @endcan
 
+            @if(Auth::user()->role && Auth::user()->role->is_super_admin)
+                <a href="{{ route('admin.settings.system') }}" 
+                   class="list-group-item list-group-item-action {{ request()->routeIs('admin.settings.system*') ? 'active' : '' }}">
+                    <i class="fas fa-cogs me-2"></i> System Settings
+                </a>
+            @endif
+
             <form method="POST" action="{{ route('logout') }}" class="d-inline">
             @csrf
                 <button type="submit" class="dropdown-item list-group-item list-group-item-action">

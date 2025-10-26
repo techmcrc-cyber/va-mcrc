@@ -130,4 +130,65 @@ class SettingController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Show system settings (Super Admin only)
+     */
+    public function system()
+    {
+        // Check if user is super admin (no permission check, only role check)
+        if (!auth()->user()->role || !auth()->user()->role->is_super_admin) {
+            abort(403, 'Unauthorized action. Only super admins can access system settings.');
+        }
+
+        $settings = \App\Models\Setting::orderBy('key')->get();
+        
+        return view('admin.settings.system', compact('settings'));
+    }
+
+    /**
+     * Store or update system setting
+     */
+    public function storeSystemSetting(Request $request)
+    {
+        // Check if user is super admin (no permission check, only role check)
+        if (!auth()->user()->role || !auth()->user()->role->is_super_admin) {
+            abort(403, 'Unauthorized action. Only super admins can access system settings.');
+        }
+
+        $request->validate([
+            'key' => 'required|string|max:255',
+            'value' => 'nullable',
+            'type' => 'required|in:string,integer,boolean,json',
+            'description' => 'nullable|string|max:500'
+        ]);
+
+        \App\Models\Setting::set(
+            $request->key,
+            $request->value,
+            $request->type,
+            $request->description
+        );
+
+        return redirect()->back()
+            ->with('success', 'Setting saved successfully!');
+    }
+
+    /**
+     * Delete system setting
+     */
+    public function deleteSystemSetting($id)
+    {
+        // Check if user is super admin (no permission check, only role check)
+        if (!auth()->user()->role || !auth()->user()->role->is_super_admin) {
+            abort(403, 'Unauthorized action. Only super admins can access system settings.');
+        }
+
+        $setting = \App\Models\Setting::findOrFail($id);
+        Cache::forget("setting_{$setting->key}");
+        $setting->delete();
+
+        return redirect()->back()
+            ->with('success', 'Setting deleted successfully!');
+    }
 }
