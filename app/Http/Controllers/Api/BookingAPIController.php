@@ -399,9 +399,9 @@ class BookingAPIController extends BaseAPIController
                 // Important Dates and Status
                 'important_info' => [
                     'days_until_retreat' => $retreat->start_date->isFuture() ?
-                        now()->diffInDays($retreat->start_date, false) : null,
+                        (int) ceil(now()->diffInDays($retreat->start_date, false)) : null,
                     'is_cancellable' => $retreat->start_date->isFuture() &&
-                        $retreat->start_date->diffInDays(now()) >= 1, // Can cancel up to 1 day before retreat
+                        now()->diffInDays($retreat->start_date) >= 1, // Can cancel up to 1 day before retreat
                     'check_in_time' => $retreat->start_date->format('M d, Y \a\t g:i A'),
                     'check_out_time' => $retreat->end_date->format('M d, Y \a\t g:i A'),
                     'duration_days' => $retreat->start_date->diffInDays($retreat->end_date) + 1,

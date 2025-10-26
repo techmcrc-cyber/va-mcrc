@@ -29,6 +29,9 @@ Route::domain('myretreatbooking.com')->group(function () {
     // Check Status
     Route::get('/check-status', [BookingController::class, 'checkStatusForm'])->name('booking.check-status');
     Route::post('/check-status', [BookingController::class, 'checkStatus'])->name('booking.check-status.submit');
+    
+    // Cancellation
+    Route::post('/booking/cancel', [BookingController::class, 'cancelParticipant'])->name('booking.cancel');
 });
 
 /*
@@ -68,6 +71,7 @@ if (!in_array(request()->getHost(), ['myretreatbooking.com', 'www.myretreatbooki
     Route::get('/booking-success', [BookingController::class, 'success'])->name('booking.success');
     Route::get('/check-status', [BookingController::class, 'checkStatusForm'])->name('booking.check-status');
     Route::post('/check-status', [BookingController::class, 'checkStatus'])->name('booking.check-status.submit');
+    Route::post('/booking/cancel', [BookingController::class, 'cancelParticipant'])->name('booking.cancel');
     
     Route::get('/', [HomeController::class, 'index'])->name('home');
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');

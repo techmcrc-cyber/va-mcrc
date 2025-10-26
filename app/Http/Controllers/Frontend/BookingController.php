@@ -94,10 +94,14 @@ class BookingController extends Controller
             'whatsapp_number' => 'required|numeric|digits:10',
         ]);
 
+        // Generate session ID for this booking check
+        $sessionId = 'session_' . time() . '_' . uniqid();
+
         // Create a new request with query parameters for the API
         $apiRequest = Request::create('', 'GET', [
             'booking_id' => $request->booking_id,
             'whatsapp_number' => $request->whatsapp_number,
+            'session_id' => $sessionId,
         ]);
 
         // Use the API controller directly (same application)
@@ -106,11 +110,69 @@ class BookingController extends Controller
 
         if ($response->isSuccessful()) {
             $bookingDetails = $responseData['data'];
-            return view('frontend.booking.status', compact('bookingDetails'));
+            
+            // Store session data for cancellation
+            session([
+                'booking_session_id' => $sessionId,
+                'booking_context' => [
+                    'booking_id' => $request->booking_id,
+                    'whatsapp_number' => $request->whatsapp_number,
+                ]
+            ]);
+            
+            return view('frontend.booking.status', compact('bookingDetails', 'sessionId'));
         }
 
         return back()
             ->withInput()
             ->withErrors(['error' => $responseData['message'] ?? 'Booking not found. Please check your details.']);
+    }
+
+    public function cancelParticipant(Request $request)
+    {
+        $request->validate([
+            'serial_number' => 'required|integer|min:1|max:4',
+        ]);
+
+        // Get booking context from session
+        $bookingContext = session('booking_context');
+        $sessionId = session('booking_session_id');
+
+        if (!$bookingContext || !$sessionId) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Session expired. Please check your booking status again.'
+            ], 400);
+        }
+
+        // Create API request with proper headers
+        $apiRequest = Request::create(
+            "/api/bookings/{$bookingContext['booking_id']}/cancel",
+            'PATCH',
+            [
+                'serial_number' => $request->serial_number,
+                'session_id' => $sessionId,
+            ]
+        );
+
+        // Call API controller with authentication
+        $response = $this->bookingAPI->cancel($apiRequest, $bookingContext['booking_id']);
+        $responseData = json_decode($response->getContent(), true);
+
+        if ($response->isSuccessful()) {
+            // Clear session data
+            session()->forget(['booking_session_id', 'booking_context']);
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Cancellation successful',
+                'data' => $responseData['data'] ?? null
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => $responseData['message'] ?? 'Cancellation failed'
+        ], $response->status());
     }
 }

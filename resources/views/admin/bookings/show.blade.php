@@ -208,13 +208,23 @@
                                                         </td>
                                                         <td>
                                                             @can('delete-bookings')
-                                                            <form action="{{ route('admin.bookings.cancel-participant', $participant->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to cancel this participant?');">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Cancel Participant">
-                                                                    <i class="fas fa-user-times"></i>
-                                                                </button>
-                                                            </form>
+                                                                @php
+                                                                    $isCancellable = $booking->retreat->start_date->isFuture() && 
+                                                                                    now()->diffInDays($booking->retreat->start_date) >= 1;
+                                                                @endphp
+                                                                @if($isCancellable)
+                                                                    <form action="{{ route('admin.bookings.cancel-participant', $participant->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to cancel this participant?');">
+                                                                        @csrf
+                                                                        @method('DELETE')
+                                                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Cancel Participant">
+                                                                            <i class="fas fa-user-times"></i>
+                                                                        </button>
+                                                                    </form>
+                                                                @else
+                                                                    <button type="button" class="btn btn-sm btn-outline-secondary" title="Cannot cancel - retreat has started or less than 1 day away" disabled>
+                                                                        <i class="fas fa-user-times"></i>
+                                                                    </button>
+                                                                @endif
                                                             @endcan
                                                         </td>
                                                     </tr>
@@ -241,13 +251,26 @@
                                         </a>
                                         @endcan
                                         @can('delete-bookings')
-                                        <form action="{{ route('admin.bookings.destroy', $booking->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to cancel this entire booking? This will deactivate all participants in this booking.');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-danger">
-                                                <i class="fas fa-ban"></i> Cancel Booking
-                                            </button>
-                                        </form>
+                                            @php
+                                                $isCancellable = $booking->retreat->start_date->isFuture() && 
+                                                                now()->diffInDays($booking->retreat->start_date) >= 1;
+                                            @endphp
+                                            @if($isCancellable)
+                                                <form action="{{ route('admin.bookings.destroy', $booking->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to cancel this entire booking? This will deactivate all participants in this booking.');">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-danger">
+                                                        <i class="fas fa-ban"></i> Cancel Booking
+                                                    </button>
+                                                </form>
+                                            @else
+                                                <button type="button" class="btn btn-secondary" title="Cannot cancel - retreat has started or less than 1 day away" disabled>
+                                                    <i class="fas fa-ban"></i> Cannot Cancel
+                                                </button>
+                                                <small class="text-muted d-block mt-2">
+                                                    <i class="fas fa-info-circle"></i> Cancellation not allowed - retreat has started or is less than 1 day away
+                                                </small>
+                                            @endif
                                         @endcan
                                     </div>
                                 </div>

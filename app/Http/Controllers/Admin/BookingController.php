@@ -387,16 +387,27 @@ class BookingController extends Controller
                 }
                 $actions .= '</div>';
                 
-                // Delete button - check permission
+                // Delete button - check permission and date
                 if (Auth::user()->can('delete-bookings')) {
-                    $actions .= '<div class="btn-row">';
-                    $actions .= '<form action="' . route('admin.bookings.destroy', $booking->id) . '" method="POST" class="d-inline w-100">';
-                    $actions .= csrf_field();
-                    $actions .= method_field('DELETE');
-                    $actions .= '<button type="submit" class="btn btn-sm btn-danger w-100" title="Cancel Booking" ';
-                    $actions .= 'onclick="return confirm(\'Are you sure you want to cancel this booking? This will deactivate all participants in this booking.\')">';
-                    $actions .= '<i class="fas fa-ban"></i></button></form>';
-                    $actions .= '</div>';
+                    // Check if retreat is cancellable (at least 1 day before start)
+                    $isCancellable = $booking->retreat->start_date->isFuture() && 
+                                    now()->diffInDays($booking->retreat->start_date) >= 1;
+                    
+                    if ($isCancellable) {
+                        $actions .= '<div class="btn-row">';
+                        $actions .= '<form action="' . route('admin.bookings.destroy', $booking->id) . '" method="POST" class="d-inline w-100">';
+                        $actions .= csrf_field();
+                        $actions .= method_field('DELETE');
+                        $actions .= '<button type="submit" class="btn btn-sm btn-danger w-100" title="Cancel Booking" ';
+                        $actions .= 'onclick="return confirm(\'Are you sure you want to cancel this booking? This will deactivate all participants in this booking.\')">';
+                        $actions .= '<i class="fas fa-ban"></i></button></form>';
+                        $actions .= '</div>';
+                    } else {
+                        $actions .= '<div class="btn-row">';
+                        $actions .= '<button type="button" class="btn btn-sm btn-secondary w-100" title="Cannot cancel - retreat has started or less than 1 day away" disabled>';
+                        $actions .= '<i class="fas fa-ban"></i></button>';
+                        $actions .= '</div>';
+                    }
                 }
             }
             

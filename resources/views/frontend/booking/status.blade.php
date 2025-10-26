@@ -200,20 +200,75 @@
 
 @push('scripts')
 <script>
+const bookingData = {
+    booking_id: '{{ $bookingDetails['booking_id'] }}',
+    whatsapp_number: '{{ $bookingDetails['primary_participant']['whatsapp_number'] ?? '' }}',
+    participant_number: {{ $bookingDetails['primary_participant']['serial_number'] ?? 1 }},
+    session_id: '{{ $sessionId ?? '' }}'
+};
+
 function confirmCancel(participantNumber, participantName) {
-    if (confirm(`Are you sure you want to cancel the booking for ${participantName}?\n\nThis action cannot be undone.`)) {
-        alert('Cancellation feature will be implemented. Please contact support at support@myretreatbooking.com for now.');
-        // TODO: Implement cancellation API call
-        // You can add AJAX call here to cancel individual participant
+    if (!confirm(`Are you sure you want to cancel the booking for ${participantName}?\n\nThis action cannot be undone.`)) {
+        return;
     }
+
+    // Show loading state
+    const button = event.target.closest('button');
+    const originalHtml = button.innerHTML;
+    button.disabled = true;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Cancelling...';
+
+    // Call API to cancel participant
+    cancelParticipant(participantNumber, button, originalHtml);
 }
 
 function confirmCancelAll() {
-    if (confirm('Are you sure you want to cancel the ENTIRE booking for all participants?\n\nThis action cannot be undone.')) {
-        alert('Cancellation feature will be implemented. Please contact support at support@myretreatbooking.com for now.');
-        // TODO: Implement cancellation API call
-        // You can add AJAX call here to cancel entire booking
+    if (!confirm('Are you sure you want to cancel the ENTIRE booking for all participants?\n\nThis action cannot be undone.')) {
+        return;
     }
+
+    // Show loading state
+    const button = event.target;
+    const originalHtml = button.innerHTML;
+    button.disabled = true;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Cancelling...';
+
+    // Cancel primary participant (which cancels entire booking)
+    cancelParticipant(1, button, originalHtml);
+}
+
+function cancelParticipant(serialNumber, button, originalHtml) {
+    // Get CSRF token
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+    
+    // Cancel the participant using the web route
+    fetch('{{ route('booking.cancel') }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': csrfToken
+        },
+        body: JSON.stringify({
+            serial_number: serialNumber
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Cancellation successful! You will be redirected to check your booking status again.');
+            // Redirect back to check status page
+            window.location.href = '{{ route('booking.check-status') }}';
+        } else {
+            throw new Error(data.message || 'Cancellation failed');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error: ' + error.message);
+        button.disabled = false;
+        button.innerHTML = originalHtml;
+    });
 }
 </script>
 @endpush
