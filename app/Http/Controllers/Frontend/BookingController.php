@@ -4,12 +4,15 @@ namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Api\BookingAPIController;
+use App\Traits\TracksUserSession;
 use App\Models\Retreat;
 use App\Models\Booking;
 use Illuminate\Http\Request;
 
 class BookingController extends Controller
 {
+    use TracksUserSession;
+    
     protected $bookingAPI;
 
     public function __construct(BookingAPIController $bookingAPI)
@@ -19,6 +22,9 @@ class BookingController extends Controller
 
     public function create(Request $request)
     {
+        // Track user session
+        $this->trackSession($request);
+        
         $retreatId = $request->query('retreat_id');
         $retreat = null;
 
@@ -73,8 +79,11 @@ class BookingController extends Controller
         return view('frontend.booking.success', compact('bookingData'));
     }
 
-    public function checkStatusForm()
+    public function checkStatusForm(Request $request)
     {
+        // Track user session
+        $this->trackSession($request);
+        
         return view('frontend.booking.check-status');
     }
 

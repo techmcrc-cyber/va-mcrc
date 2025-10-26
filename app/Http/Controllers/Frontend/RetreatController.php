@@ -4,10 +4,13 @@ namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Api\RetreatAPIController;
+use App\Traits\TracksUserSession;
 use Illuminate\Http\Request;
 
 class RetreatController extends Controller
 {
+    use TracksUserSession;
+    
     protected $retreatAPI;
 
     public function __construct(RetreatAPIController $retreatAPI)
@@ -17,6 +20,9 @@ class RetreatController extends Controller
 
     public function index(Request $request)
     {
+        // Track user session
+        $this->trackSession($request);
+        
         // Use the API controller to get all retreats
         $response = $this->retreatAPI->index($request);
         $responseData = json_decode($response->getContent(), true);
@@ -32,6 +38,9 @@ class RetreatController extends Controller
 
     public function show(Request $request, $id)
     {
+        // Track user session
+        $this->trackSession($request);
+        
         // Use the API controller to get retreat details
         $response = $this->retreatAPI->show($request, $id);
         $responseData = json_decode($response->getContent(), true);
