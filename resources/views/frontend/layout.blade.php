@@ -55,7 +55,7 @@
         .navbar-brand {
             font-family: 'Playfair Display', serif;
             font-weight: 700;
-            font-size: 1.3rem;
+            font-size: 1.8rem;
             color: var(--primary-color) !important;
             margin-right: auto;
             padding-left: 0;
