@@ -2,8 +2,8 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\API\RetreatAPIController;
-use App\Http\Controllers\API\BookingAPIController;
+use App\Http\Controllers\Api\RetreatAPIController;
+use App\Http\Controllers\Api\BookingAPIController;
 
 // Health check endpoint (no authentication required)
 Route::get('/health', function () {
