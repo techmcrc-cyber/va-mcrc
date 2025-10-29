@@ -3,17 +3,6 @@
 use App\Http\Controllers\Admin\DashboardController;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| Admin Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register admin routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group and is prefixed with 'admin'.
-|
-*/
-
 // Authenticated Admin Routes
 Route::middleware(['auth:web'])->group(function () {
 
@@ -25,28 +14,24 @@ Route::middleware(['auth:web'])->group(function () {
     Route::put('/profile', [\App\Http\Controllers\Admin\ProfileController::class, 'update'])->name('admin.profile.update');
 
     // Settings
-    Route::prefix('settings')->name('admin.settings.')->group(function () {
-        // View settings pages
-        Route::get('general', [\App\Http\Controllers\Admin\SettingController::class, 'general'])->name('general');
-        Route::get('email', [\App\Http\Controllers\Admin\SettingController::class, 'email'])->name('email');
-        Route::get('payment', [\App\Http\Controllers\Admin\SettingController::class, 'payment'])->name('payment');
-        Route::get('notification', [\App\Http\Controllers\Admin\SettingController::class, 'notification'])->name('notification');
+    // Route::prefix('settings')->name('admin.settings.')->group(function () {
+    //     // View settings pages
+    //     Route::get('general', [\App\Http\Controllers\Admin\SettingController::class, 'general'])->name('general');
+    //     Route::get('email', [\App\Http\Controllers\Admin\SettingController::class, 'email'])->name('email');
+    //     Route::get('payment', [\App\Http\Controllers\Admin\SettingController::class, 'payment'])->name('payment');
+    //     Route::get('notification', [\App\Http\Controllers\Admin\SettingController::class, 'notification'])->name('notification');
         
-        // System settings (Super Admin only)
-        Route::get('system', [\App\Http\Controllers\Admin\SettingController::class, 'system'])->name('system');
-        Route::post('system', [\App\Http\Controllers\Admin\SettingController::class, 'storeSystemSetting'])->name('system.store');
-        Route::delete('system/{id}', [\App\Http\Controllers\Admin\SettingController::class, 'deleteSystemSetting'])->name('system.delete');
+    //     // System settings (Super Admin only)
+    //     Route::get('system', [\App\Http\Controllers\Admin\SettingController::class, 'system'])->name('system');
+    //     Route::post('system', [\App\Http\Controllers\Admin\SettingController::class, 'storeSystemSetting'])->name('system.store');
+    //     Route::delete('system/{id}', [\App\Http\Controllers\Admin\SettingController::class, 'deleteSystemSetting'])->name('system.delete');
         
-        // Update settings
-        Route::put('{type}', [\App\Http\Controllers\Admin\SettingController::class, 'update'])->name('update');
+    //     // Update settings
+    //     Route::put('{type}', [\App\Http\Controllers\Admin\SettingController::class, 'update'])->name('update');
         
-        // Test email configuration
-        Route::post('test-email', [\App\Http\Controllers\Admin\SettingController::class, 'testEmail'])->name('test-email');
-    });
-
-    // Support
-    Route::get('/support', [\App\Http\Controllers\Admin\SupportController::class, 'index'])->name('admin.support');
-    Route::post('/support', [\App\Http\Controllers\Admin\SupportController::class, 'submit'])->name('admin.support.submit');
+    //     // Test email configuration
+    //     Route::post('test-email', [\App\Http\Controllers\Admin\SettingController::class, 'testEmail'])->name('test-email');
+    // });
 
     // Bookings Management
     Route::prefix('bookings')->name('admin.bookings.')->group(function () {

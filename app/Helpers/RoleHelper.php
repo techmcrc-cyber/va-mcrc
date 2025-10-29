@@ -4,12 +4,7 @@ namespace App\Helpers;
 
 class RoleHelper
 {
-    /**
-     * Generate a consistent color for a role name
-     * 
-     * @param string $roleName
-     * @return array [background, text, border]
-     */
+
     public static function getRoleColors($roleName)
     {
         // Predefined colors for common roles
