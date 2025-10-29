@@ -10,8 +10,8 @@ use Illuminate\Http\JsonResponse;
 class RetreatAPIController extends BaseAPIController
 {
     /**
-     * Display a listing of available retreats.
-     * Only shows retreats starting from current day that are not fully booked.
+     * Display a listing of upcoming retreats.
+     * Shows all retreats starting from current day, including fully booked ones.
      */
     public function index(Request $request): JsonResponse
     {
@@ -23,14 +23,9 @@ class RetreatAPIController extends BaseAPIController
                 ->upcoming() // Starting from current day
                 ->orderBy('start_date', 'asc')
                 ->get();
-            // Filter out fully booked retreats
-            $availableRetreats = $retreats->filter(function ($retreat) {
-                $bookedSeats = $retreat->bookings->count();
-                return $bookedSeats < $retreat->seats;
-            });
 
             // Transform data for API response (basic details only)
-            $retreatsList = $availableRetreats->map(function ($retreat) {
+            $retreatsList = $retreats->map(function ($retreat) {
                 $bookedSeats = $retreat->bookings->count();
                 return [
                     'retreat_id' => $retreat->id,
@@ -50,7 +45,7 @@ class RetreatAPIController extends BaseAPIController
             return $this->sendResponse([
                 'retreats' => $retreatsList,
                 'count' => $retreatsList->count()
-            ], 'Available retreats retrieved successfully');
+            ], 'Upcoming retreats retrieved successfully');
             
         } catch (\Exception $e) {
             \Log::error('API - Failed to retrieve retreats: ' . $e->getMessage());

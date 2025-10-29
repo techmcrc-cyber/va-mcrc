@@ -254,9 +254,15 @@
                         <li><i class="fas fa-users"></i> {{ $retreat['available_spots'] }} spots available</li>
                         <li><i class="fas fa-clock"></i> {{ $retreat['timings'] ?? 'Check details' }}</li>
                     </ul>
-                    <a href="{{ route('retreats.show', $retreat['retreat_id']) }}" class="btn btn-outline-primary w-100">
-                        Book Now
-                    </a>
+                    @if($retreat['available_spots'] > 0)
+                        <a href="{{ route('retreats.show', $retreat['retreat_id']) }}" class="btn btn-outline-primary w-100" style="padding: 0.375rem 0.75rem;">
+                            Book Now
+                        </a>
+                    @else
+                        <button class="btn btn-secondary w-100" style="padding: 0.375rem 0.75rem;" disabled>
+                            <i class="fas fa-times-circle"></i> Slots Filled
+                        </button>
+                    @endif
                 </div>
             </div>
         </div>

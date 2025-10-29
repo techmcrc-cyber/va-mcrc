@@ -27,11 +27,24 @@ class RetreatController extends Controller
         $response = $this->retreatAPI->index($request);
         $responseData = json_decode($response->getContent(), true);
 
-        $retreats = collect([]);
+        $allRetreats = collect([]);
         
         if ($response->isSuccessful() && isset($responseData['data']['retreats'])) {
-            $retreats = collect($responseData['data']['retreats']);
+            $allRetreats = collect($responseData['data']['retreats']);
         }
+
+        // Paginate the retreats collection (6 per page)
+        $perPage = 6;
+        $currentPage = \Illuminate\Pagination\Paginator::resolveCurrentPage('page');
+        $currentPageItems = $allRetreats->slice(($currentPage - 1) * $perPage, $perPage)->values();
+        
+        $retreats = new \Illuminate\Pagination\LengthAwarePaginator(
+            $currentPageItems,
+            $allRetreats->count(),
+            $perPage,
+            $currentPage,
+            ['path' => \Illuminate\Pagination\Paginator::resolveCurrentPath(), 'query' => $request->query()]
+        );
 
         return view('frontend.retreats.index', compact('retreats'));
     }

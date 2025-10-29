@@ -218,11 +218,11 @@ class Retreat extends Model implements HasMedia
 
     /**
      * Scope a query to only include upcoming retreats.
-     * Shows retreats that haven't ended yet (includes ongoing retreats and today's retreats).
+     * Shows retreats starting from today onwards.
      */
     public function scopeUpcoming($query)
     {
-        return $query->where('end_date', '>=', now()->toDateString());
+        return $query->where('start_date', '>=', now()->toDateString());
     }
 
     /**
