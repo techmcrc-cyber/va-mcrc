@@ -7,7 +7,7 @@
     .hero-section {
         background: #f8f9fa;
         color: var(--text-dark);
-        padding: 3rem 0;
+        padding: 2rem 0 0 0;
         position: relative;
     }
     
@@ -198,34 +198,135 @@
     </div>
 </div>
 
+<!-- Statistics Section -->
+<div style="background-color: #f8f9fa; padding: 3rem 0;">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-3 col-6 mb-4 mb-md-0">
+                <div class="stat-item">
+                    <i class="fas fa-users fa-3x mb-3" style="color: var(--primary-color);"></i>
+                    <h2 class="mb-2 counter" data-target="500" style="font-size: 3rem; font-weight: 700; color: var(--text-dark);">0</h2>
+                    <p class="mb-0" style="font-size: 1.1rem; color: var(--text-light);">Participants</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6 mb-4 mb-md-0">
+                <div class="stat-item">
+                    <i class="fas fa-calendar-check fa-3x mb-3" style="color: var(--primary-color);"></i>
+                    <h2 class="mb-2 counter" data-target="50" style="font-size: 3rem; font-weight: 700; color: var(--text-dark);">0</h2>
+                    <p class="mb-0" style="font-size: 1.1rem; color: var(--text-light);">Retreats Completed</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="stat-item">
+                    <i class="fas fa-star fa-3x mb-3" style="color: var(--primary-color);"></i>
+                    <h2 class="mb-2 counter" data-target="15" style="font-size: 3rem; font-weight: 700; color: var(--text-dark);">0</h2>
+                    <p class="mb-0" style="font-size: 1.1rem; color: var(--text-light);">Years Experience</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="stat-item">
+                    <i class="fas fa-heart fa-3x mb-3" style="color: var(--primary-color);"></i>
+                    <h2 class="mb-2 counter" data-target="98" style="font-size: 3rem; font-weight: 700; color: var(--text-dark);">0</h2>
+                    <p class="mb-0" style="font-size: 1.1rem; color: var(--text-light);">Satisfaction Rate</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const counters = document.querySelectorAll('.counter');
+    const speed = 200; // Animation speed
+    
+    const animateCounter = (counter) => {
+        const target = +counter.getAttribute('data-target');
+        const increment = target / speed;
+        let count = 0;
+        
+        const updateCount = () => {
+            count += increment;
+            if (count < target) {
+                counter.innerText = Math.ceil(count);
+                setTimeout(updateCount, 10);
+            } else {
+                counter.innerText = target + (counter.parentElement.querySelector('p').innerText.includes('%') ? '%' : '+');
+            }
+        };
+        
+        updateCount();
+    };
+    
+    // Intersection Observer to trigger animation when section is visible
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const counter = entry.target;
+                if (counter.innerText === '0') {
+                    animateCounter(counter);
+                }
+            }
+        });
+    }, { threshold: 0.5 });
+    
+    counters.forEach(counter => observer.observe(counter));
+});
+</script>
+@endpush
+
 <!-- Guide Section -->
 <div class="guide-section">
     <div class="container">
         <div class="text-center mb-5">
             <h2 class="section-title">Guiding Your Retreat</h2>
-            <p class="section-subtitle">Meet the guide who will support you on your journey</p>
+            <p class="section-subtitle">Meet the guides who will support you on your journey</p>
         </div>
         
-        <div class="guide-content">
-            <div class="guide-image">
-                <img src="{{ asset('images/author.jpg') }}" alt="Fr. Daniel Poovannathil">
+        <div class="row g-4">
+            <!-- Guide 1 -->
+            <div class="col-md-4">
+                <div class="text-center">
+                    <div class="guide-image mx-auto mb-3" style="width: 200px; height: 200px;">
+                        <img src="{{ asset('images/fr_daniel.jpg') }}" alt="Fr. Daniel Poovannathil">
+                    </div>
+                    <h4 class="mb-2">Fr. Daniel Poovannathil</h4>
+                    <p style="color: var(--primary-color);" class="mb-3">Spiritual Director</p>
+                    <p style="color: var(--text-light);">
+                        With over 15 years of experience in practices and spiritual direction, 
+                        bringing wisdom and compassion to each retreat.
+                    </p>
+                </div>
             </div>
-            <div class="guide-text">
-                <h3 style="font-size: 1.8rem; margin-bottom: 0.5rem;">Fr. Daniel Poovannathil</h3>
-                <p style="color: var(--primary-color); margin-bottom: 1.5rem;">Spiritual Director</p>
-                <p style="line-height: 1.8; color: var(--text-light); margin-bottom: 1rem;">
-                    With over 15 years of experience in contemplative practices and spiritual direction, 
-                    Rev. Sarah Mendoza brings a wealth of wisdom and compassion to each retreat. 
-                    Her gentle guidance helps participants discover deeper meaning and peace in their spiritual journey.
-                </p>
-                <p style="line-height: 1.8; color: var(--text-light); margin-bottom: 1rem;">
-                    Trained in Ignatian spirituality and mindfulness practices, she creates a safe and 
-                    nurturing environment for personal growth and spiritual awakening.
-                </p>
-                <p style="line-height: 1.8; color: var(--text-light);">
-                    Her approach blends ancient wisdom with modern understanding, making the retreat 
-                    experience accessible and profound for seekers at every stage of their journey.
-                </p>
+
+            <!-- Guide 2 -->
+            <div class="col-md-4">
+                <div class="text-center">
+                    <div class="guide-image mx-auto mb-3" style="width: 200px; height: 200px;">
+                        <img src="{{ asset('images/fr_adarsh.jpg') }}" alt="fr.adarsh">
+                    </div>
+                    <h4 class="mb-2">Fr. Adarsh</h4>
+                    <p style="color: var(--primary-color);" class="mb-3">Meditation Instructor</p>
+                    <p style="color: var(--text-light);">
+                        Trained in Ignatian spirituality and mindfulness practices, creating a safe and 
+                        nurturing environment for personal growth.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Guide 3 -->
+            <div class="col-md-4">
+                <div class="text-center">
+                    <div class="guide-image mx-auto mb-3" style="width: 200px; height: 200px;">
+                        <img src="{{ asset('images/fr_wilson.jpg') }}" alt="fr.wilson">
+                    </div>
+                    <h4 class="mb-2">Fr. Wilson</h4>
+                    <p style="color: var(--primary-color);" class="mb-3">Retreat Coordinator</p>
+                    <p style="color: var(--text-light);">
+                        Blending ancient wisdom with modern understanding, making the retreat 
+                        experience accessible and profound for all seekers.
+                    </p>
+                </div>
             </div>
         </div>
     </div>
@@ -278,18 +379,18 @@
 @endif
 
 <!-- Explore Other Spaces -->
-<div class="container" style="padding: 3rem 0; background-color: white; margin-left: 0; margin-right: 0; max-width: 100%;">
-    <div class="container">
+<div style="padding: 3rem 0; background-color: white;">
+    <div class="container-fluid" style="max-width: 1400px; padding-left: 2rem; padding-right: 2rem;">
         <div class="text-center mb-4">
             <h2 class="section-title">Explore Other Sacred Spaces</h2>
             <p class="section-subtitle">Discover additional retreat centers in our network</p>
         </div>
         
-        <div class="row g-4">
-            <div class="col-md-6">
+        <div class="row g-3">
+            <div class="col-md-4">
                 <div class="card p-4">
-                    <h5 style="margin-bottom: 1rem;">Zen Mountain Monastery</h5>
-                    <p style="color: var(--text-light); line-height: 1.8; margin-bottom: 1.5rem;">
+                    <h5 class="mb-3">Zen Mountain Monastery</h5>
+                    <p style="color: var(--text-light);" class="mb-4">
                         Experience traditional Zen practice in a serene mountain setting. 
                         Perfect for those seeking deep meditation and mindfulness training.
                     </p>
@@ -298,12 +399,24 @@
                     </a>
                 </div>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <div class="card p-4">
-                    <h5 style="margin-bottom: 1rem;">Spirit Rock Meditation Center</h5>
-                    <p style="color: var(--text-light); line-height: 1.8; margin-bottom: 1.5rem;">
+                    <h5 class="mb-3">Spirit Rock Meditation Center</h5>
+                    <p style="color: var(--text-light);" class="mb-4">
                         A beautiful sanctuary for insight meditation and Buddhist teachings. 
-                        Located on 400 acres of rolling hills hdbeshd in Marin County.
+                        Located on 400 acres of rolling hills in Marin County.
+                    </p>
+                    <a href="{{ route('retreats.index') }}" class="btn btn-outline-primary">
+                        Visit Website →
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card p-4">
+                    <h5 class="mb-3">Sacred Heart Retreat Center</h5>
+                    <p style="color: var(--text-light);" class="mb-4">
+                        A peaceful haven for contemplative prayer and spiritual renewal. 
+                        Offering guided retreats in a tranquil natural setting.
                     </p>
                     <a href="{{ route('retreats.index') }}" class="btn btn-outline-primary">
                         Visit Website →
