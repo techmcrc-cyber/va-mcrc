@@ -208,10 +208,10 @@
         
         <div class="guide-content">
             <div class="guide-image">
-                <img src="https://via.placeholder.com/200x200/ba4165/ffffff?text=Rev.+Sarah" alt="Rev. Sarah Mendoza">
+                <img src="{{ asset('images/author.jpg') }}" alt="Fr. Daniel Poovannathil">
             </div>
             <div class="guide-text">
-                <h3 style="font-size: 1.8rem; margin-bottom: 0.5rem;">Rev. Sarah Mendoza</h3>
+                <h3 style="font-size: 1.8rem; margin-bottom: 0.5rem;">Fr. Daniel Poovannathil</h3>
                 <p style="color: var(--primary-color); margin-bottom: 1.5rem;">Spiritual Director</p>
                 <p style="line-height: 1.8; color: var(--text-light); margin-bottom: 1rem;">
                     With over 15 years of experience in contemplative practices and spiritual direction, 
