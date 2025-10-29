@@ -14,24 +14,24 @@ Route::middleware(['auth:web'])->group(function () {
     Route::put('/profile', [\App\Http\Controllers\Admin\ProfileController::class, 'update'])->name('admin.profile.update');
 
     // Settings
-    // Route::prefix('settings')->name('admin.settings.')->group(function () {
-    //     // View settings pages
-    //     Route::get('general', [\App\Http\Controllers\Admin\SettingController::class, 'general'])->name('general');
-    //     Route::get('email', [\App\Http\Controllers\Admin\SettingController::class, 'email'])->name('email');
-    //     Route::get('payment', [\App\Http\Controllers\Admin\SettingController::class, 'payment'])->name('payment');
-    //     Route::get('notification', [\App\Http\Controllers\Admin\SettingController::class, 'notification'])->name('notification');
+    Route::prefix('settings')->name('admin.settings.')->group(function () {
+        // View settings pages
+        Route::get('general', [\App\Http\Controllers\Admin\SettingController::class, 'general'])->name('general');
+        Route::get('email', [\App\Http\Controllers\Admin\SettingController::class, 'email'])->name('email');
+        Route::get('payment', [\App\Http\Controllers\Admin\SettingController::class, 'payment'])->name('payment');
+        Route::get('notification', [\App\Http\Controllers\Admin\SettingController::class, 'notification'])->name('notification');
         
-    //     // System settings (Super Admin only)
-    //     Route::get('system', [\App\Http\Controllers\Admin\SettingController::class, 'system'])->name('system');
-    //     Route::post('system', [\App\Http\Controllers\Admin\SettingController::class, 'storeSystemSetting'])->name('system.store');
-    //     Route::delete('system/{id}', [\App\Http\Controllers\Admin\SettingController::class, 'deleteSystemSetting'])->name('system.delete');
+        // System settings (Super Admin only)
+        Route::get('system', [\App\Http\Controllers\Admin\SettingController::class, 'system'])->name('system');
+        Route::post('system', [\App\Http\Controllers\Admin\SettingController::class, 'storeSystemSetting'])->name('system.store');
+        Route::delete('system/{id}', [\App\Http\Controllers\Admin\SettingController::class, 'deleteSystemSetting'])->name('system.delete');
         
-    //     // Update settings
-    //     Route::put('{type}', [\App\Http\Controllers\Admin\SettingController::class, 'update'])->name('update');
+        // Update settings
+        Route::put('{type}', [\App\Http\Controllers\Admin\SettingController::class, 'update'])->name('update');
         
-    //     // Test email configuration
-    //     Route::post('test-email', [\App\Http\Controllers\Admin\SettingController::class, 'testEmail'])->name('test-email');
-    // });
+        // Test email configuration
+        Route::post('test-email', [\App\Http\Controllers\Admin\SettingController::class, 'testEmail'])->name('test-email');
+    });
 
     // Bookings Management
     Route::prefix('bookings')->name('admin.bookings.')->group(function () {
@@ -130,4 +130,24 @@ Route::middleware(['auth:web'])->group(function () {
         Route::get('/{specialBooking}/edit', [\App\Http\Controllers\Admin\SpecialBookingController::class, 'edit'])->name('edit');
         Route::put('/{specialBooking}', [\App\Http\Controllers\Admin\SpecialBookingController::class, 'update'])->name('update');
     });
+
+    // Support
+    Route::get('/support', [\App\Http\Controllers\Admin\SupportController::class, 'index'])->name('admin.support');
+    Route::post('/support', [\App\Http\Controllers\Admin\SupportController::class, 'submit'])->name('admin.support.submit');
+
+    // HTTP Request Logs (Super Admin only)
+    Route::prefix('log_files')->name('admin.logs.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\LogViewerController::class, 'index'])->name('index');
+        Route::get('/show', [\App\Http\Controllers\Admin\LogViewerController::class, 'show'])->name('show');
+        Route::get('/download', [\App\Http\Controllers\Admin\LogViewerController::class, 'download'])->name('download');
+        Route::delete('/delete', [\App\Http\Controllers\Admin\LogViewerController::class, 'delete'])->name('delete');
+    });
 });
+
+    // HTTP Request Logs (Super Admin only)
+    Route::prefix('log_files')->name('admin.logs.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\LogViewerController::class, 'index'])->name('index');
+        Route::get('/show', [\App\Http\Controllers\Admin\LogViewerController::class, 'show'])->name('show');
+        Route::get('/download', [\App\Http\Controllers\Admin\LogViewerController::class, 'download'])->name('download');
+        Route::delete('/delete', [\App\Http\Controllers\Admin\LogViewerController::class, 'delete'])->name('delete');
+    });
