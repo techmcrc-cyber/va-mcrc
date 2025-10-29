@@ -1,6 +1,6 @@
 @extends('frontend.layout')
 
-@section('title', 'Booking Details - My Retreat Booking')
+@section('title', 'My Retreat Booking')
 
 @section('content')
 <div class="container my-5">
@@ -168,6 +168,9 @@
                     <hr>
 
                     <div class="d-grid gap-2">
+                        <button class="btn btn-success" onclick="shareOnWhatsApp()">
+                            <i class="fab fa-whatsapp"></i> Share on WhatsApp
+                        </button>
                         <a href="{{ route('booking.check-status') }}" class="btn btn-outline-primary">
                             <i class="fas fa-search"></i> Check Another Booking
                         </a>
@@ -199,6 +202,24 @@ const bookingData = {
     participant_number: {{ $bookingDetails['primary_participant']['serial_number'] ?? 1 }},
     session_id: '{{ $sessionId ?? '' }}'
 };
+
+function shareOnWhatsApp() {
+    const message = `*Retreat Booking Confirmation*\n\n` +
+        `*Booking ID:* {{ $bookingDetails['booking_id'] }}\n` +
+        `*Status:* {{ ucfirst($bookingDetails['status']) }}\n\n` +
+        `*Retreat:* {{ $bookingDetails['retreat']['name'] }}\n` +
+        `*Start:* {{ \Carbon\Carbon::parse($bookingDetails['retreat']['start_date'])->format('M d, Y') }}\n` +
+        `*End:* {{ \Carbon\Carbon::parse($bookingDetails['retreat']['end_date'])->format('M d, Y') }}\n` +
+        `*Timings:* {{ $bookingDetails['retreat']['timings'] }}\n\n` +
+        `*Total Participants:* {{ $bookingDetails['summary']['total_participants'] }}\n` +
+        `*Duration:* {{ $bookingDetails['important_info']['duration_days'] }} days\n\n` +
+        `Check full details: {{ url()->current() }}`;
+    
+    const phoneNumber = '{{ $bookingDetails['primary_participant']['whatsapp_number'] ?? '' }}';
+    const whatsappUrl = `https://wa.me/91${phoneNumber}?text=${encodeURIComponent(message)}`;
+    
+    window.open(whatsappUrl, '_blank');
+}
 
 function confirmCancel(participantNumber, participantName) {
     if (!confirm(`Are you sure you want to cancel the booking for ${participantName}?\n\nThis action cannot be undone.`)) {

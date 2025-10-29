@@ -1,6 +1,6 @@
 @extends('frontend.layout')
 
-@section('title', 'Welcome - My Retreat Booking')
+@section('title', 'My Retreat Booking')
 
 @push('styles')
 <style>
@@ -205,7 +205,7 @@
             <div class="col-md-3 col-6 mb-4 mb-md-0">
                 <div class="stat-item">
                     <i class="fas fa-users fa-3x mb-3" style="color: var(--primary-color);"></i>
-                    <h2 class="mb-2 counter" data-target="500" style="font-size: 3rem; font-weight: 700; color: var(--text-dark);">0</h2>
+                    <h2 class="mb-2 counter" data-target="400" style="font-size: 3rem; font-weight: 700; color: var(--text-dark);">0</h2>
                     <p class="mb-0" style="font-size: 1.1rem; color: var(--text-light);">Participants</p>
                 </div>
             </div>

@@ -1,6 +1,6 @@
 @extends('frontend.layout')
 
-@section('title', $retreat['retreat_name'] . ' - My Retreat Booking')
+@section('title', 'My Retreat Booking')
 
 @section('content')
 <div class="container my-5">

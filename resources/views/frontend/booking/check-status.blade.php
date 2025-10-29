@@ -1,6 +1,6 @@
 @extends('frontend.layout')
 
-@section('title', 'Check Booking Status - My Retreat Booking')
+@section('title', 'My Retreat Booking')
 
 @push('styles')
 <style>
@@ -123,7 +123,7 @@
                             <small class="text-muted"><i class="fas fa-info-circle"></i> Enter the number used during registration</small>
                         </div>
 
-                        <div class="d-grid">
+                        <div class="d-grid p-2">
                             <button type="submit" class="btn btn-primary btn-lg">
                                 <i class="fas fa-search"></i> Check Status
                             </button>
@@ -144,7 +144,7 @@
         </div>
         
         <div class="col-lg-5">
-            <div class="info-card p-4 mb-4">
+            <div class="info-card p-2">
                 <h5 class="mb-3">What You Can Do</h5>
                 <div class="feature-item">
                     <div class="feature-icon">
@@ -173,6 +173,15 @@
                         <p class="text-muted small mb-0">Check dates, timings, and important instructions</p>
                     </div>
                 </div>
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-times-circle"></i>
+                    </div>
+                    <div>
+                        <h6 class="mb-1">Cancel Booking</h6>
+                        <p class="text-muted small mb-0">Cancel your booking or individual participants if needed</p>
+                    </div>
+                </div>
             </div>
             
             <div class="card border-0 shadow-sm">
@@ -182,10 +191,10 @@
                         If you're having trouble finding your booking or need assistance, our support team is here to help.
                     </p>
                     <div class="d-grid gap-2">
-                        <a href="mailto:support@myretreatbooking.com" class="btn btn-outline-primary btn-sm">
+                        <a href="mailto:support@myretreatbooking.com" class="btn btn-outline-primary" style="padding: 0.375rem 0.75rem;">
                             <i class="fas fa-envelope me-2"></i>Email Support
                         </a>
-                        <a href="tel:+15551234567" class="btn btn-outline-secondary btn-sm">
+                        <a href="tel:+15551234567" class="btn btn-outline-secondary" style="padding: 0.375rem 0.75rem;">
                             <i class="fas fa-phone me-2"></i>Call Us
                         </a>
                     </div>

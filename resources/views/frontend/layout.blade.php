@@ -44,11 +44,11 @@
         .navbar {
             background-color: white;
             border-bottom: 1px solid #e8e8e8;
-            padding: 1rem 0;
+            padding: 0.5rem 0;
         }
         
         .navbar .container {
-            padding-left: 1rem;
+            padding-left: 0.5rem;
             padding-right: 1rem;
         }
         
@@ -58,18 +58,38 @@
             font-size: 1.8rem;
             color: var(--primary-color) !important;
             margin-right: auto;
-            padding-left: 0;
+            padding: 0.5rem 1rem;
+            border: 1px solid rgba(186, 65, 101, 0.15);
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(186, 65, 101, 0.08);
         }
         
         .navbar-nav .nav-link {
             color: var(--text-dark);
             font-weight: 500;
             margin: 0 0.5rem;
-            transition: color 0.3s;
+            transition: all 0.3s;
+            position: relative;
+            padding-bottom: 0.5rem;
         }
         
         .navbar-nav .nav-link:hover {
             color: var(--primary-color);
+        }
+        
+        .navbar-nav .nav-link.active {
+            color: var(--primary-color);
+        }
+        
+        .navbar-nav .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--primary-color);
+            border-radius: 2px 2px 0 0;
         }
         
         /* Buttons */
@@ -172,7 +192,7 @@
     <nav class="navbar navbar-expand-lg navbar-light">
         <div class="container">
             <a class="navbar-brand" href="{{ route('home') }}">
-                My Retreat Booking
+                MyRetreatBooking.Com
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -180,16 +200,16 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('home') }}">Home</a>
+                        <a class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('retreats.index') }}">Retreats</a>
+                        <a class="nav-link {{ request()->routeIs('retreats.*') ? 'active' : '' }}" href="{{ route('retreats.index') }}">Retreats</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('booking.register') }}">Book Retreat</a>
+                        <a class="nav-link {{ request()->routeIs('booking.register') || request()->routeIs('booking.success') ? 'active' : '' }}" href="{{ route('booking.register') }}">Book Retreat</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('booking.check-status') }}">Check Status</a>
+                        <a class="nav-link {{ request()->routeIs('booking.check-status*') || request()->routeIs('booking.status') ? 'active' : '' }}" href="{{ route('booking.check-status') }}">Check Status</a>
                     </li>
                 </ul>
             </div>

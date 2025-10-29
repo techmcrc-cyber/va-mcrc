@@ -1,6 +1,6 @@
 @extends('frontend.layout')
 
-@section('title', 'Register for Retreat - My Retreat Booking')
+@section('title', 'My Retreat Booking')
 
 @push('styles')
 <style>

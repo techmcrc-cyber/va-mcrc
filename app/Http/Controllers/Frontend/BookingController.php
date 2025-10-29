@@ -35,11 +35,17 @@ class BookingController extends Controller
                 ->first();
         }
 
-        $retreats = Retreat::with('criteriaRelation')
+        $retreats = Retreat::with(['criteriaRelation', 'bookings' => function($query) {
+                $query->where('is_active', true);
+            }])
             ->active()
-            ->whereDate('end_date', '>=', now()->toDateString())
+            ->upcoming()
             ->orderBy('start_date', 'asc')
-            ->get();
+            ->get()
+            ->filter(function ($retreat) {
+                $bookedSeats = $retreat->bookings->count();
+                return $bookedSeats < $retreat->seats; // Only show retreats with available seats
+            });
 
         // Get max participants from database settings
         $maxAdditionalMembers = \App\Models\Setting::get('MAX_ADDITIONAL_MEMBERS', 3);
