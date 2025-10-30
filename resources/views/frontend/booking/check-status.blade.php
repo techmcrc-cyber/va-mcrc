@@ -185,18 +185,31 @@
             </div>
             
             <div class="card border-0 shadow-sm">
-                <div class="card-body p-4">
-                    <h6 class="mb-3"><i class="fas fa-question-circle text-primary"></i> Need Help?</h6>
-                    <p class="small text-muted mb-3">
+                <div class="card-body p-3">
+                    <h5 class="mb-3"><i class="fas fa-question-circle text-primary"></i> Need Help?</h5>
+                    <p class="text-muted mb-3">
                         If you're having trouble finding your booking or need assistance, our support team is here to help.
                     </p>
-                    <div class="d-grid gap-2">
-                        <a href="mailto:support@myretreatbooking.com" class="btn btn-outline-primary" style="padding: 0.375rem 0.75rem;">
+                   <!--  <div class="d-grid gap-2 mb-3">
+                        <a href="mailto:support@myretreatbooking.com" class="btn btn-outline-primary">
                             <i class="fas fa-envelope me-2"></i>Email Support
                         </a>
-                        <a href="tel:+15551234567" class="btn btn-outline-secondary" style="padding: 0.375rem 0.75rem;">
+                        <a href="tel:+15551234567" class="btn btn-outline-secondary">
                             <i class="fas fa-phone me-2"></i>Call Us
                         </a>
+                    </div> -->
+                    <div class="mt-3 pt-2" style="border-top: 1px solid #e0e0e0;">
+                        <p class="mb-2 fw-semibold"><i class="fab fa-whatsapp text-success me-2"></i>Please WhatsApp on the below numbers:</p>
+                        <p class="mb-1">
+                            <a href="https://wa.me/6421237025" class="text-decoration-none" style="color: var(--primary-color);">
+                                +64 21 237 0258
+                            </a>
+                        </p>
+                        <p class="mb-0">
+                            <a href="https://wa.me/61466631130" class="text-decoration-none" style="color: var(--primary-color);">
+                                +61 466 631 130
+                            </a>
+                        </p>
                     </div>
                 </div>
             </div>

@@ -65,13 +65,13 @@
                         <i class="fas fa-calendar"></i> 
                         {{ \Carbon\Carbon::parse($retreat['start_date'])->format('M d, Y') }} - {{ \Carbon\Carbon::parse($retreat['end_date'])->format('M d, Y') }}
                     </p>
-                    <p class="card-text text-muted mb-2">
+                   <!--  <p class="card-text text-muted mb-2">
                         <i class="fas fa-clock"></i> 
                         {{ $retreat['timings'] ?? 'Check details' }}
-                    </p>
+                    </p> -->
                     <p class="card-text mb-3">
                         <i class="fas fa-filter"></i> 
-                        <strong>Criteria:</strong> {{ $retreat['criteria_name'] ?? 'Open to all' }}
+                        <strong>Eligibility:</strong> {{ $retreat['criteria_name'] ?? 'Open to all' }}
                     </p>
                     
                     <div class="mb-3">

@@ -158,11 +158,9 @@
     <div class="container">
         <div class="row align-items-center">
             <div class="col-lg-6 hero-content">
-                <h1>Book your journey<br>to spiritual clarity</h1>
+                <h1>Draw Near to God</h1>
                 <p>
-                    Discover peace through guided spiritual experiences in serene 
-                    natural settings. Begin your journey toward inner transformation 
-                    and lasting peace.
+                    Set amidst the serene Malankara Hills in Kerala, Mount Carmel Retreat Centre is a sacred space where hearts are restored and faith is renewed. Rooted in the Catholic tradition and guided by the Syro-Malankara Catholic Church, it welcomes pilgrims, seekers and believers from around the world to encounter the life-giving power of Scripture and Sacrament.
                 </p>
             </div>
             <div class="col-lg-6">
@@ -205,29 +203,29 @@
             <div class="col-md-3 col-6 mb-4 mb-md-0">
                 <div class="stat-item">
                     <i class="fas fa-users fa-3x mb-3" style="color: var(--primary-color);"></i>
-                    <h2 class="mb-2 counter" data-target="400" style="font-size: 3rem; font-weight: 700; color: var(--text-dark);">0</h2>
-                    <p class="mb-0" style="font-size: 1.1rem; color: var(--text-light);">Participants</p>
+                    <h2 class="mb-2 counter" data-target="16000" style="font-size: 3rem; font-weight: 700; color: var(--text-dark);">0</h2>
+                    <p class="mb-0" style="font-size: 1.1rem; color: var(--text-light);">Residential Retreat Participants</p>
                 </div>
             </div>
             <div class="col-md-3 col-6 mb-4 mb-md-0">
                 <div class="stat-item">
                     <i class="fas fa-calendar-check fa-3x mb-3" style="color: var(--primary-color);"></i>
-                    <h2 class="mb-2 counter" data-target="50" style="font-size: 3rem; font-weight: 700; color: var(--text-dark);">0</h2>
-                    <p class="mb-0" style="font-size: 1.1rem; color: var(--text-light);">Retreats Completed</p>
+                    <h2 class="mb-2 counter" data-target="5" style="font-size: 3rem; font-weight: 700; color: var(--text-dark);">0</h2>
+                    <p class="mb-0" style="font-size: 1.1rem; color: var(--text-light);">Bible Crash Courses Conducted</p>
                 </div>
             </div>
             <div class="col-md-3 col-6">
                 <div class="stat-item">
                     <i class="fas fa-star fa-3x mb-3" style="color: var(--primary-color);"></i>
-                    <h2 class="mb-2 counter" data-target="15" style="font-size: 3rem; font-weight: 700; color: var(--text-dark);">0</h2>
-                    <p class="mb-0" style="font-size: 1.1rem; color: var(--text-light);">Years Experience</p>
+                    <h2 class="mb-2 counter" data-target="2000" style="font-size: 3rem; font-weight: 700; color: var(--text-dark);">0</h2>
+                    <p class="mb-0" style="font-size: 1.1rem; color: var(--text-light);">Visitors on Convention Days</p>
                 </div>
             </div>
             <div class="col-md-3 col-6">
                 <div class="stat-item">
                     <i class="fas fa-heart fa-3x mb-3" style="color: var(--primary-color);"></i>
-                    <h2 class="mb-2 counter" data-target="98" style="font-size: 3rem; font-weight: 700; color: var(--text-dark);">0</h2>
-                    <p class="mb-0" style="font-size: 1.1rem; color: var(--text-light);">Satisfaction Rate</p>
+                    <h2 class="mb-2 counter" data-target="500000" style="font-size: 3rem; font-weight: 700; color: var(--text-dark);">0</h2>
+                    <p class="mb-0" style="font-size: 1.1rem; color: var(--text-light);">followers</p>
                 </div>
             </div>
         </div>
@@ -279,8 +277,8 @@ document.addEventListener('DOMContentLoaded', function() {
 <div class="guide-section">
     <div class="container">
         <div class="text-center mb-5">
-            <h2 class="section-title">Guiding Your Retreat</h2>
-            <p class="section-subtitle">Meet the guides who will support you on your journey</p>
+            <h2 class="section-title">Meet the Leadership</h2>
+            <p class="section-subtitle">Every mission with a divine purpose needs inspired leadership. At the heart of Mount Carmel Retreat Centre is a team deeply rooted in Scripture. </p>
         </div>
         
         <div class="row g-4">
@@ -293,8 +291,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <h4 class="mb-2">Fr. Daniel Poovannathil</h4>
                     <p style="color: var(--primary-color);" class="mb-3">Spiritual Director</p>
                     <p style="color: var(--text-light);">
-                        With over 15 years of experience in practices and spiritual direction, 
-                        bringing wisdom and compassion to each retreat.
+                        The Spiritual Director of Mount Carmel Retreat Centre, he is known for his deep love of Scripture. His approachable nature and inspiring faith have made him especially dear to the youth. His presence across television and digital platforms continues to draw people closer to the Word of God and to the heart of the Church. He also travels widely, leading retreats and faith encounters that strengthen communities and renew souls across the world.
                     </p>
                 </div>
             </div>
@@ -303,13 +300,12 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="col-md-4">
                 <div class="text-center">
                     <div class="guide-image mx-auto mb-3" style="width: 200px; height: 200px;">
-                        <img src="{{ asset('images/fr_adarsh.jpg') }}" alt="fr.adarsh">
+                        <img src="{{ asset('images/fr_adarsh.jpg') }}" alt="Fr. Adarsh Kumbalathu">
                     </div>
-                    <h4 class="mb-2">Fr. Adarsh</h4>
-                    <p style="color: var(--primary-color);" class="mb-3">Meditation Instructor</p>
+                    <h4 class="mb-2">Fr. Adarsh Kumbalathu</h4>
+                    <p style="color: var(--primary-color);" class="mb-3">Preacher</p>
                     <p style="color: var(--text-light);">
-                        Trained in Ignatian spirituality and mindfulness practices, creating a safe and 
-                        nurturing environment for personal growth.
+                        As Minister at Mount Carmel Retreat Centre, Fr Adarsh brings youthful energy and a compassionate spirit to the ministry. His presence helps bridge faith and everyday life, guiding retreatants to experience God’s love through simplicity, service and joy.
                     </p>
                 </div>
             </div>
@@ -318,13 +314,12 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="col-md-4">
                 <div class="text-center">
                     <div class="guide-image mx-auto mb-3" style="width: 200px; height: 200px;">
-                        <img src="{{ asset('images/fr_wilson.jpg') }}" alt="fr.wilson">
+                        <img src="{{ asset('images/fr_wilson.jpg') }}" alt="Fr. Wilson Thattaruthundil">
                     </div>
-                    <h4 class="mb-2">Fr. Wilson</h4>
-                    <p style="color: var(--primary-color);" class="mb-3">Retreat Coordinator</p>
+                    <h4 class="mb-2">Fr. Wilson Thattaruthundil</h4>
+                    <p style="color: var(--primary-color);" class="mb-3">Preacher</p>
                     <p style="color: var(--text-light);">
-                        Blending ancient wisdom with modern understanding, making the retreat 
-                        experience accessible and profound for all seekers.
+                        Serving as Administrator of the Retreat Centre, Fr. Wilson handles the organisational, logistical and administrative aspects that allow MCRC’s spiritual programmes to run smoothly and effectively. His leadership ensures the peaceful, retreat-friendly atmosphere of the campus in Vettinad
                     </p>
                 </div>
             </div>
@@ -336,7 +331,7 @@ document.addEventListener('DOMContentLoaded', function() {
 @if($upcomingRetreats->count() > 0)
 <div class="container" style="padding: 3rem 0;">
     <div class="text-center mb-4">
-        <h2 class="section-title">Featured Retreats</h2>
+        <h2 class="section-title">Upcoming Retreats</h2>
         <p class="section-subtitle">Choose the perfect spiritual experience for your journey</p>
     </div>
     
@@ -351,9 +346,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         {{ \Carbon\Carbon::parse($retreat['end_date'])->format('M d, Y') }}
                     </p>
                     <ul class="retreat-features">
-                        <li><i class="fas fa-filter"></i> Criteria: {{ $retreat['criteria_name'] ?? 'Open to all' }}</li>
-                        <li><i class="fas fa-users"></i> {{ $retreat['available_spots'] }} spots available</li>
-                        <li><i class="fas fa-clock"></i> {{ $retreat['timings'] ?? 'Check details' }}</li>
+                        <li><i class="fas fa-filter"></i>Eligibility : {{ $retreat['criteria_name'] ?? 'Open to all' }}</li>
+                        <li><i class="fas fa-users"></i>Availability : {{ $retreat['available_spots'] }} spots remaining</li>
+                        <!-- <li><i class="fas fa-clock"></i>Time : {{ $retreat['timings'] ?? 'Check details' }}</li> -->
                     </ul>
                     @if($retreat['available_spots'] > 0)
                         <a href="{{ route('retreats.show', $retreat['retreat_id']) }}" class="btn btn-outline-primary w-100" style="padding: 0.375rem 0.75rem;">
@@ -382,43 +377,39 @@ document.addEventListener('DOMContentLoaded', function() {
 <div style="padding: 3rem 0; background-color: white;">
     <div class="container-fluid" style="max-width: 1400px; padding-left: 2rem; padding-right: 2rem;">
         <div class="text-center mb-4">
-            <h2 class="section-title">Explore Other Sacred Spaces</h2>
-            <p class="section-subtitle">Discover additional retreat centers in our network</p>
+            <h2 class="section-title">Discover other Catholic retreat centres.</h2>
         </div>
         
         <div class="row g-3">
             <div class="col-md-4">
                 <div class="card p-4">
-                    <h5 class="mb-3">Zen Mountain Monastery</h5>
+                    <h5 class="mb-3">Marian Retreat Centre, Anakkara</h5>
                     <p style="color: var(--text-light);" class="mb-4">
-                        Experience traditional Zen practice in a serene mountain setting. 
-                        Perfect for those seeking deep meditation and mindfulness training.
+                        Situated in the peaceful village of Anakkara in Idukki district, Marian Retreat Centre is a haven of grace and healing.Through prayer, preaching and the power of the Holy Spirit, thousands have experienced renewal and deep conversion here.The centre is known for its Marian devotion and its ministry of intercession and inner healing.
                     </p>
-                    <a href="{{ route('retreats.index') }}" class="btn btn-outline-primary">
+                    <a href="https://marianretreatcentre.org/residential-retreats/" class="btn btn-outline-primary" target="_blank">
                         Visit Website →
                     </a>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="card p-4">
-                    <h5 class="mb-3">Spirit Rock Meditation Center</h5>
+                    <h5 class="mb-3">Sehion Retreat Centre, Palakkad</h5>
                     <p style="color: var(--text-light);" class="mb-4">
-                        A beautiful sanctuary for insight meditation and Buddhist teachings. 
-                        Located on 400 acres of rolling hills in Marin County.
+                       Founded under the guidance of Fr. Xavier Khan Vattayil, Sehion Retreat Centre is one of the most vibrant evangelisation ministries in India.Rooted in charismatic spirituality, Sehion reaches millions through retreats, missions and media, spreading the fire of God’s love across the world.It continues to inspire the faithful to live in the fullness of the Holy Spirit.
                     </p>
-                    <a href="{{ route('retreats.index') }}" class="btn btn-outline-primary">
+                    <a href="https://www.sehion.in/" class="btn btn-outline-primary" target="_blank">
                         Visit Website →
                     </a>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="card p-4">
-                    <h5 class="mb-3">Sacred Heart Retreat Center</h5>
+                    <h5 class="mb-3">Divine Retreat Centre</h5>
                     <p style="color: var(--text-light);" class="mb-4">
-                        A peaceful haven for contemplative prayer and spiritual renewal. 
-                        Offering guided retreats in a tranquil natural setting.
+                       A Catholic retreat centre on the serene banks of the Chalakudy River in Kerala, run by the Vincentian Congregation’s Mary Matha Province. For over three decades, it has welcomed thousands seeking spiritual renewal and healing in Christ. Rooted in the mission of Jesus, it continues to share His peace and love through the power of the Holy Spirit.
                     </p>
-                    <a href="{{ route('retreats.index') }}" class="btn btn-outline-primary">
+                    <a href="https://drcm.org/retreats/#upcomingretreats" class="btn btn-outline-primary" target="_blank">
                         Visit Website →
                     </a>
                 </div>

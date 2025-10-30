@@ -56,12 +56,12 @@
             font-family: 'Playfair Display', serif;
             font-weight: 700;
             font-size: 1.8rem;
-            color: var(--primary-color) !important;
+            color: white !important;
             margin-right: auto;
             padding: 0.5rem 1rem;
-            border: 1px solid rgba(186, 65, 101, 0.15);
+            background: rgb(186, 65, 101);
             border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(186, 65, 101, 0.08);
+            box-shadow: 0 2px 8px rgba(186, 65, 101, 0.3);
         }
         
         .navbar-nav .nav-link {
@@ -243,8 +243,8 @@
                     <h6 class="mb-3" style="color: white;">Contact</h6>
                     <p style="color: #e0e0e0;">
                         <i class="fas fa-envelope me-2"></i> info@myretreatbooking.com<br>
-                        <i class="fas fa-phone me-2"></i> +1 (555) 123-4567<br>
-                        <i class="fas fa-map-marker-alt me-2"></i> Find your journey here
+                        <i class="fas fa-phone me-2"></i> Retreat Bookings: +91 9446 113 725<br>
+                        <i class="fas fa-phone me-2"></i> Programme Enquiries: +91 8281 101 101<br>
                     </p>
                 </div>
             </div>

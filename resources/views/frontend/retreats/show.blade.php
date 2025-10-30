@@ -64,7 +64,7 @@
                     </div>
 
                     <div class="mb-3">
-                        <strong><i class="fas fa-filter"></i> Criteria:</strong>
+                        <strong><i class="fas fa-filter"></i> Eligibility :</strong>
                         <p class="mb-0">{{ $retreat['criteria']['name'] ?? 'Open to all' }}</p>
                     </div>
 
@@ -74,7 +74,7 @@
                         <a href="{{ route('booking.register', ['retreat_id' => $retreat['retreat_id']]) }}" class="btn btn-primary w-100 btn-lg">
                             <i class="fas fa-user-plus"></i> Register Now
                         </a>
-                    @else
+                    @elseCriteria
                         <button class="btn btn-secondary w-100 btn-lg" disabled>
                             <i class="fas fa-times-circle"></i> Fully Booked
                         </button>

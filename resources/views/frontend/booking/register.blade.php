@@ -249,10 +249,10 @@
         <!-- Add Participant Button -->
         <div class="mb-4 text-center">
             <button type="button" class="btn-add-participant" id="addParticipant">
-                <i class="fas fa-plus-circle me-2"></i> Add Another Participant (Max {{ $maxParticipants }})
+                <i class="fas fa-plus-circle me-2"></i> Add Another Participant
             </button>
             <p class="text-muted mt-2 mb-0" style="font-size: 0.9rem;">
-                <i class="fas fa-info-circle"></i> You can register up to {{ $maxParticipants }} participants in one booking
+                <i class="fas fa-info-circle"></i> You can register up to {{ $maxParticipants }} participants in one booking.
             </p>
         </div>
 
@@ -261,7 +261,7 @@
             <div class="form-check mb-3">
                 <input class="form-check-input" type="checkbox" id="agreeTerms" required style="width: 1.2rem; height: 1.2rem;">
                 <label class="form-check-label ms-2" for="agreeTerms" style="font-size: 0.95rem;">
-                    I agree that the information provided is accurate and I understand the retreat guidelines
+                    I confirm that the information provided is accurate and I understand the retreat guidelines.
                 </label>
             </div>
             <div class="d-grid gap-2 d-md-flex justify-content-md-start">
