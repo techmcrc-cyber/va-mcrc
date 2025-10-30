@@ -1,6 +1,10 @@
 @extends('frontend.layout')
 
-@section('title', 'My Retreat Booking')
+@section('title', 'Booking Confirmed - Mount Carmel Retreat Centre')
+@section('meta_description', 'Your retreat booking at Mount Carmel Retreat Centre has been confirmed. Check your email for booking details and prepare for your spiritual journey.')
+@section('meta_keywords', 'booking confirmed, retreat confirmation, booking success, retreat booking confirmed, Mount Carmel booking, spiritual retreat confirmation')
+@section('og_title', 'Booking Confirmed - Your Spiritual Journey Awaits')
+@section('og_description', 'Congratulations! Your retreat booking has been confirmed. We look forward to welcoming you to Mount Carmel Retreat Centre.')
 
 @section('content')
 <div class="container my-5">

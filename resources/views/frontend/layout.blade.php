@@ -4,6 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="description" content="@yield('meta_description', 'Mount Carmel Retreat Centre - Book spiritual retreats in Kerala. Experience faith renewal, inner peace, and spiritual growth in the serene Malankara Hills.')">
+    <meta name="keywords" content="@yield('meta_keywords', 'retreat booking, spiritual retreat, Catholic retreat, Mount Carmel, Kerala retreat, faith renewal, spiritual growth, religious retreat, retreat centre')">
+    <meta name="author" content="Mount Carmel Retreat Centre">
+    <meta property="og:title" content="@yield('og_title', '@yield('title', 'My Retreat Booking')')">
+    <meta property="og:description" content="@yield('og_description', 'Book your spiritual retreat at Mount Carmel Retreat Centre in Kerala. Experience faith renewal and inner peace.')">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:image" content="@yield('og_image', asset('images/og-default.jpg'))">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="@yield('twitter_title', '@yield('title', 'My Retreat Booking')')">
+    <meta name="twitter:description" content="@yield('twitter_description', 'Book your spiritual retreat at Mount Carmel Retreat Centre in Kerala.')">
     <title>@yield('title', 'My Retreat Booking')</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">

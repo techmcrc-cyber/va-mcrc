@@ -1,6 +1,10 @@
 @extends('frontend.layout')
 
-@section('title', 'My Retreat Booking')
+@section('title', 'Check Booking Status - Mount Carmel Retreat Centre')
+@section('meta_description', 'Check your retreat booking status at Mount Carmel Retreat Centre. View your booking details, manage participants, and access your retreat information.')
+@section('meta_keywords', 'check booking status, retreat booking status, booking confirmation, manage booking, retreat booking details, Mount Carmel booking, cancel retreat booking')
+@section('og_title', 'Check Your Retreat Booking Status')
+@section('og_description', 'Enter your booking ID and WhatsApp number to view your retreat booking details and manage your registration.')
 
 @push('styles')
 <style>

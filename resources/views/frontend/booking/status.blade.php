@@ -1,6 +1,10 @@
 @extends('frontend.layout')
 
-@section('title', 'My Retreat Booking')
+@section('title', 'Booking Details - Mount Carmel Retreat Centre')
+@section('meta_description', 'View your retreat booking details at Mount Carmel Retreat Centre. Manage your participants and access important retreat information.')
+@section('meta_keywords', 'booking details, retreat information, booking management, participant details, retreat booking, Mount Carmel booking')
+@section('og_title', 'Your Retreat Booking Details')
+@section('og_description', 'View and manage your retreat booking at Mount Carmel Retreat Centre.')
 
 @section('content')
 <div class="container my-5">

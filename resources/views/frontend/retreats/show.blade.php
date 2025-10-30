@@ -1,6 +1,10 @@
 @extends('frontend.layout')
 
-@section('title', 'My Retreat Booking')
+@section('title', $retreat['retreat_name'] . ' - Mount Carmel Retreat Centre')
+@section('meta_description', 'Book ' . $retreat['retreat_name'] . ' at Mount Carmel Retreat Centre. Join us for a transformative spiritual experience in Kerala.')
+@section('meta_keywords', $retreat['retreat_name'] . ', retreat booking, spiritual retreat, Catholic retreat Kerala, Mount Carmel, religious retreat')
+@section('og_title', $retreat['retreat_name'] . ' - Book Now')
+@section('og_description', 'Join us for ' . $retreat['retreat_name'] . '. Experience faith renewal and spiritual growth at Mount Carmel Retreat Centre.')
 
 @section('content')
 <div class="container my-5">

@@ -1,6 +1,10 @@
 @extends('frontend.layout')
 
-@section('title', 'My Retreat Booking')
+@section('title', 'Upcoming Retreats - Mount Carmel Retreat Centre')
+@section('meta_description', 'Browse and book upcoming spiritual retreats at Mount Carmel Retreat Centre. View available dates, retreat schedules, and secure your spot for a transformative spiritual experience.')
+@section('meta_keywords', 'upcoming retreats, retreat schedule, book retreat, spiritual retreat dates, Catholic retreat Kerala, retreat availability, religious retreat booking, Mount Carmel retreats')
+@section('og_title', 'Upcoming Retreats - Book Your Spiritual Journey')
+@section('og_description', 'Explore upcoming retreat schedules at Mount Carmel Retreat Centre. Find the perfect retreat for your spiritual journey and book your spot today.')
 
 @push('styles')
 <style>

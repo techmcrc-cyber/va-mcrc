@@ -1,6 +1,10 @@
 @extends('frontend.layout')
 
-@section('title', 'My Retreat Booking')
+@section('title', 'Register for Retreat - Mount Carmel Retreat Centre')
+@section('meta_description', 'Complete your retreat registration at Mount Carmel Retreat Centre. Fill out the booking form to secure your spot for an upcoming spiritual retreat in Kerala.')
+@section('meta_keywords', 'retreat registration, book retreat, retreat booking form, spiritual retreat registration, Catholic retreat booking, Mount Carmel registration, Kerala retreat booking')
+@section('og_title', 'Register for Your Spiritual Retreat')
+@section('og_description', 'Secure your spot at Mount Carmel Retreat Centre. Complete the registration form and begin your journey of faith renewal and spiritual growth.')
 
 @push('styles')
 <style>

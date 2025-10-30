@@ -1,6 +1,10 @@
 @extends('frontend.layout')
 
-@section('title', 'My Retreat Booking')
+@section('title', 'Mount Carmel Retreat Centre - Spiritual Retreats in Kerala')
+@section('meta_description', 'Book your spiritual retreat at Mount Carmel Retreat Centre in the serene Malankara Hills, Kerala. Experience faith renewal, inner peace, and spiritual growth through Scripture and Sacrament.')
+@section('meta_keywords', 'Mount Carmel Retreat Centre, spiritual retreat Kerala, Catholic retreat, faith renewal, Malankara Hills, religious retreat, Bible retreat, spiritual growth, retreat booking Kerala, Syro-Malankara Catholic Church')
+@section('og_title', 'Mount Carmel Retreat Centre - Draw Near to God')
+@section('og_description', 'Set amidst the serene Malankara Hills in Kerala, Mount Carmel Retreat Centre welcomes pilgrims and seekers from around the world to encounter the life-giving power of Scripture and Sacrament.')
 
 @push('styles')
 <style>
@@ -211,7 +215,7 @@
                 <div class="stat-item">
                     <i class="fas fa-calendar-check fa-3x mb-3" style="color: var(--primary-color);"></i>
                     <h2 class="mb-2 counter" data-target="5" style="font-size: 3rem; font-weight: 700; color: var(--text-dark);">0</h2>
-                    <p class="mb-0" style="font-size: 1.1rem; color: var(--text-light);">Bible Crash Courses Conducted</p>
+                    <p class="mb-0" style="font-size: 1.1rem; color: var(--text-light); white-space: nowrap;">Bible Crash Courses Conducted</p>
                 </div>
             </div>
             <div class="col-md-3 col-6">
