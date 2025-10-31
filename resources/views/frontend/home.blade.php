@@ -153,6 +153,95 @@
         color: var(--primary-color);
         margin-right: 0.5rem;
     }
+    
+    /* Mobile Responsive Styles */
+    @media (max-width: 575px) {
+        .hero-section {
+            padding: 1.5rem 0;
+        }
+        
+        .hero-content {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .hero-content h1 {
+            font-size: 2rem;
+            line-height: 1.3;
+        }
+        
+        .hero-content p {
+            font-size: 0.95rem;
+        }
+        
+        .booking-form-card {
+            margin: 0 auto;
+            max-width: 400px;
+        }
+        
+        .guide-section {
+            padding: 1.5rem 0;
+        }
+        
+        .guide-image {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 1rem;
+        }
+        
+        .section-title {
+            font-size: 1.75rem;
+        }
+        
+        .section-subtitle {
+            font-size: 0.95rem;
+        }
+        
+        .stat-item h2 {
+            font-size: 2rem !important;
+        }
+        
+        .stat-item p {
+            font-size: 0.85rem !important;
+        }
+        
+        .retreat-card-body {
+            padding: 1.5rem;
+        }
+        
+        .container-fluid {
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+        }
+    }
+    
+    @media (max-width: 300px) {
+        .hero-content h1 {
+            font-size: 1.5rem;
+        }
+        
+        .booking-form-card {
+            padding: 1rem;
+        }
+        
+        .booking-form-card h3 {
+            font-size: 1.25rem;
+        }
+        
+        .btn-lg {
+            padding: 0.75rem 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .stat-item h2 {
+            font-size: 1.5rem !important;
+        }
+        
+        .guide-image {
+            width: 120px;
+            height: 120px;
+        }
+    }
 </style>
 @endpush
 

@@ -203,6 +203,30 @@
             font-size: 1.5rem;
             color: var(--primary-color);
         }
+        
+        /* Mobile Responsive Styles */
+        @media (max-width: 575px) {
+            .navbar-brand {
+                font-size: 1.1rem;
+                padding: 0.4rem 0.8rem;
+            }
+            
+            .navbar .container {
+                padding-left: 0.5rem;
+                padding-right: 0.5rem;
+            }
+            
+            .navbar-nav .nav-link {
+                margin: 0.25rem 0;
+            }
+        }
+        
+        @media (max-width: 300px) {
+            .navbar-brand {
+                font-size: 0.95rem;
+                padding: 0.3rem 0.6rem;
+            }
+        }
     </style>
     @stack('styles')
 </head>

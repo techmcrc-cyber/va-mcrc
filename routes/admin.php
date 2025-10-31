@@ -135,19 +135,4 @@ Route::middleware(['auth:web'])->group(function () {
     Route::get('/support', [\App\Http\Controllers\Admin\SupportController::class, 'index'])->name('admin.support');
     Route::post('/support', [\App\Http\Controllers\Admin\SupportController::class, 'submit'])->name('admin.support.submit');
 
-    // HTTP Request Logs (Super Admin only)
-    Route::prefix('log_files')->name('admin.logs.')->group(function () {
-        Route::get('/', [\App\Http\Controllers\Admin\LogViewerController::class, 'index'])->name('index');
-        Route::get('/show', [\App\Http\Controllers\Admin\LogViewerController::class, 'show'])->name('show');
-        Route::get('/download', [\App\Http\Controllers\Admin\LogViewerController::class, 'download'])->name('download');
-        Route::delete('/delete', [\App\Http\Controllers\Admin\LogViewerController::class, 'delete'])->name('delete');
-    });
 });
-
-    // HTTP Request Logs (Super Admin only)
-    Route::prefix('log_files')->name('admin.logs.')->group(function () {
-        Route::get('/', [\App\Http\Controllers\Admin\LogViewerController::class, 'index'])->name('index');
-        Route::get('/show', [\App\Http\Controllers\Admin\LogViewerController::class, 'show'])->name('show');
-        Route::get('/download', [\App\Http\Controllers\Admin\LogViewerController::class, 'download'])->name('download');
-        Route::delete('/delete', [\App\Http\Controllers\Admin\LogViewerController::class, 'delete'])->name('delete');
-    });
