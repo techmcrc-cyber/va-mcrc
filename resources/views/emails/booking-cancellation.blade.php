@@ -207,8 +207,13 @@
                 <td style="padding: 20px; text-align: center; font-family: Arial, sans-serif; font-size: 12px; color: #666;">
                     <p style="margin: 5px 0;"><strong>Mount Carmel Retreat Centre</strong></p>
                     <p style="margin: 5px 0;">
-                        Email: <a href="mailto:info@mountcarmelretreat.org" style="color: #b53d5e; text-decoration: none;">info@mountcarmelretreat.org</a> | 
-                        Phone: +91-XXXXXXXXXX
+                        Email: <a href="mailto:info@myretreatbooking.com" style="color: #b53d5e; text-decoration: none;">info@myretreatbooking.com</a>
+                    </p>
+                    <p style="margin: 5px 0;">
+                        Retreat Bookings: <a href="tel:+919446113725" style="color: #b53d5e; text-decoration: none;">+91 9446 113 725</a>
+                    </p>
+                    <p style="margin: 5px 0;">
+                        Programme Enquiries: <a href="tel:+918281101101" style="color: #b53d5e; text-decoration: none;">+91 8281 101 101</a>
                     </p>
                     <p style="margin-top: 10px; margin-bottom: 5px; color: #999;">
                         This is an automated message. Please do not reply to this email.
