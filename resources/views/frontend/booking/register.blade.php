@@ -362,24 +362,7 @@ function getParticipantFormHTML(index, isPrimary) {
                 <label class="form-label required">WhatsApp Number</label>
                 <div class="input-group">
                     <select name="participants[${index}][country_code]" class="form-select" style="max-width: 180px;" required>
-                        <option value="+91" selected>+91 (India)</option>
-                        <option value="+1">+1 (USA/Canada)</option>
-                        <option value="+44">+44 (UK)</option>
-                        <option value="+971">+971 (UAE)</option>
-                        <option value="+966">+966 (Saudi Arabia)</option>
-                        <option value="+965">+965 (Kuwait)</option>
-                        <option value="+974">+974 (Qatar)</option>
-                        <option value="+973">+973 (Bahrain)</option>
-                        <option value="+968">+968 (Oman)</option>
-                        <option value="+61">+61 (Australia)</option>
-                        <option value="+64">+64 (New Zealand)</option>
-                        <option value="+65">+65 (Singapore)</option>
-                        <option value="+60">+60 (Malaysia)</option>
-                        <option value="+27">+27 (South Africa)</option>
-                        <option value="+49">+49 (Germany)</option>
-                        <option value="+33">+33 (France)</option>
-                        <option value="+39">+39 (Italy)</option>
-                        <option value="+34">+34 (Spain)</option>
+                        {!! render_country_code_options() !!}
                     </select>
                     <input type="text" name="participants[${index}][whatsapp_number]" class="form-control whatsapp-input" maxlength="15" pattern="[0-9]{7,15}" required>
                 </div>

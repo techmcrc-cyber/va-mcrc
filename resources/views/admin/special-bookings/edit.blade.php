@@ -167,19 +167,20 @@
                                 </div>
                             </div>
                             
-                            <div class="col-md-4">
+                            <div class="col-md-5">
                                 <div class="form-group">
                                     <label for="whatsapp_number">WhatsApp Number <span class="text-danger">*</span></label>
                                     <div class="input-group">
-                                        <div class="input-group-prepend">
-                                            <span class="input-group-text">+91</span>
-                                        </div>
-                                        <input type="text" class="form-control" id="whatsapp_number" name="whatsapp_number" value="{{ old('whatsapp_number', $specialBooking->whatsapp_number) }}" required>
+                                        <select name="country_code" id="country_code" class="form-select" style="max-width: 180px;" required>
+                                            {!! render_country_code_options(old('country_code', $specialBooking->country_code)) !!}
+                                        </select>
+                                        <input type="text" class="form-control" id="whatsapp_number" name="whatsapp_number" value="{{ old('whatsapp_number', $specialBooking->whatsapp_number) }}" maxlength="15" pattern="[0-9]{7,15}" required>
                                     </div>
+                                    <small class="form-text text-muted">Enter phone number without country code</small>
                                 </div>
                             </div>
                             
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="age">Age <span class="text-danger">*</span></label>
                                     <input type="number" class="form-control" id="age" name="age" value="{{ old('age', $specialBooking->age) }}" min="1" max="120" required>
@@ -313,21 +314,22 @@
                                                             <input type="text" class="form-control" name="participants[{{ $participantCount }}][lastname]" value="{{ old('participants.' . $participantCount . '.lastname', $participant->lastname) }}" required>
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-4">
+                                                    <div class="col-md-5">
                                                         <div class="form-group">
                                                             <label>WhatsApp Number <span class="text-danger">*</span></label>
                                                             <div class="input-group">
-                                                                <div class="input-group-prepend">
-                                                                    <span class="input-group-text">+91</span>
-                                                                </div>
-                                                                <input type="text" class="form-control participant-whatsapp @error('participants.' . $participantCount . '.whatsapp_number') is-invalid @enderror" name="participants[{{ $participantCount }}][whatsapp_number]" value="{{ old('participants.' . $participantCount . '.whatsapp_number', $participant->whatsapp_number) }}" minlength="10" maxlength="10" pattern="[0-9]{10}" required>
+                                                                <select name="participants[{{ $participantCount }}][country_code]" class="form-select" style="max-width: 180px;" required>
+                                                                    {!! render_country_code_options(old('participants.' . $participantCount . '.country_code', $participant->country_code)) !!}
+                                                                </select>
+                                                                <input type="text" class="form-control participant-whatsapp @error('participants.' . $participantCount . '.whatsapp_number') is-invalid @enderror" name="participants[{{ $participantCount }}][whatsapp_number]" value="{{ old('participants.' . $participantCount . '.whatsapp_number', $participant->whatsapp_number) }}" maxlength="15" pattern="[0-9]{7,15}" required>
                                                                 @error('participants.' . $participantCount . '.whatsapp_number')
                                                                     <div class="invalid-feedback">{{ $message }}</div>
                                                                 @enderror
                                                             </div>
+                                                            <small class="form-text text-muted">Enter phone number without country code</small>
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-4">
+                                                    <div class="col-md-3">
                                                         <div class="form-group">
                                                             <label>Age <span class="text-danger">*</span></label>
                                                             <input type="number" class="form-control" name="participants[{{ $participantCount }}][age]" value="{{ old('participants.' . $participantCount . '.age', $participant->age) }}" min="1" max="120" required>
@@ -632,18 +634,19 @@
                                 <input type="text" class="form-control" name="participants[${partIndex}][lastname]" value="${participantData ? participantData.lastname : ''}" required>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-5">
                             <div class="form-group">
                                 <label>WhatsApp Number <span class="text-danger">*</span></label>
                                 <div class="input-group">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text">+91</span>
-                                    </div>
-                                    <input type="text" class="form-control participant-whatsapp" name="participants[${partIndex}][whatsapp_number]" value="${participantData ? participantData.whatsapp_number : ''}" minlength="10" maxlength="10" pattern="[0-9]{10}" required>
+                                    <select name="participants[${partIndex}][country_code]" class="form-select" style="max-width: 180px;" required>
+                                        {!! render_country_code_options() !!}
+                                    </select>
+                                    <input type="text" class="form-control participant-whatsapp" name="participants[${partIndex}][whatsapp_number]" value="${participantData ? participantData.whatsapp_number : ''}" maxlength="15" pattern="[0-9]{7,15}" required>
                                 </div>
+                                <small class="form-text text-muted">Enter phone number without country code</small>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="form-group">
                                 <label>Age <span class="text-danger">*</span></label>
                                 <input type="number" class="form-control" name="participants[${partIndex}][age]" value="${participantData ? participantData.age : ''}" min="1" max="120" required>
