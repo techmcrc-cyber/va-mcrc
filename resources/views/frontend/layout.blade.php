@@ -285,7 +285,7 @@
                 <div class="col-md-4 mb-4">
                     <h6 class="mb-3" style="color: white;">Contact</h6>
                     <p style="color: #e0e0e0;">
-                        <i class="fas fa-envelope me-2"></i> info@myretreatbooking.com<br>
+                        <i class="fas fa-envelope me-2"></i> booking@mountcarmelretreatcentre.org<br>
                         <i class="fas fa-phone me-2"></i> Retreat Bookings: +91 9446 113 725<br>
                         <i class="fas fa-phone me-2"></i> Programme Enquiries: +91 8281 101 101<br>
                     </p>

@@ -95,16 +95,13 @@
                         </div>
                     </div>
 
-                    <div class="text-end">
-                        @if($retreat['available_spots'] > 0)
-                            <a href="{{ route('retreats.show', $retreat['retreat_id']) }}" class="btn btn-sm btn-primary" style="min-width: 140px; padding: 0.25rem 0.5rem;">
-                                View Details <i class="fas fa-arrow-right"></i>
-                            </a>
-                        @else
-                            <button class="btn btn-sm btn-secondary" style="min-width: 140px; padding: 0.25rem 0.5rem;" disabled>
-                                <i class="fas fa-times-circle"></i> Slots Filled
-                            </button>
-                        @endif
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a href="{{ route('home') }}" class="btn btn-sm btn-outline-secondary" style="padding: 0.25rem 0.5rem;">
+                            <i class="fas fa-arrow-left"></i> Back
+                        </a>
+                        <a href="{{ route('retreats.show', $retreat['retreat_id']) }}" class="btn btn-sm {{ $retreat['available_spots'] > 0 ? 'btn-primary' : 'btn-secondary' }}" style="min-width: 140px; padding: 0.25rem 0.5rem;">
+                            View Details <i class="fas fa-arrow-right"></i>
+                        </a>
                     </div>
                 </div>
             </div>

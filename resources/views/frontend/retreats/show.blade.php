@@ -78,7 +78,7 @@
                         <a href="{{ route('booking.register', ['retreat_id' => $retreat['retreat_id']]) }}" class="btn btn-primary w-100 btn-lg">
                             <i class="fas fa-user-plus"></i> Register Now
                         </a>
-                    @elseCriteria
+                    @else
                         <button class="btn btn-secondary w-100 btn-lg" disabled>
                             <i class="fas fa-times-circle"></i> Fully Booked
                         </button>

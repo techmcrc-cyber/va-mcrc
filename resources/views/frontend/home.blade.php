@@ -278,8 +278,8 @@
                             <i class="fas fa-info-circle me-1"></i> Need help?
                         </p>
                         <p class="text-center mb-0" style="font-size: 0.9rem;">
-                            <a href="mailto:info@myretreatbooking.com" style="color: var(--primary-color); text-decoration: none;">
-                                Contact us at info@myretreatbooking.com
+                            <a href="mailto:booking@mountcarmelretreatcentre.org" style="color: var(--primary-color); text-decoration: none;">
+                                Contact us at booking@mountcarmelretreatcentre.org
                             </a>
                         </p>
                     </div>

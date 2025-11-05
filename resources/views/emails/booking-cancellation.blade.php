@@ -207,7 +207,7 @@
                 <td style="padding: 20px; text-align: center; font-family: Arial, sans-serif; font-size: 12px; color: #666;">
                     <p style="margin: 5px 0;"><strong>Mount Carmel Retreat Centre</strong></p>
                     <p style="margin: 5px 0;">
-                        Email: <a href="mailto:info@myretreatbooking.com" style="color: #b53d5e; text-decoration: none;">info@myretreatbooking.com</a>
+                        Email: <a href="mailto:booking@mountcarmelretreatcentre.org" style="color: #b53d5e; text-decoration: none;">booking@mountcarmelretreatcentre.org</a>
                     </p>
                     <p style="margin: 5px 0;">
                         Retreat Bookings: <a href="tel:+919446113725" style="color: #b53d5e; text-decoration: none;">+91 9446 113 725</a>
