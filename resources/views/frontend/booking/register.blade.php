@@ -358,12 +358,34 @@ function getParticipantFormHTML(index, isPrimary) {
                 <label class="form-label required">Last Name</label>
                 <input type="text" name="participants[${index}][lastname]" class="form-control" required>
             </div>
-            <div class="col-md-4 mb-3">
+            <div class="col-md-5 mb-3">
                 <label class="form-label required">WhatsApp Number</label>
-                <input type="text" name="participants[${index}][whatsapp_number]" class="form-control" maxlength="10" pattern="[0-9]{10}" required>
-                <small class="text-muted">10 digits only</small>
+                <div class="input-group">
+                    <select name="participants[${index}][country_code]" class="form-select" style="max-width: 180px;" required>
+                        <option value="+91" selected>+91 (India)</option>
+                        <option value="+1">+1 (USA/Canada)</option>
+                        <option value="+44">+44 (UK)</option>
+                        <option value="+971">+971 (UAE)</option>
+                        <option value="+966">+966 (Saudi Arabia)</option>
+                        <option value="+965">+965 (Kuwait)</option>
+                        <option value="+974">+974 (Qatar)</option>
+                        <option value="+973">+973 (Bahrain)</option>
+                        <option value="+968">+968 (Oman)</option>
+                        <option value="+61">+61 (Australia)</option>
+                        <option value="+64">+64 (New Zealand)</option>
+                        <option value="+65">+65 (Singapore)</option>
+                        <option value="+60">+60 (Malaysia)</option>
+                        <option value="+27">+27 (South Africa)</option>
+                        <option value="+49">+49 (Germany)</option>
+                        <option value="+33">+33 (France)</option>
+                        <option value="+39">+39 (Italy)</option>
+                        <option value="+34">+34 (Spain)</option>
+                    </select>
+                    <input type="text" name="participants[${index}][whatsapp_number]" class="form-control whatsapp-input" maxlength="15" pattern="[0-9]{7,15}" required>
+                </div>
+                <small class="text-muted">Enter phone number without country code</small>
             </div>
-            <div class="col-md-4 mb-3">
+            <div class="col-md-3 mb-3">
                 <label class="form-label required">Age</label>
                 <input type="number" name="participants[${index}][age]" class="form-control" min="1" max="120" required>
             </div>
@@ -420,6 +442,27 @@ document.getElementById('retreat_id').addEventListener('change', function() {
             field.querySelector('input').required = false;
         });
     }
+});
+
+// Remove leading zeros from WhatsApp numbers
+document.addEventListener('input', function(e) {
+    if (e.target.classList.contains('whatsapp-input')) {
+        // Remove any non-digit characters
+        let value = e.target.value.replace(/\D/g, '');
+        // Remove leading zeros
+        value = value.replace(/^0+/, '');
+        e.target.value = value;
+    }
+});
+
+// Also clean on form submit
+document.getElementById('registrationForm').addEventListener('submit', function(e) {
+    const whatsappInputs = document.querySelectorAll('.whatsapp-input');
+    whatsappInputs.forEach(input => {
+        let value = input.value.replace(/\D/g, '');
+        value = value.replace(/^0+/, '');
+        input.value = value;
+    });
 });
 </script>
 @endpush

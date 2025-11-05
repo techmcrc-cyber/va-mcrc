@@ -14,14 +14,37 @@
         <input type="text" name="participants[{{ $index }}][lastname]" id="participants_{{ $index }}_lastname" 
                class="form-control" value="{{ old("participants.$index.lastname") }}" required>
     </div>
-    <div class="col-md-4 mb-3">
-        <label for="participants_{{ $index }}_whatsapp_number" class="form-label required">WhatsApp Number</label>
-        <input type="text" name="participants[{{ $index }}][whatsapp_number]" id="participants_{{ $index }}_whatsapp_number" 
-               class="form-control" value="{{ old("participants.$index.whatsapp_number") }}" 
-               maxlength="10" pattern="[0-9]{10}" required>
-        <small class="text-muted">10 digits only</small>
+    <div class="col-md-5 mb-3">
+        <label class="form-label required">WhatsApp Number</label>
+        <div class="input-group">
+            <select name="participants[{{ $index }}][country_code]" id="participants_{{ $index }}_country_code" 
+                    class="form-select" style="max-width: 180px;" required>
+                <option value="+91" {{ old("participants.$index.country_code", '+91') == '+91' ? 'selected' : '' }}>+91 (India)</option>
+                <option value="+1" {{ old("participants.$index.country_code") == '+1' ? 'selected' : '' }}>+1 (USA/Canada)</option>
+                <option value="+44" {{ old("participants.$index.country_code") == '+44' ? 'selected' : '' }}>+44 (UK)</option>
+                <option value="+971" {{ old("participants.$index.country_code") == '+971' ? 'selected' : '' }}>+971 (UAE)</option>
+                <option value="+966" {{ old("participants.$index.country_code") == '+966' ? 'selected' : '' }}>+966 (Saudi Arabia)</option>
+                <option value="+965" {{ old("participants.$index.country_code") == '+965' ? 'selected' : '' }}>+965 (Kuwait)</option>
+                <option value="+974" {{ old("participants.$index.country_code") == '+974' ? 'selected' : '' }}>+974 (Qatar)</option>
+                <option value="+973" {{ old("participants.$index.country_code") == '+973' ? 'selected' : '' }}>+973 (Bahrain)</option>
+                <option value="+968" {{ old("participants.$index.country_code") == '+968' ? 'selected' : '' }}>+968 (Oman)</option>
+                <option value="+61" {{ old("participants.$index.country_code") == '+61' ? 'selected' : '' }}>+61 (Australia)</option>
+                <option value="+64" {{ old("participants.$index.country_code") == '+64' ? 'selected' : '' }}>+64 (New Zealand)</option>
+                <option value="+65" {{ old("participants.$index.country_code") == '+65' ? 'selected' : '' }}>+65 (Singapore)</option>
+                <option value="+60" {{ old("participants.$index.country_code") == '+60' ? 'selected' : '' }}>+60 (Malaysia)</option>
+                <option value="+27" {{ old("participants.$index.country_code") == '+27' ? 'selected' : '' }}>+27 (South Africa)</option>
+                <option value="+49" {{ old("participants.$index.country_code") == '+49' ? 'selected' : '' }}>+49 (Germany)</option>
+                <option value="+33" {{ old("participants.$index.country_code") == '+33' ? 'selected' : '' }}>+33 (France)</option>
+                <option value="+39" {{ old("participants.$index.country_code") == '+39' ? 'selected' : '' }}>+39 (Italy)</option>
+                <option value="+34" {{ old("participants.$index.country_code") == '+34' ? 'selected' : '' }}>+34 (Spain)</option>
+            </select>
+            <input type="text" name="participants[{{ $index }}][whatsapp_number]" id="participants_{{ $index }}_whatsapp_number" 
+                   class="form-control whatsapp-input" value="{{ old("participants.$index.whatsapp_number") }}" 
+                   maxlength="15" pattern="[0-9]{7,15}" required>
+        </div>
+        <small class="text-muted">Enter phone number without country code</small>
     </div>
-    <div class="col-md-4 mb-3">
+    <div class="col-md-3 mb-3">
         <label for="participants_{{ $index }}_age" class="form-label required">Age</label>
         <input type="number" name="participants[{{ $index }}][age]" id="participants_{{ $index }}_age" 
                class="form-control" value="{{ old("participants.$index.age") }}" 

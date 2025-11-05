@@ -14,6 +14,7 @@ class Booking extends Model
         'retreat_id',
         'firstname',
         'lastname',
+        'country_code',
         'whatsapp_number',
         'age',
         'email',

@@ -65,8 +65,9 @@ class BookingAPIController extends BaseAPIController
                 $isPrimary = ($index === 0); // First participant is primary
                 $participantRules = $this->getParticipantValidationRules($retreat, $isPrimary);
                 $validator = Validator::make($participant, $participantRules, [
-                    'whatsapp_number.digits' => 'WhatsApp number must be exactly 10 digits.',
+                    'whatsapp_number.digits_between' => 'WhatsApp number must be between 7 and 15 digits.',
                     'whatsapp_number.numeric' => 'WhatsApp number must contain only digits.',
+                    'country_code.required' => 'Country code is required.',
                     'congregation.required' => 'Congregation is required for this retreat type.',
                 ]);
 
@@ -105,13 +106,17 @@ class BookingAPIController extends BaseAPIController
                         $primaryParticipantData = $participantData;
                     }
 
+                    // Clean WhatsApp number - remove leading zeros
+                    $cleanWhatsappNumber = ltrim($participantData['whatsapp_number'], '0');
+                    
                     // For secondary participants, use primary's address and emergency contact
                     $booking = Booking::create([
                         'booking_id' => $bookingId,
                         'retreat_id' => $retreat->id,
                         'firstname' => $participantData['firstname'],
                         'lastname' => $participantData['lastname'],
-                        'whatsapp_number' => $participantData['whatsapp_number'],
+                        'country_code' => $participantData['country_code'] ?? '+91',
+                        'whatsapp_number' => $cleanWhatsappNumber,
                         'age' => $participantData['age'],
                         'email' => $participantData['email'],
                         'address' => $isPrimary ? $participantData['address'] : $primaryParticipantData['address'],
@@ -188,7 +193,8 @@ class BookingAPIController extends BaseAPIController
         $rules = [
             'firstname' => 'required|string|max:255',
             'lastname' => 'required|string|max:255',
-            'whatsapp_number' => 'required|numeric|digits:10',
+            'country_code' => 'required|string|max:10',
+            'whatsapp_number' => 'required|numeric|digits_between:7,15',
             'age' => 'required|integer|min:1|max:120',
             'email' => 'required|email|max:255',
             'gender' => 'required|in:male,female,other',
