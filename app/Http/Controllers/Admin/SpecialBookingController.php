@@ -359,6 +359,8 @@ class SpecialBookingController extends Controller
                         'age' => $participant['age'] ?? null,
                         'email' => $participant['email'] ?? null,
                         'gender' => $participant['gender'] ?? 'other',
+                        'married' => $participant['married'] ?? null,
+                        'congregation' => $participant['congregation'] ?? null,
                         'flag' => $participantValidation['flag_string'],
                         'updated_by' => Auth::id(),
                     ]);
@@ -375,6 +377,8 @@ class SpecialBookingController extends Controller
                     'age' => $participant['age'] ?? null,
                     'email' => $participant['email'] ?? null,
                     'gender' => $participant['gender'] ?? 'other',
+                    'married' => $participant['married'] ?? null,
+                    'congregation' => $participant['congregation'] ?? null,
                     'participant_number' => $participantNumber,
                     'flag' => $participantValidation['flag_string'],
                     'created_by' => Auth::id(),
