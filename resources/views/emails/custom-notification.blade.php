@@ -109,14 +109,16 @@
         <!-- Header with table layout for email compatibility -->
         <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #b53d5e;">
             <tr>
-                <td style="padding: 20px 30px;">
-                    <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                <td style="padding: 20px 30px; text-align: center;">
+                    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width: 600px; margin: 0 auto;">
                         <tr>
-                            <td width="120" valign="middle" style="padding-right: 20px;">
-                                <img src="https://mountcarmelretreatcentre.org/wp-content/uploads/2022/02/logo_mcrc_new-1-100x118.png" alt="Mount Carmel Retreat Centre Logo" style="max-width: 100px; height: auto; display: block;">
+                            <td align="center" style="padding-bottom: 15px;">
+                                <img src="https://mountcarmelretreatcentre.org/wp-content/uploads/2022/02/logo_mcrc_new-1-100x118.png" alt="Mount Carmel Retreat Centre Logo" style="max-width: 80px; height: auto; display: block; margin: 0 auto;">
                             </td>
-                            <td valign="middle" align="center" style="color: white; font-family: Arial, sans-serif;">
-                                <h2 style="margin: 0; font-size: 32px; font-weight: bold; color: white;">Mount Carmel Retreat Centre</h2>
+                        </tr>
+                        <tr>
+                            <td align="center" style="color: white; font-family: Arial, sans-serif;">
+                                <h2 style="margin: 0; font-size: 24px; font-weight: bold; color: white; line-height: 1.3;">Mount Carmel Retreat Centre</h2>
                             </td>
                         </tr>
                     </table>
