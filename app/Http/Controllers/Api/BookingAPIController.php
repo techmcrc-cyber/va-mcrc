@@ -165,7 +165,7 @@ class BookingAPIController extends BaseAPIController
                             'serial_number' => $booking->participant_number,
                             'name' => $booking->firstname . ' ' . $booking->lastname,
                             'email' => $booking->email,
-                            'whatsapp_number' => $booking->whatsapp_number,
+                            'whatsapp_number' => $booking->formatted_whatsapp_number,
                             'role' => $booking->participant_number === 1 ? 'primary' : 'secondary',
                         ];
                     }),
@@ -379,7 +379,7 @@ class BookingAPIController extends BaseAPIController
                     'lastname' => $primaryBooking->lastname,
                     'full_name' => $primaryBooking->firstname . ' ' . $primaryBooking->lastname,
                     'email' => $primaryBooking->email,
-                    'whatsapp_number' => $primaryBooking->whatsapp_number,
+                    'whatsapp_number' => $primaryBooking->formatted_whatsapp_number,
                     'age' => $primaryBooking->age,
                     'gender' => ucfirst($primaryBooking->gender),
                 ] : null,
@@ -392,7 +392,7 @@ class BookingAPIController extends BaseAPIController
                         'lastname' => $p->lastname,
                         'full_name' => $p->firstname . ' ' . $p->lastname,
                         'email' => $p->email,
-                        'whatsapp_number' => $p->whatsapp_number,
+                        'whatsapp_number' => $p->formatted_whatsapp_number,
                         'age' => $p->age,
                         'gender' => ucfirst($p->gender),
                         'role' => $p->participant_number === 1 ? 'primary' : 'secondary',
@@ -622,14 +622,14 @@ class BookingAPIController extends BaseAPIController
                     'serial_number' => $participantToCancel->participant_number,
                     'name' => $participantToCancel->firstname . ' ' . $participantToCancel->lastname,
                     'email' => $participantToCancel->email,
-                    'whatsapp_number' => $participantToCancel->whatsapp_number,
+                    'whatsapp_number' => $participantToCancel->formatted_whatsapp_number,
                 ],
                 'remaining_participants' => $remainingParticipants->map(function ($participant) {
                     return [
                         'serial_number' => $participant->participant_number,
                         'name' => $participant->firstname . ' ' . $participant->lastname,
                         'email' => $participant->email,
-                        'whatsapp_number' => $participant->whatsapp_number,
+                        'whatsapp_number' => $participant->formatted_whatsapp_number,
                         'role' => $participant->participant_number === 1 ? 'primary' : 'secondary',
                     ];
                 })->values(),
@@ -698,14 +698,14 @@ class BookingAPIController extends BaseAPIController
                     'serial_number' => $participantToCancel->participant_number,
                     'name' => $participantToCancel->firstname . ' ' . $participantToCancel->lastname,
                     'email' => $participantToCancel->email,
-                    'whatsapp_number' => $participantToCancel->whatsapp_number,
+                    'whatsapp_number' => $participantToCancel->formatted_whatsapp_number,
                 ],
                 'remaining_participants' => $remainingParticipants->map(function ($participant) {
                     return [
                         'serial_number' => $participant->participant_number,
                         'name' => $participant->firstname . ' ' . $participant->lastname,
                         'email' => $participant->email,
-                        'whatsapp_number' => $participant->whatsapp_number,
+                        'whatsapp_number' => $participant->formatted_whatsapp_number,
                         'role' => $participant->participant_number === 1 ? 'primary' : 'secondary',
                     ];
                 })->values(),
@@ -765,7 +765,7 @@ class BookingAPIController extends BaseAPIController
                     'serial_number' => $participantToCancel->participant_number,
                     'name' => $participantToCancel->firstname . ' ' . $participantToCancel->lastname,
                     'email' => $participantToCancel->email,
-                    'whatsapp_number' => $participantToCancel->whatsapp_number,
+                    'whatsapp_number' => $participantToCancel->formatted_whatsapp_number,
                 ],
                 'remaining_participants' => [],
                 'retreat' => [

@@ -122,7 +122,7 @@
                     <p><strong>{{ $cancelledParticipant->firstname }} {{ $cancelledParticipant->lastname }}</strong></p>
                     <p><strong>Serial Number:</strong> {{ $cancelledParticipant->participant_number }}</p>
                     <p><strong>Email:</strong> {{ $cancelledParticipant->email }}</p>
-                    <p><strong>WhatsApp:</strong> {{ $cancelledParticipant->whatsapp_number }}</p>
+                    <p><strong>WhatsApp:</strong> {{ $cancelledParticipant->formatted_whatsapp_number }}</p>
                     <p><strong>Role:</strong> {{ $cancelledParticipant->participant_number === 1 ? 'Primary Participant' : 'Additional Participant' }}</p>
                 </div>
             </div>
@@ -136,7 +136,7 @@
                             <p><strong>{{ $participant->firstname }} {{ $participant->lastname }}</strong></p>
                             <p><strong>Serial Number:</strong> {{ $participant->participant_number }}</p>
                             <p><strong>Email:</strong> {{ $participant->email }}</p>
-                            <p><strong>WhatsApp:</strong> {{ $participant->whatsapp_number }}</p>
+                            <p><strong>WhatsApp:</strong> {{ $participant->formatted_whatsapp_number }}</p>
                             <p><strong>Role:</strong> {{ $participant->participant_number === 1 ? 'Primary Participant' : 'Additional Participant' }}</p>
                         </div>
                     @endforeach

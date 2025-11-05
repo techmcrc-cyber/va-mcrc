@@ -45,6 +45,14 @@ class Booking extends Model
     ];
 
     /**
+     * Get formatted WhatsApp number with country code
+     */
+    public function getFormattedWhatsappNumberAttribute(): string
+    {
+        return format_whatsapp_number($this->country_code, $this->whatsapp_number);
+    }
+
+    /**
      * Get the retreat that owns the booking.
      */
     public function retreat(): BelongsTo

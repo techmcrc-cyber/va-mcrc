@@ -165,7 +165,7 @@
                 <p><strong>Name:</strong> {{ $booking->firstname }} {{ $booking->lastname }}</p>
                 <p><strong>Serial Number:</strong> 1 (Primary)</p>
                 <p><strong>Email:</strong> {{ $booking->email }}</p>
-                <p><strong>WhatsApp:</strong> {{ $booking->whatsapp_number }}</p>
+                <p><strong>WhatsApp:</strong> {{ $booking->formatted_whatsapp_number }}</p>
                 <p><strong>Age:</strong> {{ $booking->age }} years</p>
                 <p><strong>Gender:</strong> {{ ucfirst($booking->gender) }}</p>
 
@@ -197,7 +197,7 @@
                                 <p><strong>{{ $participant->firstname }} {{ $participant->lastname }}</strong></p>
                                 <p><strong>Serial Number:</strong> {{ $participant->participant_number }}</p>
                                 <p><strong>Email:</strong> {{ $participant->email }}</p>
-                                <p><strong>WhatsApp:</strong> {{ $participant->whatsapp_number }}</p>
+                                <p><strong>WhatsApp:</strong> {{ $participant->formatted_whatsapp_number }}</p>
                                 <p><strong>Age:</strong> {{ $participant->age }} years</p>
                                 <p><strong>Gender:</strong> {{ ucfirst($participant->gender) }}</p>
 

@@ -66,3 +66,23 @@ if (!function_exists('render_country_code_options')) {
         return $options;
     }
 }
+
+
+if (!function_exists('format_whatsapp_number')) {
+    /**
+     * Format WhatsApp number with country code
+     * 
+     * @param string|null $countryCode
+     * @param string|null $number
+     * @return string
+     */
+    function format_whatsapp_number($countryCode, $number)
+    {
+        if (empty($number)) {
+            return '';
+        }
+        
+        $code = $countryCode ?? '+91';
+        return $code . ' ' . $number;
+    }
+}

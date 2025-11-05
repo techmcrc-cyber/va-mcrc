@@ -93,7 +93,7 @@
                                 </tr>
                                 <tr>
                                     <th>WhatsApp</th>
-                                    <td>+91 {{ $booking->whatsapp_number }}</td>
+                                    <td>{{ $booking->formatted_whatsapp_number }}</td>
                                 </tr>
                                 <tr>
                                     <th>Address</th>
@@ -195,7 +195,7 @@
                                                         <td>{{ ucfirst($participant->gender) }}</td>
                                                         <td>{{ $participant->age }} years</td>
                                                         <td>{{ $participant->email }}</td>
-                                                        <td>+91 {{ $participant->whatsapp_number }}</td>
+                                                        <td>{{ $participant->formatted_whatsapp_number }}</td>
                                                         <td>
                                                             @if($participant->flag)
                                                                 <span class="badge bg-warning" data-toggle="tooltip" title="{{ $participant->flag }}">

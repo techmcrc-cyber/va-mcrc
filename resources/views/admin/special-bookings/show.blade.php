@@ -109,7 +109,7 @@
                             <td>{{ ucfirst($participant->gender) }}</td>
                             <td>
                                 {{ $participant->email }}<br>
-                                <small>{{ $participant->whatsapp_number }}</small>
+                                <small>{{ $participant->formatted_whatsapp_number }}</small>
                             </td>
                             <td>
                                 @if($participant->flag)
