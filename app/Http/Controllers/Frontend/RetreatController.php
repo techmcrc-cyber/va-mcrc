@@ -30,7 +30,13 @@ class RetreatController extends Controller
         $allRetreats = collect([]);
         
         if ($response->isSuccessful() && isset($responseData['data']['retreats'])) {
-            $allRetreats = collect($responseData['data']['retreats']);
+            // Sort by featured first (desc), then by start_date ascending
+            $allRetreats = collect($responseData['data']['retreats'])
+                ->sortBy([
+                    ['is_featured', 'desc'],
+                    ['start_date', 'asc']
+                ])
+                ->values();
         }
 
         // Paginate the retreats collection (6 per page)

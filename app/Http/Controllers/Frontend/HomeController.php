@@ -30,9 +30,12 @@ class HomeController extends Controller
         $upcomingRetreats = collect([]);
         
         if ($response->isSuccessful() && isset($responseData['data']['retreats'])) {
-            // Sort by start_date ascending and take first 3 (starting soonest)
+            // Sort by featured first (desc), then by start_date ascending
             $upcomingRetreats = collect($responseData['data']['retreats'])
-                ->sortBy('start_date')
+                ->sortBy([
+                    ['is_featured', 'desc'],
+                    ['start_date', 'asc']
+                ])
                 ->take(3)
                 ->values();
         }
