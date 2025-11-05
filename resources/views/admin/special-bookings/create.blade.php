@@ -671,13 +671,13 @@
             
             $(`input[name="participants[${participantIndex}][whatsapp_number]"]`).rules('add', {
                 required: true,
-                minlength: 10,
-                maxlength: 10,
+                minlength: 7,
+                maxlength: 15,
                 digits: true,
                 messages: {
                     required: 'Please enter WhatsApp number',
-                    minlength: 'Please enter a valid 10-digit number',
-                    maxlength: 'Please enter a valid 10-digit number',
+                    minlength: 'Please enter a valid phone number (7-15 digits)',
+                    maxlength: 'Please enter a valid phone number (7-15 digits)',
                     digits: 'Please enter numbers only'
                 }
             });
@@ -741,15 +741,16 @@
                                 <input type="text" class="form-control" name="participants[${participantCount}][lastname]" required>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-5">
                             <div class="form-group">
                                 <label>WhatsApp Number <span class="text-danger">*</span></label>
                                 <div class="input-group">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text">+91</span>
-                                    </div>
-                                    <input type="text" class="form-control participant-whatsapp" name="participants[${participantCount}][whatsapp_number]" minlength="10" maxlength="10" pattern="[0-9]{10}" required>
+                                    <select name="participants[${participantCount}][country_code]" class="form-select" style="max-width: 180px;" required>
+                                        {!! render_country_code_options() !!}
+                                    </select>
+                                    <input type="text" class="form-control participant-whatsapp" name="participants[${participantCount}][whatsapp_number]" maxlength="15" pattern="[0-9]{7,15}" required>
                                 </div>
+                                <small class="form-text text-muted">Enter phone number without country code</small>
                             </div>
                         </div>
                         <div class="col-md-4">
@@ -858,8 +859,8 @@
                 lastname: 'required',
                 whatsapp_number: {
                     required: true,
-                    minlength: 10,
-                    maxlength: 10,
+                    minlength: 7,
+                    maxlength: 15,
                     digits: true
                 },
                 age: {
@@ -889,8 +890,8 @@
                 lastname: 'Please enter last name',
                 whatsapp_number: {
                     required: 'Please enter WhatsApp number',
-                    minlength: 'Please enter a valid 10-digit number',
-                    maxlength: 'Please enter a valid 10-digit number',
+                    minlength: 'Please enter a valid phone number (7-15 digits)',
+                    maxlength: 'Please enter a valid phone number (7-15 digits)',
                     digits: 'Please enter numbers only'
                 },
                 age: {

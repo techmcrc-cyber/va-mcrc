@@ -101,7 +101,7 @@ class BookingController extends Controller
     {
         $request->validate([
             'booking_id' => 'required|string',
-            'whatsapp_number' => 'required|numeric|digits:10',
+            'whatsapp_number' => 'required|numeric|digits_between:7,15',
         ]);
 
         // Generate session ID for this booking check

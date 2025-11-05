@@ -119,12 +119,12 @@
                                    name="whatsapp_number" 
                                    id="whatsapp_number" 
                                    class="form-control form-control-lg" 
-                                   placeholder="10 digit number"
-                                   maxlength="10"
-                                   pattern="[0-9]{10}"
+                                   placeholder="Phone number"
+                                   maxlength="15"
+                                   pattern="[0-9]{7,15}"
                                    value="{{ old('whatsapp_number') }}"
                                    required>
-                            <small class="text-muted"><i class="fas fa-info-circle"></i> Enter the number used during registration</small>
+                            <small class="text-muted"><i class="fas fa-info-circle"></i> Enter the number used during registration (without country code)</small>
                         </div>
 
                         <div class="d-grid p-2">

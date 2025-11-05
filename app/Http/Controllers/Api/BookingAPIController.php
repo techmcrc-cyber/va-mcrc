@@ -262,12 +262,12 @@ class BookingAPIController extends BaseAPIController
                 'participant_number' => $participantNumber,
             ], [
                 'booking_id' => 'required|string',
-                'whatsapp_number' => 'required|numeric|digits:10',
+                'whatsapp_number' => 'required|numeric|digits_between:7,15',
                 'participant_number' => 'nullable|integer|min:1|max:4',
             ], [
                 'booking_id.required' => 'Booking ID is required in headers or query parameters',
                 'whatsapp_number.required' => 'WhatsApp number is required in headers or query parameters',
-                'whatsapp_number.digits' => 'WhatsApp number must be exactly 10 digits',
+                'whatsapp_number.digits_between' => 'WhatsApp number must be between 7 and 15 digits',
                 'participant_number.integer' => 'Participant number must be a valid integer',
                 'participant_number.min' => 'Participant number must be at least 1',
                 'participant_number.max' => 'Participant number cannot exceed 4',

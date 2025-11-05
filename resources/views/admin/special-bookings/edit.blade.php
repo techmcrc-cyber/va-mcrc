@@ -832,13 +832,13 @@
             if (!$('#booking-form').validate().settings.rules[fieldName]) {
                 $(this).rules('add', {
                     required: true,
-                    minlength: 10,
-                    maxlength: 10,
+                    minlength: 7,
+                    maxlength: 15,
                     digits: true,
                     messages: {
                         required: 'Please enter WhatsApp number',
-                        minlength: 'Please enter a valid 10-digit number',
-                        maxlength: 'Please enter a valid 10-digit number',
+                        minlength: 'Please enter a valid phone number (7-15 digits)',
+                        maxlength: 'Please enter a valid phone number (7-15 digits)',
                         digits: 'Please enter numbers only'
                     }
                 });
@@ -853,8 +853,8 @@
                 lastname: 'required',
                 whatsapp_number: {
                     required: true,
-                    minlength: 10,
-                    maxlength: 10,
+                    minlength: 7,
+                    maxlength: 15,
                     digits: true
                 },
                 age: {
@@ -884,8 +884,8 @@
                 lastname: 'Please enter last name',
                 whatsapp_number: {
                     required: 'Please enter WhatsApp number',
-                    minlength: 'Please enter a valid 10-digit number',
-                    maxlength: 'Please enter a valid 10-digit number',
+                    minlength: 'Please enter a valid phone number (7-15 digits)',
+                    maxlength: 'Please enter a valid phone number (7-15 digits)',
                     digits: 'Please enter numbers only'
                 },
                 age: {

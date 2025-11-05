@@ -39,7 +39,8 @@ class BookingRequest extends FormRequest
             'retreat_id' => 'required|exists:retreats,id',
             'firstname' => 'required|string|max:255',
             'lastname' => 'required|string|max:255',
-            'whatsapp_number' => 'required|string|min:10|max:10|regex:/^[0-9]+$/',
+            'whatsapp_number' => 'required|string|min:7|max:15|regex:/^[0-9]+$/',
+            'country_code' => 'required|string|max:10',
             'age' => 'required|integer|min:1|max:120',
             'email' => 'required|email|max:255',
             'address' => 'required|string',
@@ -65,7 +66,8 @@ class BookingRequest extends FormRequest
             foreach ($this->input('participants', []) as $index => $participant) {
                 $rules["participants.{$index}.firstname"] = 'required|string|max:255';
                 $rules["participants.{$index}.lastname"] = 'required|string|max:255';
-                $rules["participants.{$index}.whatsapp_number"] = 'required|string|min:10|max:10|regex:/^[0-9]+$/';
+                $rules["participants.{$index}.whatsapp_number"] = 'required|string|min:7|max:15|regex:/^[0-9]+$/';
+                $rules["participants.{$index}.country_code"] = 'required|string|max:10';
                 $rules["participants.{$index}.age"] = 'required|integer|min:1|max:120';
                 $rules["participants.{$index}.email"] = 'required|email|max:255';
                 $rules["participants.{$index}.gender"] = 'required|in:male,female,other';
@@ -84,11 +86,11 @@ class BookingRequest extends FormRequest
     {
         return [
             'congregation.required' => 'The congregation field is required for Priests and Sisters retreats.',
-            'whatsapp_number.min' => 'WhatsApp number must be exactly 10 digits.',
-            'whatsapp_number.max' => 'WhatsApp number must be exactly 10 digits.',
+            'whatsapp_number.min' => 'WhatsApp number must be between 7 and 15 digits.',
+            'whatsapp_number.max' => 'WhatsApp number must be between 7 and 15 digits.',
             'whatsapp_number.regex' => 'WhatsApp number must contain only digits.',
-            'participants.*.whatsapp_number.min' => 'WhatsApp number must be exactly 10 digits.',
-            'participants.*.whatsapp_number.max' => 'WhatsApp number must be exactly 10 digits.',
+            'participants.*.whatsapp_number.min' => 'WhatsApp number must be between 7 and 15 digits.',
+            'participants.*.whatsapp_number.max' => 'WhatsApp number must be between 7 and 15 digits.',
             'participants.*.whatsapp_number.regex' => 'WhatsApp number must contain only digits.',
         ];
     }
