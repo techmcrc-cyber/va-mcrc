@@ -118,7 +118,14 @@ class SpecialBookingController extends Controller
      */
     public function create()
     {
-        $retreats = Retreat::active()->upcoming()->orderBy('start_date')->get();
+        $retreats = Retreat::active()->upcoming()->orderBy('start_date')->get()->map(function ($retreat) {
+            $bookedSeats = Booking::where('retreat_id', $retreat->id)
+                ->where('is_active', true)
+                ->count();
+            $retreat->available_seats = $retreat->seats - $bookedSeats;
+            $retreat->is_full = $bookedSeats >= $retreat->seats;
+            return $retreat;
+        });
         return view('admin.special-bookings.create', compact('retreats'));
     }
 
@@ -249,7 +256,14 @@ class SpecialBookingController extends Controller
      */
     public function edit(Booking $specialBooking)
     {
-        $retreats = Retreat::active()->upcoming()->orderBy('start_date')->get();
+        $retreats = Retreat::active()->upcoming()->orderBy('start_date')->get()->map(function ($retreat) use ($specialBooking) {
+            $bookedSeats = Booking::where('retreat_id', $retreat->id)
+                ->where('is_active', true)
+                ->count();
+            $retreat->available_seats = $retreat->seats - $bookedSeats;
+            $retreat->is_full = $bookedSeats >= $retreat->seats && $retreat->id !== $specialBooking->retreat_id;
+            return $retreat;
+        });
         $allParticipants = Booking::where('booking_id', $specialBooking->booking_id)
             ->where('is_active', true)
             ->orderBy('participant_number')

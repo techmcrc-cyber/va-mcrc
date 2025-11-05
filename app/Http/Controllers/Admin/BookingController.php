@@ -415,7 +415,14 @@ class BookingController extends Controller
         $retreats = Retreat::where('is_active', true)
             ->where('end_date', '>=', now()->toDateString())
             ->orderBy('start_date')
-            ->get();
+            ->get()
+            ->filter(function ($retreat) {
+                // Only show retreats that have available seats
+                $bookedSeats = Booking::where('retreat_id', $retreat->id)
+                    ->where('is_active', true)
+                    ->count();
+                return $bookedSeats < $retreat->seats;
+            });
             
         return view('admin.bookings.create', compact('retreats'));
     }
@@ -572,7 +579,18 @@ class BookingController extends Controller
             })
             ->orWhere('id', $booking->retreat_id) // Include current retreat even if inactive
             ->orderBy('start_date')
-            ->get();
+            ->get()
+            ->filter(function ($retreat) use ($booking) {
+                // Always include the current retreat
+                if ($retreat->id === $booking->retreat_id) {
+                    return true;
+                }
+                // Only show other retreats that have available seats
+                $bookedSeats = Booking::where('retreat_id', $retreat->id)
+                    ->where('is_active', true)
+                    ->count();
+                return $bookedSeats < $retreat->seats;
+            });
             
         $allParticipants = $booking->allParticipants();
         

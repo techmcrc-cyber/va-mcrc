@@ -126,11 +126,13 @@
                                                 $endDate = $retreat->end_date->format('M d, Y');
                                                 $dateRange = "($startDate - $endDate)";
                                                 $selected = old('retreat_id', $specialBooking->retreat_id) == $retreat->id ? 'selected' : '';
+                                                $seatsInfo = $retreat->is_full ? ' - SEATS FULL' : " ({$retreat->available_seats} seats available)";
                                             @endphp
                                             <option value="{{ $retreat->id }}" 
                                                 data-criteria="{{ $retreat->criteria }}"
+                                                style="{{ $retreat->is_full ? 'color: red; font-weight: bold;' : '' }}"
                                                 {{ $selected }}>
-                                                {{ $retreat->title }} {{ $dateRange }}
+                                                {{ $retreat->title }} {{ $dateRange }}{{ $seatsInfo }}
                                             </option>
                                         @endforeach
                                     </select>
