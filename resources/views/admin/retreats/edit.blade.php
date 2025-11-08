@@ -212,14 +212,26 @@
             instructionsQuill.clipboard.dangerouslyPasteHTML(instructionsContent);
         }
 
-        // Update hidden input on form submit
+        // Function to update hidden inputs with Quill content
+        function updateHiddenInputs() {
+            const descriptionInput = document.querySelector('#description');
+            const instructionsInput = document.querySelector('#instructions');
+            
+            // Always update the hidden inputs
+            descriptionInput.value = quill.root.innerHTML;
+            instructionsInput.value = instructionsQuill.root.innerHTML;
+        }
+        
+        // Update hidden inputs when the form is submitted
         const form = document.querySelector('form');
-        form.onsubmit = function() {
-            const description = document.querySelector('#description');
-            const instructions = document.querySelector('#instructions');
-            description.value = quill.root.innerHTML;
-            instructions.value = instructionsQuill.root.innerHTML;
-        };
+        form.addEventListener('submit', function(e) {
+            // Update the hidden inputs before submission
+            updateHiddenInputs();
+        });
+        
+        // Also update hidden inputs when the editor content changes
+        quill.on('text-change', updateHiddenInputs);
+        instructionsQuill.on('text-change', updateHiddenInputs);
 
         // Set minimum end date based on start date
         const startDateInput = document.querySelector('#start_date');
