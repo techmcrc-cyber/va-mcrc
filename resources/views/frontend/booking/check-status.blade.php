@@ -71,7 +71,7 @@
                 <i class="fas fa-search"></i>
             </div>
             <h1 class="mb-3">Check Your Booking Status</h1>
-            <p class="text-muted mb-0">Enter your booking details to view your retreat information and manage your booking</p>
+            <p class="text-muted mb-0">Enter your booking details to view your retreat information and manage your booking.</p>
         </div>
     </div>
 </div>
@@ -108,7 +108,7 @@
                                    placeholder="e.g., BK20241024001"
                                    value="{{ old('booking_id') }}"
                                    required>
-                            <small class="text-muted"><i class="fas fa-info-circle"></i> Check your confirmation email for this ID</small>
+                            <small class="text-muted"><i class="fas fa-info-circle"></i> Check your confirmation email for this ID.</small>
                         </div>
 
                         <div class="mb-4">
@@ -124,7 +124,7 @@
                                    pattern="[0-9]{7,15}"
                                    value="{{ old('whatsapp_number') }}"
                                    required>
-                            <small class="text-muted"><i class="fas fa-info-circle"></i> Enter the number used during registration (without country code)</small>
+                            <small class="text-muted"><i class="fas fa-info-circle"></i> Enter the number used during registration (without country code).</small>
                         </div>
 
                         <div class="d-grid p-2">
@@ -156,7 +156,7 @@
                     </div>
                     <div>
                         <h6 class="mb-1">View Details</h6>
-                        <p class="text-muted small mb-0">See your complete booking information and retreat details</p>
+                        <p class="text-muted small mb-0">See your complete booking information and retreat details.</p>
                     </div>
                 </div>
                 <div class="feature-item">
@@ -165,7 +165,7 @@
                     </div>
                     <div>
                         <h6 class="mb-1">Participant Info</h6>
-                        <p class="text-muted small mb-0">Review all registered participants for your booking</p>
+                        <p class="text-muted small mb-0">Review all registered participants for your booking.</p>
                     </div>
                 </div>
                 <div class="feature-item">
@@ -174,7 +174,7 @@
                     </div>
                     <div>
                         <h6 class="mb-1">Retreat Schedule</h6>
-                        <p class="text-muted small mb-0">Check dates, timings, and important instructions</p>
+                        <p class="text-muted small mb-0">Check dates, timings, and important instructions.</p>
                     </div>
                 </div>
                 <div class="feature-item">
@@ -183,7 +183,7 @@
                     </div>
                     <div>
                         <h6 class="mb-1">Cancel Booking</h6>
-                        <p class="text-muted small mb-0">Cancel your booking or individual participants if needed</p>
+                        <p class="text-muted small mb-0">Cancel your booking or individual participants if needed.</p>
                     </div>
                 </div>
             </div>
@@ -203,7 +203,7 @@
                         </a>
                     </div> -->
                     <div class="mt-3 pt-2" style="border-top: 1px solid #e0e0e0;">
-                        <p class="mb-2 fw-semibold"><i class="fab fa-whatsapp text-success me-2"></i>Please WhatsApp on the below numbers:</p>
+                        <p class="mb-2 fw-semibold"><i class="fab fa-whatsapp text-success me-2"></i>Reach us on WhatsApp</p>
                         <p class="mb-1">
                             <a href="https://wa.me/6421237025" class="text-decoration-none" style="color: var(--primary-color);">
                                 +64 21 237 0258

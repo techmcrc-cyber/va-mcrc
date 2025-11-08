@@ -258,13 +258,13 @@
             </div>
             <div class="col-lg-6">
                 <div class="booking-form-card">
-                    <h3>Secure Your Spot</h3>
-                    <p class="subtitle">Choose an action to get started</p>
+                    <h3>Secure Your Spot.</h3>
+                    <!-- <p class="subtitle">Choose an action to get started</p> -->
                     
                     <div class="d-grid gap-3">
                         <a href="{{ route('booking.register') }}" class="btn btn-primary btn-lg">
                             <i class="fas fa-calendar-plus me-2"></i>
-                            Book a Retreat
+                            Book My Retreat
                         </a>
                         
                         <a href="{{ route('booking.check-status') }}" class="btn btn-primary btn-lg">
@@ -371,7 +371,7 @@ document.addEventListener('DOMContentLoaded', function() {
     <div class="container">
         <div class="text-center mb-5">
             <h2 class="section-title">Meet the Leadership</h2>
-            <p class="section-subtitle">Every mission with a divine purpose needs inspired leadership. At the heart of Mount Carmel Retreat Centre is a team deeply rooted in Scripture. </p>
+            <!-- <p class="section-subtitle">Every mission with a divine purpose needs inspired leadership. At the heart of Mount Carmel Retreat Centre is a team deeply rooted in Scripture. </p> -->
         </div>
         
         <div class="row g-4">
@@ -425,9 +425,8 @@ document.addEventListener('DOMContentLoaded', function() {
 <div class="container" style="padding: 3rem 0;">
     <div class="text-center mb-4">
         <h2 class="section-title">Upcoming Retreats</h2>
-        <p class="section-subtitle">Choose the perfect spiritual experience for your journey</p>
-    </div>
-    
+<!--         <p class="section-subtitle">Choose the perfect spiritual experience for your journey</p>-->
+    </div>    
     <div class="row g-4">
         @foreach($upcomingRetreats->take(3) as $retreat)
         <div class="col-md-4">

@@ -249,7 +249,7 @@
                         <a class="nav-link {{ request()->routeIs('retreats.*') ? 'active' : '' }}" href="{{ route('retreats.index') }}">Retreats</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('booking.register') || request()->routeIs('booking.success') ? 'active' : '' }}" href="{{ route('booking.register') }}">Book Retreat</a>
+                        <a class="nav-link {{ request()->routeIs('booking.register') || request()->routeIs('booking.success') ? 'active' : '' }}" href="{{ route('booking.register') }}">Book My Retreat</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('booking.check-status*') || request()->routeIs('booking.status') ? 'active' : '' }}" href="{{ route('booking.check-status') }}">Check Status</a>
@@ -269,8 +269,7 @@
                 <div class="col-md-4 mb-4">
                     <h5 class="mb-3" style="font-family: 'Playfair Display', serif; color: white;">My Retreat Booking</h5>
                     <p style="color: #e0e0e0; line-height: 1.8;">
-                        Offering sacred spaces for spiritual growth and inner peace. 
-                        Join us on a journey of self-discovery and renewal.
+                       The central hub for Catholic retreat centre bookings
                     </p>
                 </div>
                 <div class="col-md-4 mb-4">
