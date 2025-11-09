@@ -23,6 +23,27 @@
                         <div class="alert alert-success">{{ session('success') }}</div>
                     @endif
                     
+                    <!-- Filter Buttons -->
+                    <div class="mb-3">
+                        <div class="btn-group" role="group" aria-label="Retreat filters">
+                            <button type="button" class="btn btn-outline-primary filter-btn active" data-filter="all">
+                                <i class="fas fa-list me-1"></i> All
+                            </button>
+                            <button type="button" class="btn btn-outline-success filter-btn" data-filter="active">
+                                <i class="fas fa-check-circle me-1"></i> Active
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary filter-btn" data-filter="inactive">
+                                <i class="fas fa-times-circle me-1"></i> Inactive
+                            </button>
+                            <button type="button" class="btn btn-outline-warning filter-btn" data-filter="featured">
+                                <i class="fas fa-star me-1"></i> Featured
+                            </button>
+                            <button type="button" class="btn btn-outline-danger filter-btn" data-filter="deleted">
+                                <i class="fas fa-trash me-1"></i> Deleted
+                            </button>
+                        </div>
+                    </div>
+                    
                     <div class="table-responsive">
                         <table class="table table-bordered table-hover" id="retreats-table" width="100%" cellspacing="0">
                             <thead>
@@ -102,6 +123,37 @@
     #retreats-table .btn-group .btn i {
         font-size: 12px;
     }
+    
+    /* Filter buttons styling */
+    .filter-btn {
+        transition: all 0.3s ease;
+    }
+    
+    .filter-btn.active {
+        background-color: var(--bs-primary);
+        color: white;
+        border-color: var(--bs-primary);
+    }
+    
+    .filter-btn.active.btn-outline-success {
+        background-color: var(--bs-success);
+        border-color: var(--bs-success);
+    }
+    
+    .filter-btn.active.btn-outline-secondary {
+        background-color: var(--bs-secondary);
+        border-color: var(--bs-secondary);
+    }
+    
+    .filter-btn.active.btn-outline-warning {
+        background-color: var(--bs-warning);
+        border-color: var(--bs-warning);
+    }
+    
+    .filter-btn.active.btn-outline-danger {
+        background-color: var(--bs-danger);
+        border-color: var(--bs-danger);
+    }
 </style>
 @endpush
 
@@ -117,12 +169,17 @@
 
 <script>
 $(document).ready(function() {
+    var currentFilter = 'all';
+    
     var table = $('#retreats-table').DataTable({
         processing: true,
         serverSide: true,
         ajax: {
             url: "{{ route('admin.retreats.index') }}",
-            type: "GET"
+            type: "GET",
+            data: function(d) {
+                d.status_filter = currentFilter;
+            }
         },
         columns: [
             { data: 'title', name: 'title' },
@@ -239,6 +296,14 @@ $(document).ready(function() {
         if (e.key === 'Enter') {
             table.search(this.value).draw();
         }
+    });
+    
+    // Filter button click handler
+    $('.filter-btn').on('click', function() {
+        $('.filter-btn').removeClass('active');
+        $(this).addClass('active');
+        currentFilter = $(this).data('filter');
+        table.ajax.reload();
     });
 });
 </script>

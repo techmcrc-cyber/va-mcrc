@@ -22,6 +22,30 @@ class RetreatController extends Controller
         if ($request->ajax()) {
             $query = Retreat::query();
             
+            // Handle status filter
+            if ($request->has('status_filter') && !empty($request->status_filter)) {
+                $filter = $request->status_filter;
+                
+                switch ($filter) {
+                    case 'active':
+                        $query->where('is_active', true);
+                        break;
+                    case 'inactive':
+                        $query->where('is_active', false);
+                        break;
+                    case 'featured':
+                        $query->where('is_featured', true);
+                        break;
+                    case 'deleted':
+                        $query->onlyTrashed();
+                        break;
+                    case 'all':
+                    default:
+                        // Show all non-deleted retreats
+                        break;
+                }
+            }
+            
             // Handle search
             if ($request->has('search') && !empty($request->search['value'])) {
                 $search = $request->search['value'];
@@ -74,45 +98,68 @@ class RetreatController extends Controller
                     $nestedData['whatsapp_link'] = '<span class="text-muted">-</span>';
                 }
                 
-                $nestedData['status'] = $retreat->is_active 
+                // Status badges
+                $statusBadges = '';
+                if ($retreat->trashed()) {
+                    $statusBadges .= '<span class="badge bg-danger">Deleted</span> ';
+                }
+                if ($retreat->is_featured) {
+                    $statusBadges .= '<span class="badge bg-warning">Featured</span> ';
+                }
+                $statusBadges .= $retreat->is_active 
                     ? '<span class="badge bg-success">Active</span>' 
                     : '<span class="badge bg-secondary">Inactive</span>';
+                
+                $nestedData['status'] = $statusBadges;
                 
                 // Check if retreat has ended (before today)
                 $hasEnded = $retreat->end_date->toDateString() < now()->toDateString();
                 
                 // Actions
                 $actions = '<div class="btn-group" role="group">';
-                $actions .= '<a href="' . route('admin.retreats.show', $retreat) . '" class="btn btn-info btn-sm" title="View">';
-                $actions .= '<i class="fas fa-eye"></i></a> ';
                 
-                // Edit button - check permission
-                if (Auth::user()->can('edit-retreats')) {
-                    if ($hasEnded) {
-                        // Disabled Edit button for past retreats
-                        $actions .= '<button class="btn btn-primary btn-sm" title="Cannot edit past retreat" disabled>';
-                        $actions .= '<i class="fas fa-edit"></i></button> ';
-                    } else {
-                        // Active Edit button for current/future retreats
-                        $actions .= '<a href="' . route('admin.retreats.edit', $retreat) . '" class="btn btn-primary btn-sm" title="Edit">';
-                        $actions .= '<i class="fas fa-edit"></i></a> ';
-                    }
-                }
-                
-                // Delete button - check permission
-                if (Auth::user()->can('delete-retreats')) {
-                    if ($hasEnded) {
-                        // Disabled Delete button for past retreats
-                        $actions .= '<button class="btn btn-danger btn-sm" title="Cannot delete past retreat" disabled>';
-                        $actions .= '<i class="fas fa-trash"></i></button>';
-                    } else {
-                        // Active Delete button for current/future retreats
-                        $actions .= '<form action="' . route('admin.retreats.destroy', $retreat) . '" method="POST" class="d-inline">';
+                // If deleted, show restore button
+                if ($retreat->trashed()) {
+                    if (Auth::user()->can('delete-retreats')) {
+                        $actions .= '<form action="' . route('admin.retreats.restore', $retreat->id) . '" method="POST" class="d-inline">';
                         $actions .= csrf_field();
-                        $actions .= method_field('DELETE');
-                        $actions .= '<button type="submit" class="btn btn-danger btn-sm" title="Delete" ';
-                        $actions .= 'onclick="return confirm(\'Are you sure you want to delete this retreat?\')">';
-                        $actions .= '<i class="fas fa-trash"></i></button></form>';
+                        $actions .= '<button type="submit" class="btn btn-success btn-sm" title="Restore" ';
+                        $actions .= 'onclick="return confirm(\'Are you sure you want to restore this retreat?\')">';
+                        $actions .= '<i class="fas fa-undo"></i></button></form>';
+                    }
+                } else {
+                    // Normal actions for non-deleted retreats
+                    $actions .= '<a href="' . route('admin.retreats.show', $retreat) . '" class="btn btn-info btn-sm" title="View">';
+                    $actions .= '<i class="fas fa-eye"></i></a> ';
+                    
+                    // Edit button - check permission
+                    if (Auth::user()->can('edit-retreats')) {
+                        if ($hasEnded) {
+                            // Disabled Edit button for past retreats
+                            $actions .= '<button class="btn btn-primary btn-sm" title="Cannot edit past retreat" disabled>';
+                            $actions .= '<i class="fas fa-edit"></i></button> ';
+                        } else {
+                            // Active Edit button for current/future retreats
+                            $actions .= '<a href="' . route('admin.retreats.edit', $retreat) . '" class="btn btn-primary btn-sm" title="Edit">';
+                            $actions .= '<i class="fas fa-edit"></i></a> ';
+                        }
+                    }
+                    
+                    // Delete button - check permission
+                    if (Auth::user()->can('delete-retreats')) {
+                        if ($hasEnded) {
+                            // Disabled Delete button for past retreats
+                            $actions .= '<button class="btn btn-danger btn-sm" title="Cannot delete past retreat" disabled>';
+                            $actions .= '<i class="fas fa-trash"></i></button>';
+                        } else {
+                            // Active Delete button for current/future retreats
+                            $actions .= '<form action="' . route('admin.retreats.destroy', $retreat) . '" method="POST" class="d-inline">';
+                            $actions .= csrf_field();
+                            $actions .= method_field('DELETE');
+                            $actions .= '<button type="submit" class="btn btn-danger btn-sm" title="Delete" ';
+                            $actions .= 'onclick="return confirm(\'Are you sure you want to delete this retreat?\')">';
+                            $actions .= '<i class="fas fa-trash"></i></button></form>';
+                        }
                     }
                 }
                 
@@ -209,5 +256,17 @@ class RetreatController extends Controller
         $retreat->delete();
         return redirect()->route('admin.retreats.index')
             ->with('success', 'Retreat deleted successfully');
+    }
+
+    /**
+     * Restore a soft-deleted retreat.
+     */
+    public function restore($id)
+    {
+        $retreat = Retreat::withTrashed()->findOrFail($id);
+        $retreat->restore();
+        
+        return redirect()->route('admin.retreats.index')
+            ->with('success', 'Retreat restored successfully');
     }
 }

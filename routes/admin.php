@@ -76,6 +76,7 @@ Route::middleware(['auth:web'])->group(function () {
         Route::get('/', [\App\Http\Controllers\Admin\RetreatController::class, 'index'])->name('index');
         Route::get('/create', [\App\Http\Controllers\Admin\RetreatController::class, 'create'])->name('create');
         Route::post('/', [\App\Http\Controllers\Admin\RetreatController::class, 'store'])->name('store');
+        Route::post('/{id}/restore', [\App\Http\Controllers\Admin\RetreatController::class, 'restore'])->name('restore');
         Route::get('/{retreat}', [\App\Http\Controllers\Admin\RetreatController::class, 'show'])->name('show');
         Route::get('/{retreat}/edit', [\App\Http\Controllers\Admin\RetreatController::class, 'edit'])->name('edit');
         Route::put('/{retreat}', [\App\Http\Controllers\Admin\RetreatController::class, 'update'])->name('update');
