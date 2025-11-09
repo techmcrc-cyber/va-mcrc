@@ -52,7 +52,8 @@ class RetreatController extends Controller
                 $query->where(function($q) use ($search) {
                     $q->where('title', 'like', "%{$search}%")
                       ->orWhere('description', 'like', "%{$search}%")
-                      ->orWhere('location', 'like', "%{$search}%");
+                      ->orWhere('timings', 'like', "%{$search}%")
+                      ->orWhere('special_remarks', 'like', "%{$search}%");
                 });
             }
             
