@@ -30,6 +30,7 @@
                                 <tr>
                                     <th>Booking ID</th>
                                     <th>Name</th>
+                                    <th>WhatsApp</th>
                                     <th>Retreat</th>
                                     <th>Flags</th>
                                     <th>Created</th>
@@ -103,6 +104,7 @@ $(document).ready(function() {
         columns: [
             { data: 'booking_id', name: 'booking_id' },
             { data: 'name', name: 'name' },
+            { data: 'whatsapp', name: 'whatsapp', orderable: false, searchable: false },
             { data: 'retreat', name: 'retreat' },
             { data: 'flags', name: 'flags', orderable: false },
             { data: 'created_at', name: 'created_at' },

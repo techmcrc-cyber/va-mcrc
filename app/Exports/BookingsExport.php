@@ -8,9 +8,13 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use Maatwebsite\Excel\Concerns\WithStyles;
+use Maatwebsite\Excel\Concerns\WithCustomValueBinder;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use PhpOffice\PhpSpreadsheet\Cell\Cell;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
+use PhpOffice\PhpSpreadsheet\Cell\DefaultValueBinder;
 
-class BookingsExport implements FromCollection, WithHeadings, WithMapping, WithColumnWidths, WithStyles
+class BookingsExport extends DefaultValueBinder implements FromCollection, WithHeadings, WithMapping, WithColumnWidths, WithStyles, WithCustomValueBinder
 {
     protected $bookings;
     protected $isTemplate;
@@ -32,6 +36,7 @@ class BookingsExport implements FromCollection, WithHeadings, WithMapping, WithC
                     'first_name' => 'John',
                     'last_name' => 'Doe',
                     'email' => 'john.doe@example.com',
+                    'country_code' => '+91',
                     'whatsapp_number' => '9876543210',
                     'age' => 35,
                     'gender' => 'male',
@@ -52,6 +57,7 @@ class BookingsExport implements FromCollection, WithHeadings, WithMapping, WithC
                     'first_name' => 'Jane',
                     'last_name' => 'Doe',
                     'email' => 'jane.doe@example.com',
+                    'country_code' => '+91',
                     'whatsapp_number' => '9876543211',
                     'age' => 32,
                     'gender' => 'female',
@@ -72,6 +78,7 @@ class BookingsExport implements FromCollection, WithHeadings, WithMapping, WithC
                     'first_name' => 'Bobby',
                     'last_name' => 'Doe',
                     'email' => '',
+                    'country_code' => '',
                     'whatsapp_number' => '',
                     'age' => 12,
                     'gender' => 'male',
@@ -92,6 +99,7 @@ class BookingsExport implements FromCollection, WithHeadings, WithMapping, WithC
                     'first_name' => 'Mary',
                     'last_name' => 'Smith',
                     'email' => 'mary.smith@example.com',
+                    'country_code' => '+91',
                     'whatsapp_number' => '9876543212',
                     'age' => 28,
                     'gender' => 'female',
@@ -121,6 +129,7 @@ class BookingsExport implements FromCollection, WithHeadings, WithMapping, WithC
                 'First Name',
                 'Last Name', 
                 'Email',
+                'Country Code',
                 'WhatsApp Number',
                 'Age',
                 'Gender',
@@ -146,6 +155,7 @@ class BookingsExport implements FromCollection, WithHeadings, WithMapping, WithC
             'First Name',
             'Last Name',
             'Email',
+            'Country Code',
             'WhatsApp Number',
             'Age',
             'Gender',
@@ -174,6 +184,7 @@ class BookingsExport implements FromCollection, WithHeadings, WithMapping, WithC
                 $booking['first_name'],
                 $booking['last_name'],
                 $booking['email'],
+                $booking['country_code'],
                 $booking['whatsapp_number'],
                 $booking['age'],
                 $booking['gender'],
@@ -199,6 +210,7 @@ class BookingsExport implements FromCollection, WithHeadings, WithMapping, WithC
             $booking->firstname,
             $booking->lastname,
             $booking->email ?: '',
+            $booking->country_code ?: '',
             $booking->whatsapp_number ?: '',
             $booking->age,
             ucfirst($booking->gender),
@@ -227,19 +239,20 @@ class BookingsExport implements FromCollection, WithHeadings, WithMapping, WithC
                 'B' => 15, // First Name
                 'C' => 15, // Last Name
                 'D' => 25, // Email
-                'E' => 15, // WhatsApp Number
-                'F' => 8,  // Age
-                'G' => 10, // Gender
-                'H' => 10, // Married
-                'I' => 30, // Address
-                'J' => 15, // City
-                'K' => 15, // State
-                'L' => 18, // Diocese
-                'M' => 18, // Parish
-                'N' => 18, // Congregation
-                'O' => 20, // Emergency Contact Name
-                'P' => 18, // Emergency Contact Phone
-                'Q' => 25, // Special Remarks
+                'E' => 12, // Country Code
+                'F' => 15, // WhatsApp Number
+                'G' => 8,  // Age
+                'H' => 10, // Gender
+                'I' => 10, // Married
+                'J' => 30, // Address
+                'K' => 15, // City
+                'L' => 15, // State
+                'M' => 18, // Diocese
+                'N' => 18, // Parish
+                'O' => 18, // Congregation
+                'P' => 20, // Emergency Contact Name
+                'Q' => 18, // Emergency Contact Phone
+                'R' => 25, // Special Remarks
             ];
         }
         
@@ -252,28 +265,32 @@ class BookingsExport implements FromCollection, WithHeadings, WithMapping, WithC
             'E' => 15, // First Name
             'F' => 15, // Last Name
             'G' => 25, // Email
-            'H' => 15, // WhatsApp Number
-            'I' => 8,  // Age
-            'J' => 10, // Gender
-            'K' => 10, // Married
-            'L' => 30, // Address
-            'M' => 15, // City
-            'N' => 15, // State
-            'O' => 20, // Diocese
-            'P' => 20, // Parish
-            'Q' => 20, // Congregation
-            'R' => 20, // Emergency Contact Name
-            'S' => 18, // Emergency Contact Phone
-            'T' => 30, // Special Remarks
-            'U' => 20, // Flag
-            'V' => 18, // Booking Date
-            'W' => 10, // Status
+            'H' => 12, // Country Code
+            'I' => 15, // WhatsApp Number
+            'J' => 8,  // Age
+            'K' => 10, // Gender
+            'L' => 10, // Married
+            'M' => 30, // Address
+            'N' => 15, // City
+            'O' => 15, // State
+            'P' => 20, // Diocese
+            'Q' => 20, // Parish
+            'R' => 20, // Congregation
+            'S' => 20, // Emergency Contact Name
+            'T' => 18, // Emergency Contact Phone
+            'U' => 30, // Special Remarks
+            'V' => 20, // Flag
+            'W' => 18, // Booking Date
+            'X' => 10, // Status
         ];
     }
 
     public function styles(Worksheet $sheet)
     {
         if ($this->isTemplate) {
+            // Format Country Code column (E) as TEXT to allow + symbol
+            $sheet->getStyle('E:E')->getNumberFormat()->setFormatCode('@');
+            
             // Template-specific styling
             $headerStyle = [
                 'font' => ['bold' => true, 'size' => 12],
@@ -295,8 +312,8 @@ class BookingsExport implements FromCollection, WithHeadings, WithMapping, WithC
                 'font' => ['italic' => true],
             ];
             
-            // Add data validation for Gender column (G)
-            $sheet->getCell('G1')->getDataValidation()
+            // Add data validation for Gender column (H)
+            $sheet->getCell('H1')->getDataValidation()
                 ->setType(\PhpOffice\PhpSpreadsheet\Cell\DataValidation::TYPE_LIST)
                 ->setErrorStyle(\PhpOffice\PhpSpreadsheet\Cell\DataValidation::STYLE_STOP)
                 ->setAllowBlank(false)
@@ -308,8 +325,8 @@ class BookingsExport implements FromCollection, WithHeadings, WithMapping, WithC
                 ->setPrompt('Choose from the dropdown: male, female, or other')
                 ->setFormula1('"male,female,other"');
             
-            // Add data validation for Married column (H)
-            $sheet->getCell('H1')->getDataValidation()
+            // Add data validation for Married column (I)
+            $sheet->getCell('I1')->getDataValidation()
                 ->setType(\PhpOffice\PhpSpreadsheet\Cell\DataValidation::TYPE_LIST)
                 ->setErrorStyle(\PhpOffice\PhpSpreadsheet\Cell\DataValidation::STYLE_STOP)
                 ->setAllowBlank(true)
@@ -323,9 +340,10 @@ class BookingsExport implements FromCollection, WithHeadings, WithMapping, WithC
             
             // Add comments for important fields
             $sheet->getComment('A1')->getText()->createTextRun('Group ID: Use same number for family/group bookings (e.g., 1,1,1 for family of 3)');
-            $sheet->getComment('E1')->getText()->createTextRun('WhatsApp Number: 10 digits only (without +91). Optional for minors.');
+            $sheet->getComment('E1')->getText()->createTextRun('Country Code: Format +91, +1, +44, etc. Default is +91 (India)');
+            $sheet->getComment('F1')->getText()->createTextRun('WhatsApp Number: 10 digits only (without country code). Optional for minors.');
             $sheet->getComment('D1')->getText()->createTextRun('Email: Optional for additional participants/minors');
-            $sheet->getComment('M1')->getText()->createTextRun('Congregation: Required for priest/sister retreats only');
+            $sheet->getComment('O1')->getText()->createTextRun('Congregation: Required for priest/sister retreats only');
             
             return [
                 1 => $headerStyle, // Header row
@@ -333,6 +351,9 @@ class BookingsExport implements FromCollection, WithHeadings, WithMapping, WithC
                 3 => $sampleDataStyle, // Second sample row
             ];
         }
+        
+        // Format Country Code column (H) as TEXT for export to preserve + symbol
+        $sheet->getStyle('H:H')->getNumberFormat()->setFormatCode('@');
         
         // Export styling
         return [
@@ -344,5 +365,27 @@ class BookingsExport implements FromCollection, WithHeadings, WithMapping, WithC
                 ],
             ],
         ];
+    }
+
+    /**
+     * Custom value binder to force country codes to be stored as text
+     */
+    public function bindValue(Cell $cell, $value)
+    {
+        // Get column letter
+        $column = $cell->getColumn();
+        
+        // For template: Column E is Country Code
+        // For export: Column H is Country Code
+        if (($this->isTemplate && $column === 'E') || (!$this->isTemplate && $column === 'H')) {
+            // Force country code to be text to preserve the + sign
+            if (is_string($value) && strpos($value, '+') === 0) {
+                $cell->setValueExplicit($value, DataType::TYPE_STRING);
+                return true;
+            }
+        }
+        
+        // Default behavior for other cells
+        return parent::bindValue($cell, $value);
     }
 }

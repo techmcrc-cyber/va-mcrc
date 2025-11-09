@@ -289,7 +289,10 @@ class BookingController extends Controller
             
             $guestInfo .= '<div class="guest-contact mt-1">';
             if ($booking->whatsapp_number) {
-                $guestInfo .= '<small class="text-muted d-block"><i class="fas fa-phone-alt me-1"></i>' . e($booking->whatsapp_number) . '</small>';
+                $whatsappDisplay = $booking->country_code 
+                    ? e($booking->country_code . ' ' . $booking->whatsapp_number)
+                    : e($booking->whatsapp_number);
+                $guestInfo .= '<small class="text-muted d-block"><i class="fas fa-phone-alt me-1"></i>' . $whatsappDisplay . '</small>';
             }
             if ($booking->email) {
                 $guestInfo .= '<small class="text-muted d-block"><i class="fas fa-envelope me-1"></i>' . e($booking->email) . '</small>';

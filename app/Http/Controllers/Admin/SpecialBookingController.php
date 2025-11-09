@@ -56,6 +56,17 @@ class SpecialBookingController extends Controller
                 $nestedData = [];
                 $nestedData['booking_id'] = $booking->booking_id;
                 $nestedData['name'] = $booking->firstname . ' ' . $booking->lastname;
+                
+                // WhatsApp with country code
+                if ($booking->whatsapp_number) {
+                    $whatsappDisplay = $booking->country_code 
+                        ? e($booking->country_code . ' ' . $booking->whatsapp_number)
+                        : e($booking->whatsapp_number);
+                    $nestedData['whatsapp'] = '<small class="text-muted"><i class="fas fa-phone-alt me-1"></i>' . $whatsappDisplay . '</small>';
+                } else {
+                    $nestedData['whatsapp'] = '-';
+                }
+                
                 $nestedData['retreat'] = $booking->retreat ? $booking->retreat->title : '-';
                 $nestedData['flags'] = $booking->flag ? '<span class="badge bg-warning">' . str_replace(',', '</span> <span class="badge bg-warning">', $booking->flag) . '</span>' : '-';
                 $nestedData['created_at'] = $booking->created_at->format('M d, Y');
