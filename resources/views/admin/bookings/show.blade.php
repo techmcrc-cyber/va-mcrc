@@ -189,15 +189,22 @@
                                         <tbody>
                                             @foreach($allParticipants as $index => $participant)
                                                 @if($participant->id !== $booking->id)
-                                                    <tr>
+                                                    <tr class="{{ !$participant->is_active ? 'table-secondary' : '' }}">
                                                         <td>{{ $index }}</td>
-                                                        <td>{{ $participant->firstname }} {{ $participant->lastname }}</td>
+                                                        <td>
+                                                            {{ $participant->firstname }} {{ $participant->lastname }}
+                                                            @if(!$participant->is_active)
+                                                                <span class="badge bg-danger ms-1">Canceled</span>
+                                                            @endif
+                                                        </td>
                                                         <td>{{ ucfirst($participant->gender) }}</td>
                                                         <td>{{ $participant->age }} years</td>
                                                         <td>{{ $participant->email }}</td>
                                                         <td>{{ $participant->formatted_whatsapp_number }}</td>
                                                         <td>
-                                                            @if($participant->flag)
+                                                            @if(!$participant->is_active)
+                                                                <span class="badge bg-danger">Canceled</span>
+                                                            @elseif($participant->flag)
                                                                 <span class="badge bg-warning" data-toggle="tooltip" title="{{ $participant->flag }}">
                                                                     <i class="fas fa-exclamation-triangle"></i>
                                                                     {{ Str::title(str_replace('_', ' ', explode(',', $participant->flag)[0])) }}
@@ -207,15 +214,26 @@
                                                             @endif
                                                         </td>
                                                         <td>
-                                                            @can('delete-bookings')
-                                                                <form action="{{ route('admin.bookings.cancel-participant', $participant->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to cancel this participant?');">
-                                                                    @csrf
-                                                                    @method('DELETE')
-                                                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Cancel Participant">
-                                                                        <i class="fas fa-user-times"></i>
-                                                                    </button>
-                                                                </form>
-                                                            @endcan
+                                                            @if(!$participant->is_active)
+                                                                @can('edit-bookings')
+                                                                    <form action="{{ route('admin.bookings.restore-participant', $participant->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to restore this participant?');">
+                                                                        @csrf
+                                                                        <button type="submit" class="btn btn-sm btn-success" title="Restore Participant">
+                                                                            <i class="fas fa-undo"></i> Restore
+                                                                        </button>
+                                                                    </form>
+                                                                @endcan
+                                                            @else
+                                                                @can('delete-bookings')
+                                                                    <form action="{{ route('admin.bookings.cancel-participant', $participant->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to cancel this participant?');">
+                                                                        @csrf
+                                                                        @method('DELETE')
+                                                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Cancel Participant">
+                                                                            <i class="fas fa-user-times"></i> Cancel
+                                                                        </button>
+                                                                    </form>
+                                                                @endcan
+                                                            @endif
                                                         </td>
                                                     </tr>
                                                 @endif

@@ -379,28 +379,84 @@ class BookingController extends Controller
                 $actions .= '<i class="fas fa-eye"></i></a>';
                 $actions .= '</div>';
             } else {
-                // For active list, show all buttons based on permissions
-                $actions .= '<div class="btn-row mb-1">';
-                $actions .= '<a href="' . route('admin.bookings.show', $booking->id) . '" class="btn btn-sm btn-info me-1" title="View">';
-                $actions .= '<i class="fas fa-eye"></i></a> ';
+                // Check if primary booking is canceled
+                $isPrimaryCanceled = !$booking->is_active;
                 
-                // Edit button - check permission
-                if (Auth::user()->can('edit-bookings')) {
-                    $actions .= '<a href="' . route('admin.bookings.edit', $booking->id) . '" class="btn btn-sm btn-primary" title="Edit">';
-                    $actions .= '<i class="fas fa-edit"></i></a>';
-                }
-                $actions .= '</div>';
+                // Check if there are any canceled participants
+                $hasCanceledParticipants = $cancelledCount > 0;
                 
-                // Delete button - check permission (admin can always cancel)
-                if (Auth::user()->can('delete-bookings')) {
-                    $actions .= '<div class="btn-row">';
-                    $actions .= '<form action="' . route('admin.bookings.destroy', $booking->id) . '" method="POST" class="d-inline w-100">';
-                    $actions .= csrf_field();
-                    $actions .= method_field('DELETE');
-                    $actions .= '<button type="submit" class="btn btn-sm btn-danger w-100" title="Cancel Booking" ';
-                    $actions .= 'onclick="return confirm(\'Are you sure you want to cancel this booking? This will deactivate all participants in this booking.\')">';
-                    $actions .= '<i class="fas fa-ban"></i></button></form>';
+                // Check if ALL participants are canceled
+                $totalParticipants = Booking::where('booking_id', $booking->booking_id)->count();
+                $allCanceled = ($cancelledCount == $totalParticipants);
+                
+                if ($allCanceled) {
+                    // All participants canceled - show View and Restore buttons only
+                    $actions .= '<div class="btn-row mb-1">';
+                    $actions .= '<a href="' . route('admin.bookings.show', $booking->id) . '" class="btn btn-sm btn-info" title="View">';
+                    $actions .= '<i class="fas fa-eye"></i></a>';
                     $actions .= '</div>';
+                    
+                    // Restore button - check permission
+                    if (Auth::user()->can('edit-bookings')) {
+                        $actions .= '<div class="btn-row">';
+                        $actions .= '<form action="' . route('admin.bookings.restore', $booking->id) . '" method="POST" class="d-inline w-100">';
+                        $actions .= csrf_field();
+                        $actions .= '<button type="submit" class="btn btn-sm btn-success w-100" title="Restore Booking" ';
+                        $actions .= 'onclick="return confirm(\'Are you sure you want to restore this booking? This will reactivate all participants.\')">';
+                        $actions .= '<i class="fas fa-undo"></i> Restore</button></form>';
+                        $actions .= '</div>';
+                    }
+                } else {
+                    // Some or no participants canceled - show normal buttons
+                    $actions .= '<div class="btn-row mb-1">';
+                    $actions .= '<a href="' . route('admin.bookings.show', $booking->id) . '" class="btn btn-sm btn-info me-1" title="View">';
+                    $actions .= '<i class="fas fa-eye"></i></a> ';
+                    
+                    // Edit button - check permission
+                    if (Auth::user()->can('edit-bookings')) {
+                        $actions .= '<a href="' . route('admin.bookings.edit', $booking->id) . '" class="btn btn-sm btn-primary" title="Edit">';
+                        $actions .= '<i class="fas fa-edit"></i></a>';
+                    }
+                    $actions .= '</div>';
+                    
+                    // Show both Cancel and Restore buttons if there are some canceled participants
+                    if ($hasCanceledParticipants && $activeParticipantsCount > 0) {
+                        // Has both active and canceled - show both buttons
+                        $actions .= '<div class="btn-row mb-1">';
+                        
+                        // Cancel button for active participants
+                        if (Auth::user()->can('delete-bookings')) {
+                            $actions .= '<form action="' . route('admin.bookings.destroy', $booking->id) . '" method="POST" class="d-inline me-1">';
+                            $actions .= csrf_field();
+                            $actions .= method_field('DELETE');
+                            $actions .= '<button type="submit" class="btn btn-sm btn-danger" title="Cancel Active Participants" ';
+                            $actions .= 'onclick="return confirm(\'Cancel remaining active participants?\')">';
+                            $actions .= '<i class="fas fa-ban"></i></button></form>';
+                        }
+                        
+                        // Restore button for canceled participants
+                        if (Auth::user()->can('edit-bookings')) {
+                            $actions .= '<form action="' . route('admin.bookings.restore', $booking->id) . '" method="POST" class="d-inline">';
+                            $actions .= csrf_field();
+                            $actions .= '<button type="submit" class="btn btn-sm btn-success" title="Restore Canceled Participants" ';
+                            $actions .= 'onclick="return confirm(\'Restore canceled participants?\')">';
+                            $actions .= '<i class="fas fa-undo"></i></button></form>';
+                        }
+                        
+                        $actions .= '</div>';
+                    } else if ($activeParticipantsCount > 0) {
+                        // Only active participants - show cancel button
+                        if (Auth::user()->can('delete-bookings')) {
+                            $actions .= '<div class="btn-row">';
+                            $actions .= '<form action="' . route('admin.bookings.destroy', $booking->id) . '" method="POST" class="d-inline w-100">';
+                            $actions .= csrf_field();
+                            $actions .= method_field('DELETE');
+                            $actions .= '<button type="submit" class="btn btn-sm btn-danger w-100" title="Cancel Booking" ';
+                            $actions .= 'onclick="return confirm(\'Are you sure you want to cancel this booking? This will deactivate all participants.\')">';
+                            $actions .= '<i class="fas fa-ban"></i></button></form>';
+                            $actions .= '</div>';
+                        }
+                    }
                 }
             }
             
@@ -566,10 +622,14 @@ class BookingController extends Controller
             $q->withTrashed();
         }]);
         
-        $allParticipants = $booking->allParticipants();
+        // Get ALL participants including canceled ones for the show page
+        $allParticipants = Booking::where('booking_id', $booking->booking_id)
+            ->orderBy('participant_number')
+            ->get();
         
         // Update the additional_participants count to reflect only active participants
-        $booking->additional_participants = $allParticipants->where('participant_number', '>', 1)->count();
+        $activeParticipants = $allParticipants->where('is_active', true);
+        $booking->additional_participants = $activeParticipants->where('participant_number', '>', 1)->count();
         
         return view('admin.bookings.show', compact('booking', 'allParticipants'));
     }
@@ -846,6 +906,102 @@ class BookingController extends Controller
         return redirect()
             ->route('admin.bookings.show', $primaryBooking->id)
             ->with('success', 'Participant cancelled successfully. Cancellation email sent to primary participant.');
+    }
+
+    /**
+     * Restore a canceled booking (reactivate all participants).
+     */
+    public function restore(Booking $booking)
+    {
+        // Get all participants with the same booking_id
+        $allParticipants = Booking::where('booking_id', $booking->booking_id)->get();
+        $primaryBooking = $allParticipants->where('participant_number', 1)->first();
+        $retreat = $booking->retreat;
+        
+        // Check if retreat has ended
+        if ($retreat->end_date->toDateString() < now()->toDateString()) {
+            return back()->with('error', 'Cannot restore booking for a past retreat.');
+        }
+        
+        // Check if there are enough seats available
+        $canceledCount = $allParticipants->where('is_active', false)->count();
+        $currentBookedSeats = Booking::where('retreat_id', $retreat->id)
+            ->where('is_active', true)
+            ->count();
+        
+        if (($currentBookedSeats + $canceledCount) > $retreat->seats) {
+            return back()->with('error', 'Not enough seats available to restore this booking. Available seats: ' . ($retreat->seats - $currentBookedSeats));
+        }
+        
+        // Reactivate all canceled participants
+        Booking::where('booking_id', $booking->booking_id)
+            ->where('is_active', false)
+            ->update(['is_active' => true]);
+        
+        // Update additional_participants count for primary booking
+        if ($primaryBooking) {
+            $totalParticipants = $allParticipants->count();
+            $primaryBooking->update([
+                'additional_participants' => max(0, $totalParticipants - 1),
+            ]);
+        }
+        
+        // Determine redirect based on retreat end date
+        $isArchived = $retreat->end_date->toDateString() < now()->toDateString();
+        $redirectRoute = $isArchived ? 'admin.bookings.archive' : 'admin.bookings.active';
+        
+        return redirect()
+            ->route($redirectRoute)
+            ->with('success', 'Booking restored successfully. All canceled participants have been reactivated.');
+    }
+
+    /**
+     * Restore an individual canceled participant.
+     */
+    public function restoreParticipant(Booking $participant)
+    {
+        // Get retreat and check if it has ended
+        $retreat = $participant->retreat;
+        
+        if ($retreat->end_date->toDateString() < now()->toDateString()) {
+            return back()->with('error', 'Cannot restore participant for a past retreat.');
+        }
+        
+        // Check if participant is already active
+        if ($participant->is_active) {
+            return back()->with('warning', 'This participant is already active.');
+        }
+        
+        // Check if there are enough seats available
+        $currentBookedSeats = Booking::where('retreat_id', $retreat->id)
+            ->where('is_active', true)
+            ->count();
+        
+        if ($currentBookedSeats >= $retreat->seats) {
+            return back()->with('error', 'Not enough seats available. Retreat is fully booked.');
+        }
+        
+        // Reactivate this participant
+        $participant->update(['is_active' => true]);
+        
+        // Update additional_participants count for primary booking
+        $primaryBooking = Booking::where('booking_id', $participant->booking_id)
+            ->where('participant_number', 1)
+            ->first();
+        
+        if ($primaryBooking) {
+            $activeCount = Booking::where('booking_id', $participant->booking_id)
+                ->where('is_active', true)
+                ->count();
+            
+            $primaryBooking->update([
+                'additional_participants' => max(0, $activeCount - 1),
+            ]);
+        }
+        
+        return redirect()
+            ->route('admin.bookings.show', $primaryBooking->id)
+            ->with('success', 'Participant restored successfully.');
     }
 
     /**
