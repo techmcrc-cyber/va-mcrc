@@ -201,9 +201,9 @@ class RetreatController extends Controller
      */
     public function destroy(Retreat $retreat)
     {
-        // Check if retreat has any bookings
-        if ($retreat->bookings()->exists()) {
-            return back()->with('error', 'Cannot delete retreat that has existing bookings. Please cancel all bookings first.');
+        // Check if retreat has any active bookings
+        if ($retreat->bookings()->where('is_active', true)->exists()) {
+            return back()->with('error', 'Cannot delete retreat that has active bookings. Please cancel all bookings first.');
         }
         
         $retreat->delete();

@@ -30,11 +30,13 @@ class BookingController extends Controller
             // Check if filtering for cancelled bookings
             $showCancelled = $request->has('status_filter') && $request->status_filter === 'cancelled';
             
-            $query = Booking::with(['retreat', 'creator'])
+            $query = Booking::with(['retreat' => function($q) {
+                    $q->withTrashed(); // Include soft-deleted retreats
+                }, 'creator'])
                 ->where('participant_number', 1)
                 ->whereHas('retreat', function($q) {
                     // Compare only dates, not time - retreat is active if end_date is today or future
-                    $q->whereDate('end_date', '>=', now()->toDateString());
+                    $q->withTrashed()->whereDate('end_date', '>=', now()->toDateString());
                 });
             
             // Only filter by is_active if not specifically looking for cancelled bookings
@@ -52,7 +54,7 @@ class BookingController extends Controller
                       ->orWhere('whatsapp_number', 'like', "%{$search}%")
                       ->orWhere('email', 'like', "%{$search}%")
                       ->orWhereHas('retreat', function($q) use ($search) {
-                          $q->where('title', 'like', "%{$search}%");
+                          $q->withTrashed()->where('title', 'like', "%{$search}%");
                       });
                 });
             }
@@ -60,7 +62,7 @@ class BookingController extends Controller
             // Handle retreat filter
             if ($request->has('retreat_filter') && !empty($request->retreat_filter)) {
                 $query->whereHas('retreat', function($q) use ($request) {
-                    $q->where('title', $request->retreat_filter);
+                    $q->withTrashed()->where('title', $request->retreat_filter);
                 });
             }
             
@@ -124,7 +126,7 @@ class BookingController extends Controller
                 "recordsTotal"    => intval(Booking::where('participant_number', 1)
                     ->where('is_active', true)
                     ->whereHas('retreat', function($q) {
-                        $q->whereDate('end_date', '>=', now()->toDateString());
+                        $q->withTrashed()->whereDate('end_date', '>=', now()->toDateString());
                     })->count()),
                 "recordsFiltered" => intval($totalData),
                 "data"            => $data
@@ -151,10 +153,12 @@ class BookingController extends Controller
             // Check if filtering for cancelled bookings
             $showCancelled = $request->has('status_filter') && $request->status_filter === 'cancelled';
             
-            $query = Booking::with(['retreat', 'creator'])
+            $query = Booking::with(['retreat' => function($q) {
+                    $q->withTrashed(); // Include soft-deleted retreats
+                }, 'creator'])
                 ->where('participant_number', 1)
                 ->whereHas('retreat', function($q) {
-                    $q->where('end_date', '<', now()->toDateString());
+                    $q->withTrashed()->where('end_date', '<', now()->toDateString());
                 });
             
             // Only filter by is_active if not specifically looking for cancelled bookings
@@ -172,7 +176,7 @@ class BookingController extends Controller
                       ->orWhere('whatsapp_number', 'like', "%{$search}%")
                       ->orWhere('email', 'like', "%{$search}%")
                       ->orWhereHas('retreat', function($q) use ($search) {
-                          $q->where('title', 'like', "%{$search}%");
+                          $q->withTrashed()->where('title', 'like', "%{$search}%");
                       });
                 });
             }
@@ -180,7 +184,7 @@ class BookingController extends Controller
             // Handle retreat filter
             if ($request->has('retreat_filter') && !empty($request->retreat_filter)) {
                 $query->whereHas('retreat', function($q) use ($request) {
-                    $q->where('title', $request->retreat_filter);
+                    $q->withTrashed()->where('title', $request->retreat_filter);
                 });
             }
             
@@ -244,7 +248,7 @@ class BookingController extends Controller
                 "recordsTotal"    => intval(Booking::where('participant_number', 1)
                     ->where('is_active', true)
                     ->whereHas('retreat', function($q) {
-                        $q->where('end_date', '<', now()->toDateString());
+                        $q->withTrashed()->where('end_date', '<', now()->toDateString());
                     })->count()),
                 "recordsFiltered" => intval($totalData),
                 "data"            => $data
@@ -557,6 +561,11 @@ class BookingController extends Controller
 
     public function show(Booking $booking)
     {
+        // Load retreat with soft-deleted retreats
+        $booking->load(['retreat' => function($q) {
+            $q->withTrashed();
+        }]);
+        
         $allParticipants = $booking->allParticipants();
         
         // Update the additional_participants count to reflect only active participants
@@ -573,11 +582,17 @@ class BookingController extends Controller
                 ->with('warning', 'Please edit the primary booking to modify all participants.');
         }
         
+        // Load retreat with soft-deleted retreats
+        $booking->load(['retreat' => function($q) {
+            $q->withTrashed();
+        }]);
+        
         $retreats = Retreat::where(function ($query) {
                 $query->where('is_active', true)
                       ->where('end_date', '>=', now()->toDateString());
             })
-            ->orWhere('id', $booking->retreat_id) // Include current retreat even if inactive
+            ->orWhere('id', $booking->retreat_id) // Include current retreat even if inactive or deleted
+            ->withTrashed() // Include soft-deleted retreats
             ->orderBy('start_date')
             ->get()
             ->filter(function ($retreat) use ($booking) {
@@ -941,7 +956,9 @@ class BookingController extends Controller
             'retreat_id' => 'nullable|exists:retreats,id'
         ]);
 
-        $query = Booking::with(['retreat'])
+        $query = Booking::with(['retreat' => function($q) {
+                $q->withTrashed(); // Include soft-deleted retreats
+            }])
             ->where('is_active', true)
             ->orderBy('booking_id')
             ->orderBy('participant_number');
