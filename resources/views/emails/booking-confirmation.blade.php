@@ -155,13 +155,6 @@
                 @endif
             </div>
 
-            @if($retreat->description)
-                <div class="booking-details">
-                    <h3>📖 About This Retreat</h3>
-                    <div>{!! $retreat->description !!}</div>
-                </div>
-            @endif
-
             <div class="booking-details">
                 <h3>👤 Primary Participant</h3>
                 <p><strong>Name:</strong> {{ $booking->firstname }} {{ $booking->lastname }}</p>
@@ -226,6 +219,25 @@
                 </div>
             @endif
 
+            @if($retreat->whatsapp_channel_link)
+                <div class="whatsapp-section">
+                    <h4 style="color: #25d366; margin-top: 0;">💬 Join Our WhatsApp Community</h4>
+                    <p>Stay connected with fellow retreat participants and receive important updates!</p>
+                    <a href="{{ $retreat->whatsapp_channel_link }}" class="whatsapp-button" target="_blank">
+                        Join WhatsApp Community
+                    </a>
+                    <p style="font-size: 12px; color: #666; margin-top: 10px;">Click the button above or copy this link: <br>
+                    <span style="word-break: break-all;">{{ $retreat->whatsapp_channel_link }}</span></p>
+                </div>
+            @endif
+
+            @if($retreat->description)
+                <div class="booking-details">
+                    <h3>📖 About This Retreat</h3>
+                    <div>{!! $retreat->description !!}</div>
+                </div>
+            @endif
+
             @if($retreat->instructions)
                 <div class="important">
                     <h4>📋 Important Instructions</h4>
@@ -237,18 +249,6 @@
                 <div class="booking-details">
                     <h4>📝 Special Remarks</h4>
                     <p>{{ $booking->special_remarks }}</p>
-                </div>
-            @endif
-
-            @if($retreat->whatsapp_channel_link)
-                <div class="whatsapp-section">
-                    <h4 style="color: #25d366; margin-top: 0;">💬 Join Our WhatsApp Community</h4>
-                    <p>Stay connected with fellow retreat participants and receive important updates!</p>
-                    <a href="{{ $retreat->whatsapp_channel_link }}" class="whatsapp-button" target="_blank">
-                        Join WhatsApp Community
-                    </a>
-                    <p style="font-size: 12px; color: #666; margin-top: 10px;">Click the button above or copy this link: <br>
-                    <span style="word-break: break-all;">{{ $retreat->whatsapp_channel_link }}</span></p>
                 </div>
             @endif
 
