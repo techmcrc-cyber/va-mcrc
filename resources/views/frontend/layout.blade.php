@@ -28,7 +28,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary-color: #ba4165;
@@ -49,13 +49,13 @@
         }
         
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Poppins', sans-serif;
             color: var(--text-dark);
             background-color: var(--light-bg);
         }
         
         h1, h2, h3, h4, h5, h6 {
-            font-family: 'Playfair Display', serif;
+            font-family: 'Poppins', sans-serif;
             font-weight: 600;
         }
         
@@ -72,7 +72,7 @@
         }
         
         .navbar-brand {
-            font-family: 'Playfair Display', serif;
+            font-family: 'Poppins', sans-serif;
             font-weight: 700;
             font-size: 1.4rem;
             color: white !important;
@@ -267,7 +267,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-4 mb-4">
-                    <h5 class="mb-3" style="font-family: 'Playfair Display', serif; color: white;">My Retreat Booking</h5>
+                    <h5 class="mb-3" style="font-family: 'Poppins', sans-serif; color: white;">My Retreat Booking</h5>
                     <p style="color: #e0e0e0; line-height: 1.8;">
                        The central hub for Catholic retreat centre bookings
                     </p>
