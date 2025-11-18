@@ -298,6 +298,22 @@ document.getElementById('addParticipant').addEventListener('click', function() {
     const newCard = createParticipantCard(participantCount);
     container.insertAdjacentHTML('beforeend', newCard);
     
+    // Apply current retreat criteria to the newly added participant
+    const selectedOption = document.getElementById('retreat_id').options[document.getElementById('retreat_id').selectedIndex];
+    const criteria = selectedOption ? selectedOption.dataset.criteria : '';
+    
+    if (criteria === 'priests_only' || criteria === 'sisters_only') {
+        const newCongregationInputs = container.querySelectorAll('.participant-card:last-child .congregation-input');
+        const newCongregationMarkers = container.querySelectorAll('.participant-card:last-child .congregation-required');
+        
+        newCongregationInputs.forEach(input => {
+            input.required = true;
+        });
+        newCongregationMarkers.forEach(marker => {
+            marker.style.display = 'inline';
+        });
+    }
+    
     if (participantCount >= maxParticipants) {
         this.disabled = true;
     }
@@ -381,7 +397,7 @@ function getParticipantFormHTML(index, isPrimary) {
                     <option value="other">Other</option>
                 </select>
             </div>
-            <div class="col-md-6 mb-3">
+            <div class="col-md-4 mb-3">
                 <label class="form-label">Marital Status</label>
                 <select name="participants[${index}][married]" class="form-select">
                     <option value="">Select</option>
@@ -389,9 +405,9 @@ function getParticipantFormHTML(index, isPrimary) {
                     <option value="no">Unmarried</option>
                 </select>
             </div>
-            <div class="col-md-6 mb-3 congregation-field" style="display: none;">
-                <label class="form-label">Congregation</label>
-                <input type="text" name="participants[${index}][congregation]" class="form-control">
+            <div class="col-md-4 mb-3">
+                <label class="form-label congregation-label">Congregation <span class="congregation-required" style="display: none; color: #dc3545;">*</span></label>
+                <input type="text" name="participants[${index}][congregation]" class="form-control congregation-input">
                 <small class="text-muted">For Priests/Sisters only</small>
             </div>
             <div class="col-md-12 mb-3">
@@ -408,24 +424,39 @@ function getParticipantFormHTML(index, isPrimary) {
     `;
 }
 
-// Show/hide congregation field based on retreat criteria
-document.getElementById('retreat_id').addEventListener('change', function() {
-    const selectedOption = this.options[this.selectedIndex];
-    const criteria = selectedOption.dataset.criteria;
+// Function to update congregation field requirement based on retreat criteria
+function updateCongregationRequirement() {
+    const retreatSelect = document.getElementById('retreat_id');
+    const selectedOption = retreatSelect.options[retreatSelect.selectedIndex];
+    const criteria = selectedOption ? selectedOption.dataset.criteria : '';
     
-    const congregationFields = document.querySelectorAll('.congregation-field');
+    const congregationInputs = document.querySelectorAll('.congregation-input');
+    const congregationRequiredMarkers = document.querySelectorAll('.congregation-required');
+    
     if (criteria === 'priests_only' || criteria === 'sisters_only') {
-        congregationFields.forEach(field => {
-            field.style.display = 'block';
-            field.querySelector('input').required = true;
+        // Make congregation required
+        congregationInputs.forEach(input => {
+            input.required = true;
+        });
+        congregationRequiredMarkers.forEach(marker => {
+            marker.style.display = 'inline';
         });
     } else {
-        congregationFields.forEach(field => {
-            field.style.display = 'none';
-            field.querySelector('input').required = false;
+        // Make congregation optional
+        congregationInputs.forEach(input => {
+            input.required = false;
+        });
+        congregationRequiredMarkers.forEach(marker => {
+            marker.style.display = 'none';
         });
     }
-});
+}
+
+// Toggle congregation field requirement based on retreat criteria
+document.getElementById('retreat_id').addEventListener('change', updateCongregationRequirement);
+
+// Initialize congregation requirement on page load (for pre-selected retreats)
+document.addEventListener('DOMContentLoaded', updateCongregationRequirement);
 
 // Remove leading zeros from WhatsApp numbers
 document.addEventListener('input', function(e) {
