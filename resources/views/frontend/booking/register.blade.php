@@ -154,7 +154,7 @@
                         @foreach($retreats as $r)
                             <option value="{{ $r->id }}" 
                                     {{ (old('retreat_id', $retreat?->id) == $r->id) ? 'selected' : '' }}
-                                    data-criteria="{{ $r->criteria }}">
+                                    data-criteria="{{ $r->criteriaRelation?->vocation ?? '' }}">
                                 {{ $r->title }} ({{ $r->start_date->format('M d, Y') }})
                             </option>
                         @endforeach
@@ -302,15 +302,15 @@ document.getElementById('addParticipant').addEventListener('click', function() {
     const selectedOption = document.getElementById('retreat_id').options[document.getElementById('retreat_id').selectedIndex];
     const criteria = selectedOption ? selectedOption.dataset.criteria : '';
     
-    if (criteria === 'priests_only' || criteria === 'sisters_only') {
+    if (criteria === 'priest_only' || criteria === 'sisters_only') {
+        const newCongregationFields = container.querySelectorAll('.participant-card:last-child .congregation-field');
         const newCongregationInputs = container.querySelectorAll('.participant-card:last-child .congregation-input');
-        const newCongregationMarkers = container.querySelectorAll('.participant-card:last-child .congregation-required');
         
+        newCongregationFields.forEach(field => {
+            field.style.display = 'block';
+        });
         newCongregationInputs.forEach(input => {
             input.required = true;
-        });
-        newCongregationMarkers.forEach(marker => {
-            marker.style.display = 'inline';
         });
     }
     
@@ -405,8 +405,8 @@ function getParticipantFormHTML(index, isPrimary) {
                     <option value="no">Unmarried</option>
                 </select>
             </div>
-            <div class="col-md-4 mb-3">
-                <label class="form-label congregation-label">Congregation <span class="congregation-required" style="display: none; color: #dc3545;">*</span></label>
+            <div class="col-md-4 mb-3 congregation-field" style="display: none;">
+                <label class="form-label">Congregation <span style="color: #dc3545;">*</span></label>
                 <input type="text" name="participants[${index}][congregation]" class="form-control congregation-input">
                 <small class="text-muted">For Priests/Sisters only</small>
             </div>
@@ -424,39 +424,40 @@ function getParticipantFormHTML(index, isPrimary) {
     `;
 }
 
-// Function to update congregation field requirement based on retreat criteria
-function updateCongregationRequirement() {
+// Function to show/hide congregation field based on retreat criteria
+function updateCongregationField() {
     const retreatSelect = document.getElementById('retreat_id');
     const selectedOption = retreatSelect.options[retreatSelect.selectedIndex];
     const criteria = selectedOption ? selectedOption.dataset.criteria : '';
     
+    const congregationFields = document.querySelectorAll('.congregation-field');
     const congregationInputs = document.querySelectorAll('.congregation-input');
-    const congregationRequiredMarkers = document.querySelectorAll('.congregation-required');
     
-    if (criteria === 'priests_only' || criteria === 'sisters_only') {
-        // Make congregation required
+    if (criteria === 'priest_only' || criteria === 'sisters_only') {
+        // Show congregation field and make it required
+        congregationFields.forEach(field => {
+            field.style.display = 'block';
+        });
         congregationInputs.forEach(input => {
             input.required = true;
         });
-        congregationRequiredMarkers.forEach(marker => {
-            marker.style.display = 'inline';
-        });
     } else {
-        // Make congregation optional
+        // Hide congregation field and make it optional
+        congregationFields.forEach(field => {
+            field.style.display = 'none';
+        });
         congregationInputs.forEach(input => {
             input.required = false;
-        });
-        congregationRequiredMarkers.forEach(marker => {
-            marker.style.display = 'none';
+            input.value = ''; // Clear value when hidden
         });
     }
 }
 
-// Toggle congregation field requirement based on retreat criteria
-document.getElementById('retreat_id').addEventListener('change', updateCongregationRequirement);
+// Toggle congregation field visibility based on retreat criteria
+document.getElementById('retreat_id').addEventListener('change', updateCongregationField);
 
-// Initialize congregation requirement on page load (for pre-selected retreats)
-document.addEventListener('DOMContentLoaded', updateCongregationRequirement);
+// Initialize congregation field on page load (for pre-selected retreats)
+document.addEventListener('DOMContentLoaded', updateCongregationField);
 
 // Remove leading zeros from WhatsApp numbers
 document.addEventListener('input', function(e) {

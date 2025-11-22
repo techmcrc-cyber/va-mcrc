@@ -52,9 +52,9 @@
             <option value="no" {{ old("participants.$index.married") == 'no' ? 'selected' : '' }}>Unmarried</option>
         </select>
     </div>
-    <div class="col-md-4 mb-3">
-        <label for="participants_{{ $index }}_congregation" class="form-label congregation-label">
-            Congregation <span class="congregation-required" style="display: none; color: #dc3545;">*</span>
+    <div class="col-md-4 mb-3 congregation-field" style="display: none;">
+        <label for="participants_{{ $index }}_congregation" class="form-label">
+            Congregation <span style="color: #dc3545;">*</span>
         </label>
         <input type="text" name="participants[{{ $index }}][congregation]" id="participants_{{ $index }}_congregation" 
                class="form-control congregation-input" value="{{ old("participants.$index.congregation") }}">
