@@ -258,7 +258,7 @@
             </div>
             <div class="col-lg-6">
                 <div class="booking-form-card">
-                    <h3>Secure Your Spot.</h3>
+                    <h3>Secure Your Spots.</h3>
                     <!-- <p class="subtitle">Choose an action to get started</p> -->
                     
                     <div class="d-grid gap-3">
