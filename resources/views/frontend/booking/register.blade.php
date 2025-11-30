@@ -121,7 +121,7 @@
 <div class="registration-header">
     <div class="container">
         <h1 class="mb-2" style="font-size: 2rem;">Register for Retreat</h1>
-        <p class="mb-0">Complete the form below to secure your spot</p>
+        <p class="mb-0">Complete the form below to secure your spots</p>
     </div>
 </div>
 
