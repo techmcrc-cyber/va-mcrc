@@ -57,6 +57,7 @@ class RetreatRequest extends FormRequest
             'longitude' => ['nullable', 'numeric', 'between:-180,180'],
             'criteria' => ['nullable', 'exists:criteria,id'],
             'whatsapp_channel_link' => ['required', 'url', 'max:500'],
+            'whatsapp_template_id' => ['nullable', 'integer', 'min:1'],
             'special_remarks' => ['nullable', 'string'],
             'instructions' => ['required', 'string'],
             'is_featured' => ['boolean'],
