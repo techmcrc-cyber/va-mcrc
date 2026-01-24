@@ -38,7 +38,7 @@ class SendBookingConfirmationEmail implements ShouldQueue
                 Mail::to($this->primaryBooking->email)
                     ->send(new BookingConfirmation($this->primaryBooking, $this->retreat, $this->allParticipants));
                 
-                Log::info('Booking confirmation email sent successfully', [
+                Log::channel('booking_confirmations')->info('Booking confirmation email sent successfully', [
                     'booking_id' => $this->primaryBooking->booking_id,
                     'email' => $this->primaryBooking->email
                 ]);
