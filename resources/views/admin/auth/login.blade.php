@@ -12,7 +12,7 @@
                 <div class="card-body p-4">
                     <div class="d-flex align-items-center mb-2">
                         <div class="flex-shrink-0">
-                            <img src="https://mountcarmelretreatcentre.org/wp-content/uploads/2022/02/logo_mcrc_new-1-100x118.png" 
+                            <img src="{{ asset('images/mcrc_logo.png') }}" 
                                  alt="Mount Carmel Retreat Centre" 
                                  style="width: auto; object-fit: contain;">
                         </div>

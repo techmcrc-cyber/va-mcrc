@@ -4,7 +4,7 @@
     <div class="sidebar-heading text-center py-1>
         <a href="{{ route('admin.dashboard') }}" class="text-decoration-none d-flex flex-column align-items-center" style="color: #5a5c69;">
             <div class="position-relative mb-2">
-                <img src="https://mountcarmelretreatcentre.org/wp-content/uploads/2022/02/logo_mcrc_new-1-100x118.png" alt="Mount Carmel Retreat Centre" class="img-fluid" >
+                <img src="{{ asset('images/mcrc_logo.png') }}" alt="Mount Carmel Retreat Centre" class="img-fluid" >
             </div>
             <h5 class="mb-0 mt-2">{{ config('app.name') }}</h5>
         </a>

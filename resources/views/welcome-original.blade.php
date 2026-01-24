@@ -209,7 +209,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="text-center mb-4">
                 <div class="logo-container inline-block mb-8">
-                    <img src="https://mountcarmelretreatcentre.org/wp-content/uploads/2022/02/logo_mcrc_new-1-100x118.png" 
+                    <img src="{{ asset('images/mcrc_logo.png') }}" 
                          alt="Mount Carmel Retreat Centre" 
                          >
                 </div>
