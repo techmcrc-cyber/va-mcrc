@@ -274,8 +274,9 @@ class BookingsImport implements ToCollection, WithHeadingRow
         // Queue confirmation WhatsApp message to primary booking contact
         if ($primaryBooking && $primaryBooking->whatsapp_number) {
             $retreat = $retreat ?? Retreat::find($this->retreatId);
-            $templateId = $retreat->whatsapp_template_id ?? (int) config('services.brevo.whatsapp.template_id', 1);
-            \App\Jobs\SendBookingConfirmationWhatsApp::dispatch($primaryBooking, $templateId);
+            if ($retreat->whatsapp_template_id) {
+                \App\Jobs\SendBookingConfirmationWhatsApp::dispatch($primaryBooking, $retreat->whatsapp_template_id);
+            }
         }
     }
 

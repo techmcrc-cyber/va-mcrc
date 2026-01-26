@@ -614,9 +614,8 @@ class BookingController extends Controller
         }
 
         // Queue confirmation WhatsApp message
-        if ($primaryBooking->whatsapp_number) {
-            $templateId = $retreat->whatsapp_template_id ?? (int) config('services.brevo.whatsapp.template_id', 1);
-            \App\Jobs\SendBookingConfirmationWhatsApp::dispatch($primaryBooking, $templateId);
+        if ($primaryBooking->whatsapp_number && $retreat->whatsapp_template_id) {
+            \App\Jobs\SendBookingConfirmationWhatsApp::dispatch($primaryBooking, $retreat->whatsapp_template_id);
         }
         
         return redirect()
