@@ -35,15 +35,32 @@
                                     @enderror
                                 </div>
 
-                                <div class="form-group mb-3">
-                                    <label for="whatsapp_channel_link" class="form-label">WhatsApp Channel Link *</label>
-                                    <input type="url" class="form-control @error('whatsapp_channel_link') is-invalid @enderror" 
-                                           id="whatsapp_channel_link" name="whatsapp_channel_link" 
-                                           value="{{ old('whatsapp_channel_link', $retreat->whatsapp_channel_link) }}" 
-                                           placeholder="https://whatsapp.com/channel/..." required>
-                                    @error('whatsapp_channel_link')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
+                                <div class="row mb-3">
+                                    <div class="col-md-8">
+                                        <div class="form-group">
+                                            <label for="whatsapp_channel_link" class="form-label">WhatsApp Channel Link *</label>
+                                            <input type="url" class="form-control @error('whatsapp_channel_link') is-invalid @enderror" 
+                                                   id="whatsapp_channel_link" name="whatsapp_channel_link" 
+                                                   value="{{ old('whatsapp_channel_link', $retreat->whatsapp_channel_link) }}" 
+                                                   placeholder="https://whatsapp.com/channel/..." required>
+                                            @error('whatsapp_channel_link')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="whatsapp_template_id" class="form-label">WhatsApp Template ID</label>
+                                            <input type="number" class="form-control @error('whatsapp_template_id') is-invalid @enderror" 
+                                                   id="whatsapp_template_id" name="whatsapp_template_id" 
+                                                   value="{{ old('whatsapp_template_id', $retreat->whatsapp_template_id) }}" 
+                                                   placeholder="1" min="1">
+                                            @error('whatsapp_template_id')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                            <small class="form-text text-muted">Leave empty to use default</small>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <div class="form-group mb-3">

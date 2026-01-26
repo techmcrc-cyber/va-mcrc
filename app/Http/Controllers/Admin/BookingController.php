@@ -612,6 +612,11 @@ class BookingController extends Controller
         if ($primaryBooking->email) {
             \App\Jobs\SendBookingConfirmationEmail::dispatch($primaryBooking, $retreat, $allBookings);
         }
+
+        // Queue confirmation WhatsApp message
+        if ($primaryBooking->whatsapp_number && $retreat->whatsapp_template_id) {
+            \App\Jobs\SendBookingConfirmationWhatsApp::dispatch($primaryBooking, $retreat->whatsapp_template_id);
+        }
         
         return redirect()
             ->route('admin.bookings.show', $primaryBooking->id)

@@ -150,6 +150,11 @@ class BookingAPIController extends BaseAPIController
                     \App\Jobs\SendBookingConfirmationEmail::dispatch($primaryBooking, $retreat, collect($allBookings));
                 }
 
+                // Queue confirmation WhatsApp message
+                if ($primaryBooking && $primaryBooking->whatsapp_number && $retreat->whatsapp_template_id) {
+                    \App\Jobs\SendBookingConfirmationWhatsApp::dispatch($primaryBooking, $retreat->whatsapp_template_id);
+                }
+
                 DB::commit();
 
                 $responseData = [

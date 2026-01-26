@@ -270,6 +270,14 @@ class BookingsImport implements ToCollection, WithHeadingRow
             $retreat = Retreat::find($this->retreatId);
             \App\Jobs\SendBookingConfirmationEmail::dispatch($primaryBooking, $retreat, collect($allBookings));
         }
+
+        // Queue confirmation WhatsApp message to primary booking contact
+        if ($primaryBooking && $primaryBooking->whatsapp_number) {
+            $retreat = $retreat ?? Retreat::find($this->retreatId);
+            if ($retreat->whatsapp_template_id) {
+                \App\Jobs\SendBookingConfirmationWhatsApp::dispatch($primaryBooking, $retreat->whatsapp_template_id);
+            }
+        }
     }
 
     public function getImportResults()

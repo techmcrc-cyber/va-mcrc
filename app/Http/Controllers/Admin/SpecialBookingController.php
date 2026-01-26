@@ -237,6 +237,11 @@ class SpecialBookingController extends Controller
         if ($primaryBooking->email) {
             \App\Jobs\SendBookingConfirmationEmail::dispatch($primaryBooking, $retreat, $allBookings);
         }
+
+        // Queue confirmation WhatsApp message
+        if ($primaryBooking->whatsapp_number && $retreat->whatsapp_template_id) {
+            \App\Jobs\SendBookingConfirmationWhatsApp::dispatch($primaryBooking, $retreat->whatsapp_template_id);
+        }
         
         $warningMessage = 'Special booking created successfully. Confirmation email will be sent shortly.';
         if ($primaryValidation['flag_string']) {

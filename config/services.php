@@ -35,4 +35,12 @@ return [
         ],
     ],
 
+    'brevo' => [
+        'api_key' => env('BREVO_API_KEY'),
+        'whatsapp' => [
+            'sender' => env('BREVO_WHATSAPP_SENDER'),
+            'template_id' => env('BREVO_DEFAULT_TEMPLATE'),
+        ],
+    ],
+
 ];

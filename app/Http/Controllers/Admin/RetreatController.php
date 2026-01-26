@@ -95,6 +95,11 @@ class RetreatController extends Controller
                 if ($retreat->whatsapp_channel_link) {
                     $nestedData['whatsapp_link'] = '<a href="' . e($retreat->whatsapp_channel_link) . '" target="_blank" class="btn btn-success btn-sm" title="WhatsApp Channel">';
                     $nestedData['whatsapp_link'] .= '<i class="fab fa-whatsapp"></i></a>';
+                    
+                    // Add template ID if available
+                    if ($retreat->whatsapp_template_id) {
+                        $nestedData['whatsapp_link'] .= '<br><small class="text-muted">Tem.ID: ' . $retreat->whatsapp_template_id . '</small>';
+                    }
                 } else {
                     $nestedData['whatsapp_link'] = '<span class="text-muted">-</span>';
                 }
