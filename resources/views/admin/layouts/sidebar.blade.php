@@ -112,6 +112,20 @@
             </a>
             @endcan
 
+            @if(Auth::user()->hasPermission('organizations.view'))
+            <a href="{{ route('admin.organizations.index') }}" 
+               class="list-group-item list-group-item-action {{ request()->is('admin/organizations*') ? 'active' : '' }}">
+                <i class="fas fa-building me-2"></i> Organizations
+            </a>
+            @endif
+
+            @if(Auth::user()->hasPermission('leaders.view'))
+            <a href="{{ route('admin.leaders.index') }}" 
+               class="list-group-item list-group-item-action {{ request()->is('admin/leaders*') ? 'active' : '' }}">
+                <i class="fas fa-users me-2"></i> Leaders
+            </a>
+            @endif
+
             @if(Auth::user()->role && Auth::user()->role->is_super_admin)
                 <a href="{{ route('admin.settings.system') }}" 
                    class="list-group-item list-group-item-action {{ request()->routeIs('admin.settings.system*') ? 'active' : '' }}">

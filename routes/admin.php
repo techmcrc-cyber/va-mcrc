@@ -13,6 +13,28 @@ Route::middleware(['auth:web'])->group(function () {
     Route::get('/profile', [\App\Http\Controllers\Admin\ProfileController::class, 'edit'])->name('admin.profile');
     Route::put('/profile', [\App\Http\Controllers\Admin\ProfileController::class, 'update'])->name('admin.profile.update');
 
+    // Organizations Management (Super Admin Only)
+    Route::prefix('organizations')->name('admin.organizations.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\OrganizationController::class, 'index'])->name('index');
+        Route::get('/create', [\App\Http\Controllers\Admin\OrganizationController::class, 'create'])->name('create');
+        Route::post('/', [\App\Http\Controllers\Admin\OrganizationController::class, 'store'])->name('store');
+        Route::get('/{organization}', [\App\Http\Controllers\Admin\OrganizationController::class, 'show'])->name('show');
+        Route::get('/{organization}/edit', [\App\Http\Controllers\Admin\OrganizationController::class, 'edit'])->name('edit');
+        Route::put('/{organization}', [\App\Http\Controllers\Admin\OrganizationController::class, 'update'])->name('update');
+        Route::delete('/{organization}', [\App\Http\Controllers\Admin\OrganizationController::class, 'destroy'])->name('destroy');
+    });
+
+    // Leaders Management
+    Route::prefix('leaders')->name('admin.leaders.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\LeaderController::class, 'index'])->name('index');
+        Route::get('/create', [\App\Http\Controllers\Admin\LeaderController::class, 'create'])->name('create');
+        Route::post('/', [\App\Http\Controllers\Admin\LeaderController::class, 'store'])->name('store');
+        Route::get('/{leader}', [\App\Http\Controllers\Admin\LeaderController::class, 'show'])->name('show');
+        Route::get('/{leader}/edit', [\App\Http\Controllers\Admin\LeaderController::class, 'edit'])->name('edit');
+        Route::put('/{leader}', [\App\Http\Controllers\Admin\LeaderController::class, 'update'])->name('update');
+        Route::delete('/{leader}', [\App\Http\Controllers\Admin\LeaderController::class, 'destroy'])->name('destroy');
+    });
+
     // Settings
     Route::prefix('settings')->name('admin.settings.')->group(function () {
         // View settings pages

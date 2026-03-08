@@ -10,6 +10,7 @@ class Booking extends Model
 {
 
     protected $fillable = [
+        'organization_id',
         'booking_id',
         'retreat_id',
         'firstname',
@@ -59,6 +60,15 @@ class Booking extends Model
     {
         return $this->belongsTo(Retreat::class);
     }
+
+    /**
+     * Get the organization that owns the booking.
+     */
+    public function organization(): BelongsTo
+    {
+        return $this->belongsTo(Organization::class);
+    }
+
 
     /**
      * Get the user who created the booking.
@@ -137,6 +147,16 @@ class Booking extends Model
     {
         return $query->where('is_active', true);
     }
+
+
+    /**
+     * Scope to get bookings for a specific organization.
+     */
+    public function scopeForOrganization($query, $organizationId)
+    {
+        return $query->where('organization_id', $organizationId);
+    }
+
 
     /**
      * Check if the user has attended a retreat in the current calendar year based on exact match.

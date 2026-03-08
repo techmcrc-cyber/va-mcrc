@@ -15,6 +15,7 @@ class Retreat extends Model implements HasMedia
     use SoftDeletes, InteractsWithMedia;
 
     protected $fillable = [
+        'organization_id',
         'title',
         'slug',
         'description',
@@ -101,6 +102,15 @@ class Retreat extends Model implements HasMedia
     {
         return $this->belongsTo(Category::class);
     }
+
+    /**
+     * Get the organization that owns the retreat.
+     */
+    public function organization()
+    {
+        return $this->belongsTo(Organization::class);
+    }
+
 
     /**
      * Get the bookings for the retreat.
@@ -235,6 +245,15 @@ class Retreat extends Model implements HasMedia
         return $query->where('start_date', '<=', $today)
                     ->where('end_date', '>=', $today);
     }
+
+    /**
+     * Scope a query to only include retreats for a specific organization.
+     */
+    public function scopeForOrganization($query, $organizationId)
+    {
+        return $query->where('organization_id', $organizationId);
+    }
+
 
     /**
      * Get the route key for the model.

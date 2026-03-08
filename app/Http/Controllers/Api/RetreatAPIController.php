@@ -16,13 +16,19 @@ class RetreatAPIController extends BaseAPIController
     public function index(Request $request): JsonResponse
     {
         try {
-            $retreats = Retreat::with(['bookings' => function($query) {
+            $query = Retreat::with(['bookings' => function($query) {
                     $query->where('is_active', true);
                 }, 'criteriaRelation'])
                 ->active() // Only active retreats
-                ->upcoming() // Starting from current day
-                ->orderBy('start_date', 'asc')
-                ->get();
+                ->upcoming(); // Starting from current day
+            
+            // Scope by organization if in organization context
+            $organizationId = \App\Helpers\OrganizationHelper::currentId();
+            if ($organizationId) {
+                $query->forOrganization($organizationId);
+            }
+            
+            $retreats = $query->orderBy('start_date', 'asc')->get();
 
             // Transform data for API response (basic details only)
             $retreatsList = $retreats->map(function ($retreat) {
@@ -69,12 +75,19 @@ class RetreatAPIController extends BaseAPIController
             }
 
             // Find the retreat with bookings
-            $retreat = Retreat::with(['bookings' => function($query) {
+            $query = Retreat::with(['bookings' => function($query) {
                     $query->where('is_active', true);
                 }, 'criteriaRelation'])
                 ->where('id', $id)
-                ->active()
-                ->first();
+                ->active();
+            
+            // Scope by organization if in organization context
+            $organizationId = \App\Helpers\OrganizationHelper::currentId();
+            if ($organizationId) {
+                $query->forOrganization($organizationId);
+            }
+            
+            $retreat = $query->first();
 
             if (!$retreat) {
                 return $this->sendNotFound('Retreat not found or inactive');

@@ -60,6 +60,15 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the organization that owns the user.
+     */
+    public function organization()
+    {
+        return $this->belongsTo(Organization::class);
+    }
+
+
+    /**
      * Check if user has a specific permission.
      *
      * @param string $permission
