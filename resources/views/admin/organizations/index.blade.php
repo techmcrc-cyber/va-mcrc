@@ -7,7 +7,7 @@
     <div class="card mb-2">
         <div class="card-header d-flex justify-content-between align-items-center" style="background-color: #f8f9fc; border-bottom: 1px solid #e3e6f0;">
             <h4 class="m-0 fw-bold" style="color: #b53d5e; font-size: 1.5rem;">Organizations</h4>
-            @if(auth()->user()->hasPermission('organizations.create'))
+            @if(auth()->user()->hasPermission('create-organizations'))
             <a href="{{ route('admin.organizations.create') }}" class="btn btn-sm btn-primary">
                 <i class="fas fa-plus me-1"></i> Create New Organization
             </a>
@@ -85,21 +85,21 @@
                             </td>
                             <td>
                                 <div class="btn-group" role="group">
-                                    @if(auth()->user()->hasPermission('organizations.view'))
+                                    @if(auth()->user()->hasPermission('view-organizations'))
                                     <a href="{{ route('admin.organizations.show', $organization) }}" 
                                        class="btn btn-sm btn-info" title="View">
                                         <i class="fas fa-eye"></i>
                                     </a>
                                     @endif
                                     
-                                    @if(auth()->user()->hasPermission('organizations.edit'))
+                                    @if(auth()->user()->hasPermission('edit-organizations'))
                                     <a href="{{ route('admin.organizations.edit', $organization) }}" 
                                        class="btn btn-sm btn-warning" title="Edit">
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     @endif
                                     
-                                    @if(auth()->user()->hasPermission('organizations.delete'))
+                                    @if(auth()->user()->hasPermission('delete-organizations'))
                                     <form action="{{ route('admin.organizations.destroy', $organization) }}" 
                                           method="POST" class="d-inline" 
                                           onsubmit="return confirm('Are you sure you want to delete this organization?');">

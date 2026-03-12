@@ -13,7 +13,7 @@
                         <a href="{{ route('admin.leaders.index') }}" class="btn btn-secondary btn-sm">
                             <i class="fas fa-arrow-left me-1"></i> Back to Leaders
                         </a>
-                        @if(auth()->user()->hasPermission('leaders.edit'))
+                        @if(auth()->user()->hasPermission('edit-leaders'))
                         <a href="{{ route('admin.leaders.edit', $leader) }}" class="btn btn-warning btn-sm">
                             <i class="fas fa-edit me-1"></i> Edit
                         </a>

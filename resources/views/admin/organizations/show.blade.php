@@ -13,7 +13,7 @@
                         <a href="{{ route('admin.organizations.index') }}" class="btn btn-secondary btn-sm">
                             <i class="fas fa-arrow-left me-1"></i> Back to Organizations
                         </a>
-                        @if(auth()->user()->hasPermission('organizations.edit'))
+                        @if(auth()->user()->hasPermission('edit-organizations'))
                         <a href="{{ route('admin.organizations.edit', $organization) }}" class="btn btn-warning btn-sm">
                             <i class="fas fa-edit me-1"></i> Edit
                         </a>
