@@ -16,25 +16,25 @@ return new class extends Migration
             // Organization Permissions
             [
                 'name' => 'View Organizations',
-                'slug' => 'organizations.view',
+                'slug' => 'view-organizations',
                 'description' => 'View organizations',
                 'module' => 'Organizations'
             ],
             [
                 'name' => 'Create Organizations',
-                'slug' => 'organizations.create',
+                'slug' => 'create-organizations',
                 'description' => 'Create organizations',
                 'module' => 'Organizations'
             ],
             [
                 'name' => 'Edit Organizations',
-                'slug' => 'organizations.edit',
+                'slug' => 'edit-organizations',
                 'description' => 'Edit organizations',
                 'module' => 'Organizations'
             ],
             [
                 'name' => 'Delete Organizations',
-                'slug' => 'organizations.delete',
+                'slug' => 'delete-organizations',
                 'description' => 'Delete organizations',
                 'module' => 'Organizations'
             ],
@@ -42,25 +42,25 @@ return new class extends Migration
             // Leader Permissions
             [
                 'name' => 'View Leaders',
-                'slug' => 'leaders.view',
+                'slug' => 'view-leaders',
                 'description' => 'View leaders',
                 'module' => 'Leaders'
             ],
             [
                 'name' => 'Create Leaders',
-                'slug' => 'leaders.create',
+                'slug' => 'create-leaders',
                 'description' => 'Create leaders',
                 'module' => 'Leaders'
             ],
             [
                 'name' => 'Edit Leaders',
-                'slug' => 'leaders.edit',
+                'slug' => 'edit-leaders',
                 'description' => 'Edit leaders',
                 'module' => 'Leaders'
             ],
             [
                 'name' => 'Delete Leaders',
-                'slug' => 'leaders.delete',
+                'slug' => 'delete-leaders',
                 'description' => 'Delete leaders',
                 'module' => 'Leaders'
             ],
@@ -85,14 +85,14 @@ return new class extends Migration
     public function down(): void
     {
         $permissionSlugs = [
-            'organizations.view',
-            'organizations.create',
-            'organizations.edit',
-            'organizations.delete',
-            'leaders.view',
-            'leaders.create',
-            'leaders.edit',
-            'leaders.delete',
+            'view-organizations',
+            'create-organizations',
+            'edit-organizations',
+            'delete-organizations',
+            'view-leaders',
+            'create-leaders',
+            'edit-leaders',
+            'delete-leaders',
         ];
 
         Permission::whereIn('slug', $permissionSlugs)->delete();

@@ -20,7 +20,7 @@ class OrganizationController extends Controller
      */
     public function index()
     {
-        if (!auth()->user()->hasPermission('organizations.view')) {
+        if (!auth()->user()->hasPermission('view-organizations')) {
             abort(403, 'Unauthorized access.');
         }
         
@@ -37,7 +37,7 @@ class OrganizationController extends Controller
      */
     public function create()
     {
-        if (!auth()->user()->hasPermission('organizations.create')) {
+        if (!auth()->user()->hasPermission('create-organizations')) {
             abort(403, 'Unauthorized access.');
         }
         
@@ -49,7 +49,7 @@ class OrganizationController extends Controller
      */
     public function store(Request $request)
     {
-        if (!auth()->user()->hasPermission('organizations.create')) {
+        if (!auth()->user()->hasPermission('create-organizations')) {
             abort(403, 'Unauthorized access.');
         }
         
@@ -129,7 +129,7 @@ class OrganizationController extends Controller
      */
     public function show(Organization $organization)
     {
-        if (!auth()->user()->hasPermission('organizations.view')) {
+        if (!auth()->user()->hasPermission('view-organizations')) {
             abort(403, 'Unauthorized access.');
         }
         
@@ -143,7 +143,7 @@ class OrganizationController extends Controller
      */
     public function edit(Organization $organization)
     {
-        if (!auth()->user()->hasPermission('organizations.edit')) {
+        if (!auth()->user()->hasPermission('edit-organizations')) {
             abort(403, 'Unauthorized access.');
         }
         
@@ -155,7 +155,7 @@ class OrganizationController extends Controller
      */
     public function update(Request $request, Organization $organization)
     {
-        if (!auth()->user()->hasPermission('organizations.edit')) {
+        if (!auth()->user()->hasPermission('edit-organizations')) {
             abort(403, 'Unauthorized access.');
         }
         
@@ -210,7 +210,7 @@ class OrganizationController extends Controller
      */
     public function destroy(Organization $organization)
     {
-        if (!auth()->user()->hasPermission('organizations.delete')) {
+        if (!auth()->user()->hasPermission('delete-organizations')) {
             abort(403, 'Unauthorized access.');
         }
         

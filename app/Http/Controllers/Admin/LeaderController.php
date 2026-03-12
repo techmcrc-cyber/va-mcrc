@@ -33,7 +33,7 @@ class LeaderController extends Controller
      */
     public function index()
     {
-        if (!auth()->user()->hasPermission('leaders.view')) {
+        if (!auth()->user()->hasPermission('view-leaders')) {
             abort(403, 'Unauthorized access.');
         }
         
@@ -61,7 +61,7 @@ class LeaderController extends Controller
      */
     public function create()
     {
-        if (!auth()->user()->hasPermission('leaders.create')) {
+        if (!auth()->user()->hasPermission('create-leaders')) {
             abort(403, 'Unauthorized access.');
         }
         
@@ -80,7 +80,7 @@ class LeaderController extends Controller
      */
     public function store(Request $request)
     {
-        if (!auth()->user()->hasPermission('leaders.create')) {
+        if (!auth()->user()->hasPermission('create-leaders')) {
             abort(403, 'Unauthorized access.');
         }
         
@@ -133,7 +133,7 @@ class LeaderController extends Controller
      */
     public function show(Leader $leader)
     {
-        if (!auth()->user()->hasPermission('leaders.view')) {
+        if (!auth()->user()->hasPermission('view-leaders')) {
             abort(403, 'Unauthorized access.');
         }
         
@@ -152,7 +152,7 @@ class LeaderController extends Controller
      */
     public function edit(Leader $leader)
     {
-        if (!auth()->user()->hasPermission('leaders.edit')) {
+        if (!auth()->user()->hasPermission('edit-leaders')) {
             abort(403, 'Unauthorized access.');
         }
         
@@ -173,7 +173,7 @@ class LeaderController extends Controller
      */
     public function update(Request $request, Leader $leader)
     {
-        if (!auth()->user()->hasPermission('leaders.edit')) {
+        if (!auth()->user()->hasPermission('edit-leaders')) {
             abort(403, 'Unauthorized access.');
         }
         
@@ -235,7 +235,7 @@ class LeaderController extends Controller
      */
     public function destroy(Leader $leader)
     {
-        if (!auth()->user()->hasPermission('leaders.delete')) {
+        if (!auth()->user()->hasPermission('delete-leaders')) {
             abort(403, 'Unauthorized access.');
         }
         
