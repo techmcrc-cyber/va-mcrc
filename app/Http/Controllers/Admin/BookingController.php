@@ -26,6 +26,10 @@ class BookingController extends Controller
 
     public function active(Request $request)
     {
+        $user = auth()->user();
+        $isSuperAdmin = $user->isSuperAdmin();
+        $organizationId = $user->organization_id;
+        
         if ($request->ajax()) {
             // Check if filtering for cancelled bookings
             $showCancelled = $request->has('status_filter') && $request->status_filter === 'cancelled';
@@ -38,6 +42,11 @@ class BookingController extends Controller
                     // Compare only dates, not time - retreat is active if end_date is today or future
                     $q->withTrashed()->whereDate('end_date', '>=', now()->toDateString());
                 });
+            
+            // Apply organization filtering only for users with organization_id (not super admin or users without org)
+            if (!$isSuperAdmin && $organizationId) {
+                $query->where('organization_id', $organizationId);
+            }
             
             // Only filter by is_active if not specifically looking for cancelled bookings
             if (!$showCancelled) {
@@ -78,11 +87,17 @@ class BookingController extends Controller
                           });
                 } elseif ($status === 'cancelled') {
                     // Show bookings that have ANY cancelled participants
-                    $query->whereIn('booking_id', function($subQuery) {
+                    $query->whereIn('booking_id', function($subQuery) use ($isSuperAdmin, $organizationId) {
                         $subQuery->select('booking_id')
                             ->from('bookings')
-                            ->where('is_active', 0)
-                            ->distinct();
+                            ->where('is_active', 0);
+                        
+                        // Apply organization filtering for cancelled bookings too
+                        if (!$isSuperAdmin && $organizationId) {
+                            $subQuery->where('organization_id', $organizationId);
+                        }
+                        
+                        $subQuery->distinct();
                     });
                 } elseif ($status === 'AGE_MISMATCH') {
                     // Age mismatch includes both MIN_AGE_FAILED and MAX_AGE_FAILED
@@ -121,13 +136,20 @@ class BookingController extends Controller
             
             $data = $this->formatBookingsData($bookings);
             
+            // Calculate total records with organization filtering
+            $totalRecordsQuery = Booking::where('participant_number', 1)
+                ->where('is_active', true)
+                ->whereHas('retreat', function($q) {
+                    $q->withTrashed()->whereDate('end_date', '>=', now()->toDateString());
+                });
+            
+            if (!$isSuperAdmin && $organizationId) {
+                $totalRecordsQuery->where('organization_id', $organizationId);
+            }
+            
             $json_data = [
                 "draw"            => intval($request->input('draw')),
-                "recordsTotal"    => intval(Booking::where('participant_number', 1)
-                    ->where('is_active', true)
-                    ->whereHas('retreat', function($q) {
-                        $q->withTrashed()->whereDate('end_date', '>=', now()->toDateString());
-                    })->count()),
+                "recordsTotal"    => intval($totalRecordsQuery->count()),
                 "recordsFiltered" => intval($totalData),
                 "data"            => $data
             ];
@@ -135,20 +157,33 @@ class BookingController extends Controller
             return response()->json($json_data);
         }
 
-        // Get active retreats for filter dropdown
-        $retreats = Retreat::where('end_date', '>=', now()->toDateString())
-            ->whereHas('bookings', function($query) {
+        // Get active retreats for filter dropdown (scoped by organization)
+        $retreatsQuery = Retreat::where('end_date', '>=', now()->toDateString())
+            ->whereHas('bookings', function($query) use ($isSuperAdmin, $organizationId) {
                 $query->where('participant_number', 1)
                       ->where('is_active', true);
+                
+                if (!$isSuperAdmin && $organizationId) {
+                    $query->where('organization_id', $organizationId);
+                }
             })
-            ->orderBy('start_date')
-            ->get();
+            ->orderBy('start_date');
+        
+        if (!$isSuperAdmin && $organizationId) {
+            $retreatsQuery->where('organization_id', $organizationId);
+        }
+        
+        $retreats = $retreatsQuery->get();
             
         return view('admin.bookings.active', compact('retreats'));
     }
 
     public function archive(Request $request)
     {
+        $user = auth()->user();
+        $isSuperAdmin = $user->isSuperAdmin();
+        $organizationId = $user->organization_id;
+        
         if ($request->ajax()) {
             // Check if filtering for cancelled bookings
             $showCancelled = $request->has('status_filter') && $request->status_filter === 'cancelled';
@@ -160,6 +195,11 @@ class BookingController extends Controller
                 ->whereHas('retreat', function($q) {
                     $q->withTrashed()->where('end_date', '<', now()->toDateString());
                 });
+            
+            // Apply organization filtering only for users with organization_id (not super admin or users without org)
+            if (!$isSuperAdmin && $organizationId) {
+                $query->where('organization_id', $organizationId);
+            }
             
             // Only filter by is_active if not specifically looking for cancelled bookings
             if (!$showCancelled) {
@@ -200,11 +240,17 @@ class BookingController extends Controller
                           });
                 } elseif ($status === 'cancelled') {
                     // Show bookings that have ANY cancelled participants
-                    $query->whereIn('booking_id', function($subQuery) {
+                    $query->whereIn('booking_id', function($subQuery) use ($isSuperAdmin, $organizationId) {
                         $subQuery->select('booking_id')
                             ->from('bookings')
-                            ->where('is_active', 0)
-                            ->distinct();
+                            ->where('is_active', 0);
+                        
+                        // Apply organization filtering for cancelled bookings too
+                        if (!$isSuperAdmin && $organizationId) {
+                            $subQuery->where('organization_id', $organizationId);
+                        }
+                        
+                        $subQuery->distinct();
                     });
                 } elseif ($status === 'AGE_MISMATCH') {
                     // Age mismatch includes both MIN_AGE_FAILED and MAX_AGE_FAILED
@@ -243,13 +289,20 @@ class BookingController extends Controller
             
             $data = $this->formatBookingsData($bookings, true);
             
+            // Calculate total records with organization filtering
+            $totalRecordsQuery = Booking::where('participant_number', 1)
+                ->where('is_active', true)
+                ->whereHas('retreat', function($q) {
+                    $q->withTrashed()->where('end_date', '<', now()->toDateString());
+                });
+            
+            if (!$isSuperAdmin && $organizationId) {
+                $totalRecordsQuery->where('organization_id', $organizationId);
+            }
+            
             $json_data = [
                 "draw"            => intval($request->input('draw')),
-                "recordsTotal"    => intval(Booking::where('participant_number', 1)
-                    ->where('is_active', true)
-                    ->whereHas('retreat', function($q) {
-                        $q->withTrashed()->where('end_date', '<', now()->toDateString());
-                    })->count()),
+                "recordsTotal"    => intval($totalRecordsQuery->count()),
                 "recordsFiltered" => intval($totalData),
                 "data"            => $data
             ];
@@ -257,14 +310,23 @@ class BookingController extends Controller
             return response()->json($json_data);
         }
         
-        // Get archived retreats for filter dropdown
-        $retreats = Retreat::where('end_date', '<', now()->toDateString())
-            ->whereHas('bookings', function($query) {
+        // Get archived retreats for filter dropdown (scoped by organization)
+        $retreatsQuery = Retreat::where('end_date', '<', now()->toDateString())
+            ->whereHas('bookings', function($query) use ($isSuperAdmin, $organizationId) {
                 $query->where('participant_number', 1)
                       ->where('is_active', true);
+                
+                if (!$isSuperAdmin && $organizationId) {
+                    $query->where('organization_id', $organizationId);
+                }
             })
-            ->orderBy('start_date', 'desc')
-            ->get();
+            ->orderBy('start_date', 'desc');
+        
+        if (!$isSuperAdmin && $organizationId) {
+            $retreatsQuery->where('organization_id', $organizationId);
+        }
+        
+        $retreats = $retreatsQuery->get();
             
         return view('admin.bookings.archive', compact('retreats'));
     }
@@ -1017,10 +1079,20 @@ class BookingController extends Controller
      */
     public function importForm()
     {
-        $retreats = Retreat::where('is_active', true)
+        $user = auth()->user();
+        $isSuperAdmin = $user->isSuperAdmin();
+        $organizationId = $user->organization_id;
+        
+        $retreatsQuery = Retreat::where('is_active', true)
             ->whereDate('end_date', '>=', now()->toDateString())
-            ->orderBy('start_date')
-            ->get();
+            ->orderBy('start_date');
+        
+        // Apply organization filtering only for users with organization_id (not super admin or users without org)
+        if (!$isSuperAdmin && $organizationId) {
+            $retreatsQuery->where('organization_id', $organizationId);
+        }
+        
+        $retreats = $retreatsQuery->get();
             
         return view('admin.bookings.import', compact('retreats'));
     }
@@ -1043,6 +1115,16 @@ class BookingController extends Controller
             'retreat_id' => 'required|exists:retreats,id'
         ]);
 
+        $user = auth()->user();
+        $isSuperAdmin = $user->isSuperAdmin();
+        $organizationId = $user->organization_id;
+        
+        // Verify user has access to this retreat
+        $retreat = Retreat::find($request->retreat_id);
+        if (!$isSuperAdmin && $organizationId && $retreat->organization_id !== $organizationId) {
+            abort(403, 'Unauthorized access to this retreat.');
+        }
+
         try {
             $import = new BookingsImport($request->retreat_id, true); // Preview mode
             Excel::import($import, $request->file('import_file'));
@@ -1055,8 +1137,6 @@ class BookingController extends Controller
                 'retreat_id' => $request->retreat_id,
                 'file_name' => $request->file('import_file')->getClientOriginalName()
             ]);
-            
-            $retreat = Retreat::find($request->retreat_id);
             
             return view('admin.bookings.import-preview', compact('previewData', 'retreat'));
             
@@ -1077,6 +1157,17 @@ class BookingController extends Controller
         if (!$previewData) {
             return redirect()->route('admin.bookings.import')
                 ->withErrors(['general' => 'No import data found. Please upload file again.']);
+        }
+
+        $user = auth()->user();
+        $isSuperAdmin = $user->isSuperAdmin();
+        $organizationId = $user->organization_id;
+        
+        // Verify user still has access to this retreat
+        $retreat = Retreat::find($previewData['retreat_id']);
+        if (!$retreat || (!$isSuperAdmin && $organizationId && $retreat->organization_id !== $organizationId)) {
+            Session::forget('import_preview_data');
+            abort(403, 'Unauthorized access to this retreat.');
         }
 
         try {
@@ -1102,11 +1193,26 @@ class BookingController extends Controller
      */
     public function exportForm()
     {
-        $retreats = Retreat::withCount(['bookings' => function($query) {
+        $user = auth()->user();
+        $isSuperAdmin = $user->isSuperAdmin();
+        $organizationId = $user->organization_id;
+        
+        $retreatsQuery = Retreat::withCount(['bookings' => function($query) use ($isSuperAdmin, $organizationId) {
                 $query->where('is_active', true);
+                
+                // Apply organization filtering only for users with organization_id (not super admin or users without org)
+                if (!$isSuperAdmin && $organizationId) {
+                    $query->where('organization_id', $organizationId);
+                }
             }])
-            ->orderBy('start_date', 'desc')
-            ->get();
+            ->orderBy('start_date', 'desc');
+        
+        // Apply organization filtering only for users with organization_id (not super admin or users without org)
+        if (!$isSuperAdmin && $organizationId) {
+            $retreatsQuery->where('organization_id', $organizationId);
+        }
+        
+        $retreats = $retreatsQuery->get();
         
         return view('admin.bookings.export', compact('retreats'));
     }
@@ -1120,6 +1226,10 @@ class BookingController extends Controller
             'retreat_id' => 'nullable|exists:retreats,id'
         ]);
 
+        $user = auth()->user();
+        $isSuperAdmin = $user->isSuperAdmin();
+        $organizationId = $user->organization_id;
+
         $query = Booking::with(['retreat' => function($q) {
                 $q->withTrashed(); // Include soft-deleted retreats
             }])
@@ -1127,9 +1237,20 @@ class BookingController extends Controller
             ->orderBy('booking_id')
             ->orderBy('participant_number');
 
+        // Apply organization filtering only for users with organization_id (not super admin or users without org)
+        if (!$isSuperAdmin && $organizationId) {
+            $query->where('organization_id', $organizationId);
+        }
+
         if ($request->retreat_id) {
             $query->where('retreat_id', $request->retreat_id);
             $retreat = Retreat::find($request->retreat_id);
+            
+            // Verify user has access to this retreat
+            if (!$isSuperAdmin && $organizationId && $retreat->organization_id !== $organizationId) {
+                abort(403, 'Unauthorized access to this retreat.');
+            }
+            
             $filename = 'bookings_' . Str::slug($retreat->title) . '_' . now()->format('Y-m-d') . '.xlsx';
         } else {
             $filename = 'all_bookings_' . now()->format('Y-m-d') . '.xlsx';

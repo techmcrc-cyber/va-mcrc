@@ -37,6 +37,8 @@
 
 <!-- Stats Cards -->
 <div class="row g-4 mb-4">
+    @if($isSuperAdmin || !auth()->user()->organization_id)
+    <!-- For Super Admins and users without organization: Show all 4 cards -->
     <div class="col-12 col-sm-6 col-xl-3">
         <div class="card border-0 shadow-sm h-100">
             <div class="card-body">
@@ -60,8 +62,29 @@
             </div>
         </div>
     </div>
+    @else
+    <!-- For organization users: Show Active Users in first position -->
+    <div class="col-12 col-sm-6 col-xl-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-uppercase text-muted mb-2">Active Users</h6>
+                        <h2 class="mb-0 counter-number">{{ $userStats['active'] }}</h2>
+                    </div>
+                    <div class="icon-shape icon-lg bg-warning bg-opacity-10 text-warning rounded-3">
+                        <i class="fas fa-user-check"></i>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <span class="text-info"><i class="fas fa-info-circle"></i> Organization Users</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
     
-    <div class="col-12 col-sm-6 col-xl-3">
+    <div class="col-12 col-sm-6 {{ ($isSuperAdmin || !auth()->user()->organization_id) ? 'col-xl-3' : 'col-xl-4' }}">
         <div class="card border-0 shadow-sm h-100">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
@@ -85,7 +108,7 @@
         </div>
     </div>
     
-    <div class="col-12 col-sm-6 col-xl-3">
+    <div class="col-12 col-sm-6 {{ ($isSuperAdmin || !auth()->user()->organization_id) ? 'col-xl-3' : 'col-xl-4' }}">
         <div class="card border-0 shadow-sm h-100">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
@@ -108,7 +131,9 @@
             </div>
         </div>
     </div>
-    
+
+    @if($isSuperAdmin || !auth()->user()->organization_id)
+    <!-- For Super Admins and users without organization: Show Admin Users card -->
     <div class="col-12 col-sm-6 col-xl-3">
         <div class="card border-0 shadow-sm h-100">
             <div class="card-body">
@@ -132,6 +157,7 @@
             </div>
         </div>
     </div>
+    @endif
 </div>
 
 <!-- Dashboard Statistics Summary -->

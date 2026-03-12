@@ -19,89 +19,114 @@ class DashboardController extends Controller
      */
     public function index()
     {
+        $user = auth()->user();
+        $isSuperAdmin = $user->isSuperAdmin();
+        $organizationId = $user->organization_id;
+        
         // Calculate date ranges
         $currentMonth = now()->startOfMonth();
         $lastMonth = now()->subMonth()->startOfMonth();
         $lastMonthEnd = now()->subMonth()->endOfMonth();
         
         // User Statistics with month-over-month comparison
-        $totalUsers = User::count();
-        $totalUsersLastMonth = User::where('created_at', '<', $currentMonth)->count();
+        $userQuery = User::query();
+        // Only filter by organization if user has organization_id (not super admin or users without org)
+        if (!$isSuperAdmin && $organizationId) {
+            $userQuery->where('organization_id', $organizationId);
+        }
+        
+        $totalUsers = $userQuery->count();
+        $totalUsersLastMonth = (clone $userQuery)->where('created_at', '<', $currentMonth)->count();
         $userGrowth = $this->calculatePercentageChange($totalUsersLastMonth, $totalUsers);
         
         $userStats = [
             'total' => $totalUsers,
-            'active' => User::where('is_active', true)->count(),
-            'new_this_month' => User::where('created_at', '>=', $currentMonth)->count(),
-            'new_last_month' => User::whereBetween('created_at', [$lastMonth, $lastMonthEnd])->count(),
+            'active' => (clone $userQuery)->where('is_active', true)->count(),
+            'new_this_month' => (clone $userQuery)->where('created_at', '>=', $currentMonth)->count(),
+            'new_last_month' => (clone $userQuery)->whereBetween('created_at', [$lastMonth, $lastMonthEnd])->count(),
             'growth_percentage' => $userGrowth,
-            'recent' => User::with('role')->latest()->take(5)->get()
+            'recent' => (clone $userQuery)->with('role')->latest()->take(5)->get()
         ];
 
         // Retreat Statistics with month-over-month comparison
-        $totalRetreats = Retreat::count();
-        $totalRetreatsLastMonth = Retreat::where('created_at', '<', $currentMonth)->count();
+        $retreatQuery = Retreat::query();
+        // Only filter by organization if user has organization_id (not super admin or users without org)
+        if (!$isSuperAdmin && $organizationId) {
+            $retreatQuery->where('organization_id', $organizationId);
+        }
+        
+        $totalRetreats = $retreatQuery->count();
+        $totalRetreatsLastMonth = (clone $retreatQuery)->where('created_at', '<', $currentMonth)->count();
         $retreatGrowth = $this->calculatePercentageChange($totalRetreatsLastMonth, $totalRetreats);
         
         $retreatStats = [
             'total' => $totalRetreats,
-            'active' => Retreat::where('is_active', true)->count(),
-            'upcoming' => Retreat::upcoming()->count(),
-            'ongoing' => Retreat::ongoing()->count(),
-            'featured' => Retreat::featured()->count(),
-            'new_this_month' => Retreat::where('created_at', '>=', $currentMonth)->count(),
-            'new_last_month' => Retreat::whereBetween('created_at', [$lastMonth, $lastMonthEnd])->count(),
+            'active' => (clone $retreatQuery)->where('is_active', true)->count(),
+            'upcoming' => (clone $retreatQuery)->upcoming()->count(),
+            'ongoing' => (clone $retreatQuery)->ongoing()->count(),
+            'featured' => (clone $retreatQuery)->featured()->count(),
+            'new_this_month' => (clone $retreatQuery)->where('created_at', '>=', $currentMonth)->count(),
+            'new_last_month' => (clone $retreatQuery)->whereBetween('created_at', [$lastMonth, $lastMonthEnd])->count(),
             'growth_percentage' => $retreatGrowth,
         ];
 
         // Booking Statistics with month-over-month comparison
-        $totalBookings = Booking::where('is_active', true)->count();
-        $totalBookingsLastMonth = Booking::where('is_active', true)
-            ->where('created_at', '<', $currentMonth)->count();
+        $bookingQuery = Booking::where('is_active', true);
+        // Only filter by organization if user has organization_id (not super admin or users without org)
+        if (!$isSuperAdmin && $organizationId) {
+            $bookingQuery->where('organization_id', $organizationId);
+        }
+        
+        $totalBookings = $bookingQuery->count();
+        $totalBookingsLastMonth = (clone $bookingQuery)->where('created_at', '<', $currentMonth)->count();
         $bookingGrowth = $this->calculatePercentageChange($totalBookingsLastMonth, $totalBookings);
         
         $bookingStats = [
             'total' => $totalBookings,
-            'active' => Booking::where('is_active', true)->count(),
-            'primary_participants' => Booking::where('is_active', true)
-                ->where('participant_number', 1)->count(),
-            'additional_participants' => Booking::where('is_active', true)
-                ->where('participant_number', '>', 1)->count(),
-            'new_this_month' => Booking::where('is_active', true)
-                ->where('created_at', '>=', $currentMonth)->count(),
-            'new_last_month' => Booking::where('is_active', true)
-                ->whereBetween('created_at', [$lastMonth, $lastMonthEnd])->count(),
+            'active' => (clone $bookingQuery)->count(),
+            'primary_participants' => (clone $bookingQuery)->where('participant_number', 1)->count(),
+            'additional_participants' => (clone $bookingQuery)->where('participant_number', '>', 1)->count(),
+            'new_this_month' => (clone $bookingQuery)->where('created_at', '>=', $currentMonth)->count(),
+            'new_last_month' => (clone $bookingQuery)->whereBetween('created_at', [$lastMonth, $lastMonthEnd])->count(),
             'growth_percentage' => $bookingGrowth,
-            'recent_bookings' => Booking::with(['retreat'])
-                ->where('is_active', true)
+            'recent_bookings' => (clone $bookingQuery)->with(['retreat'])
                 ->latest()
                 ->take(10)
                 ->get()
         ];
 
-        // Additional User Statistics (Admin Users count)
-        $adminUsers = User::whereHas('role', function($query) {
-            $query->where('name', 'like', '%admin%')
-                  ->orWhere('is_super_admin', true);
-        })->count();
+        // Additional User Statistics (Admin Users count) - For Super Admins and users without organization
+        $adminUsers = 0;
+        $adminUserGrowth = 0;
         
-        $adminUsersLastMonth = User::whereHas('role', function($query) {
-            $query->where('name', 'like', '%admin%')
-                  ->orWhere('is_super_admin', true);
-        })->where('created_at', '<', $currentMonth)->count();
-        
-        $adminUserGrowth = $this->calculatePercentageChange($adminUsersLastMonth, $adminUsers);
+        if ($isSuperAdmin || !$organizationId) {
+            $adminUsers = User::whereHas('role', function($query) {
+                $query->where('name', 'like', '%admin%')
+                      ->orWhere('is_super_admin', true);
+            })->count();
+            
+            $adminUsersLastMonth = User::whereHas('role', function($query) {
+                $query->where('name', 'like', '%admin%')
+                      ->orWhere('is_super_admin', true);
+            })->where('created_at', '<', $currentMonth)->count();
+            
+            $adminUserGrowth = $this->calculatePercentageChange($adminUsersLastMonth, $adminUsers);
+        }
 
         // Recent Activities (Real data from bookings and retreats)
         $activities = collect();
         
         // Add recent bookings as activities
-        $recentBookings = Booking::with('retreat')
+        $recentBookingsQuery = Booking::with('retreat')
             ->where('is_active', true)
-            ->where('participant_number', 1) // Only primary participants
-            ->latest()
-            ->take(3)
-            ->get();
+            ->where('participant_number', 1); // Only primary participants
+            
+        // Only filter by organization if user has organization_id (not super admin or users without org)
+        if (!$isSuperAdmin && $organizationId) {
+            $recentBookingsQuery->where('organization_id', $organizationId);
+        }
+        
+        $recentBookings = $recentBookingsQuery->latest()->take(3)->get();
             
         foreach ($recentBookings as $booking) {
             $activities->push([
@@ -115,7 +140,13 @@ class DashboardController extends Controller
         }
         
         // Add recent retreats as activities
-        $recentRetreats = Retreat::latest()->take(2)->get();
+        $recentRetreatsQuery = Retreat::query();
+        // Only filter by organization if user has organization_id (not super admin or users without org)
+        if (!$isSuperAdmin && $organizationId) {
+            $recentRetreatsQuery->where('organization_id', $organizationId);
+        }
+        
+        $recentRetreats = $recentRetreatsQuery->latest()->take(2)->get();
         foreach ($recentRetreats as $retreat) {
             $activities->push([
                 'type' => 'retreat',
@@ -130,22 +161,30 @@ class DashboardController extends Controller
         // Sort activities by creation date
         $activities = $activities->sortByDesc('created_at')->take(5);
 
-        // Get recent users
-        $recentUsers = User::with('role')
-            ->latest()
-            ->take(5)
-            ->get();
+        // Get recent users (scoped by organization for users with organization_id)
+        $recentUsersQuery = User::with('role');
+        // Only filter by organization if user has organization_id (not super admin or users without org)
+        if (!$isSuperAdmin && $organizationId) {
+            $recentUsersQuery->where('organization_id', $organizationId);
+        }
+        $recentUsers = $recentUsersQuery->latest()->take(5)->get();
 
         // Monthly booking trends for charts
         $monthlyBookings = [];
         for ($i = 5; $i >= 0; $i--) {
             $date = now()->subMonths($i);
+            $monthlyBookingQuery = Booking::where('is_active', true)
+                ->whereYear('created_at', $date->year)
+                ->whereMonth('created_at', $date->month);
+                
+            // Only filter by organization if user has organization_id (not super admin or users without org)
+            if (!$isSuperAdmin && $organizationId) {
+                $monthlyBookingQuery->where('organization_id', $organizationId);
+            }
+            
             $monthlyBookings[] = [
                 'month' => $date->format('M Y'),
-                'count' => Booking::where('is_active', true)
-                    ->whereYear('created_at', $date->year)
-                    ->whereMonth('created_at', $date->month)
-                    ->count()
+                'count' => $monthlyBookingQuery->count()
             ];
         }
 
@@ -157,6 +196,7 @@ class DashboardController extends Controller
             'adminUserGrowth' => $adminUserGrowth,
             'activities' => $activities,
             'monthlyBookings' => $monthlyBookings,
+            'isSuperAdmin' => $isSuperAdmin,
             'stats' => [
                 'total_users' => $userStats['total'],
                 'total_retreats' => $retreatStats['total'],

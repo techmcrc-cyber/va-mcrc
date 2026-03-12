@@ -24,8 +24,17 @@ class UserController extends Controller
     {
         $this->authorize('view-users');
         
+        $user = auth()->user();
+        $isSuperAdmin = $user->isSuperAdmin();
+        $organizationId = $user->organization_id;
+        
         if ($request->ajax()) {
-            $query = User::with('role');
+            $query = User::with(['role', 'organization']);
+            
+            // Apply organization filtering only for users with organization_id (not super admin or users without org)
+            if (!$isSuperAdmin && $organizationId) {
+                $query->where('organization_id', $organizationId);
+            }
             
             // Handle search
             if ($request->has('search') && !empty($request->search['value'])) {
@@ -100,6 +109,11 @@ class UserController extends Controller
                 
                 $nestedData['role'] = $roleBadge;
                 
+                // Organization (only show for Super Admins)
+                if ($isSuperAdmin) {
+                    $nestedData['organization'] = $user->organization ? $user->organization->name : '<span class="text-muted">No Organization</span>';
+                }
+                
                 // Status with badge
                 if ($user->is_active) {
                     $nestedData['status'] = '<span class="badge bg-success"><i class="fas fa-check-circle me-1"></i> Active</span>';
@@ -132,9 +146,15 @@ class UserController extends Controller
                 $data[] = $nestedData;
             }
             
+            // Calculate total records with organization filtering
+            $totalRecordsQuery = User::query();
+            if (!$isSuperAdmin && $organizationId) {
+                $totalRecordsQuery->where('organization_id', $organizationId);
+            }
+            
             $json_data = [
                 "draw"            => intval($request->input('draw')),
-                "recordsTotal"    => intval($totalData),
+                "recordsTotal"    => intval($totalRecordsQuery->count()),
                 "recordsFiltered" => intval($totalData),
                 "data"            => $data
             ];

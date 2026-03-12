@@ -19,8 +19,17 @@ class RetreatController extends Controller
      */
     public function index(Request $request)
     {
+        $user = auth()->user();
+        $isSuperAdmin = $user->isSuperAdmin();
+        $organizationId = $user->organization_id;
+        
         if ($request->ajax()) {
             $query = Retreat::query();
+            
+            // Apply organization filtering only for users with organization_id (not super admin or users without org)
+            if (!$isSuperAdmin && $organizationId) {
+                $query->where('organization_id', $organizationId);
+            }
             
             // Handle status filter
             if ($request->has('status_filter') && !empty($request->status_filter)) {
@@ -176,9 +185,15 @@ class RetreatController extends Controller
                 $data[] = $nestedData;
             }
             
+            // Calculate total records with organization filtering
+            $totalRecordsQuery = Retreat::query();
+            if (!$isSuperAdmin && $organizationId) {
+                $totalRecordsQuery->where('organization_id', $organizationId);
+            }
+            
             $json_data = [
                 "draw"            => intval($request->input('draw')),
-                "recordsTotal"    => intval($totalData),
+                "recordsTotal"    => intval($totalRecordsQuery->count()),
                 "recordsFiltered" => intval($totalData),
                 "data"            => $data
             ];
