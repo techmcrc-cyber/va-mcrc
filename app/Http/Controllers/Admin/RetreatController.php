@@ -31,6 +31,11 @@ class RetreatController extends Controller
                 $query->where('organization_id', $organizationId);
             }
             
+            // Handle organization filter (for Super Admins and users without organization_id)
+            if (($isSuperAdmin || !$organizationId) && $request->has('organization_filter') && !empty($request->organization_filter)) {
+                $query->where('organization_id', $request->organization_filter);
+            }
+            
             // Handle status filter
             if ($request->has('status_filter') && !empty($request->status_filter)) {
                 $filter = $request->status_filter;
@@ -85,7 +90,7 @@ class RetreatController extends Controller
             $limit = $request->input('length', 25);
             $start = $request->input('start', 0);
             
-            $retreats = $query->with('criteriaRelation')
+            $retreats = $query->with(['criteriaRelation', 'organization'])
                             ->offset($start)
                             ->limit($limit)
                             ->get();
@@ -93,7 +98,15 @@ class RetreatController extends Controller
             $data = [];
             foreach ($retreats as $retreat) {
                 $nestedData = [];
-                $nestedData['title'] = $retreat->title;
+                
+                // Title with organization tag (for Super Admins and users without organization_id)
+                $titleWithOrg = $retreat->title;
+                $user = auth()->user();
+                if (($user->isSuperAdmin() || !$user->organization_id) && $retreat->organization) {
+                    $titleWithOrg .= ' <span class="badge bg-info ms-2">' . e($retreat->organization->name) . '</span>';
+                }
+                $nestedData['title'] = $titleWithOrg;
+                
                 $nestedData['date'] = $retreat->start_date->format('M d, Y') . ' - ' . $retreat->end_date->format('M d, Y');
                 $nestedData['end_date'] = $retreat->end_date->format('Y-m-d'); // For sorting
                 $nestedData['timings'] = $retreat->timings;
@@ -211,7 +224,15 @@ class RetreatController extends Controller
     {
         $criteriaOptions = \App\Models\Criteria::where('status', 1)->pluck('name', 'id');
         
-        return view('admin.retreats.create', compact('criteriaOptions'));
+        $user = auth()->user();
+        $organizations = [];
+        
+        // Only show organization dropdown for Super Admins and users without organization_id
+        if ($user->isSuperAdmin() || !$user->organization_id) {
+            $organizations = \App\Models\Organization::active()->pluck('name', 'id');
+        }
+        
+        return view('admin.retreats.create', compact('criteriaOptions', 'organizations'));
     }
 
     /**
@@ -224,6 +245,20 @@ class RetreatController extends Controller
         $validated['slug'] = Str::slug($validated['title'] . ' ' . now()->format('Y-m-d'));
         $validated['created_by'] = Auth::id();
         $validated['updated_by'] = Auth::id();
+        
+        $user = auth()->user();
+        
+        // Handle organization_id assignment
+        if ($user->organization_id) {
+            // If user has organization_id, auto-assign it
+            $validated['organization_id'] = $user->organization_id;
+        } elseif (isset($validated['organization_id']) && !empty($validated['organization_id'])) {
+            // If user is Super Admin or without organization, use selected organization
+            $validated['organization_id'] = $validated['organization_id'];
+        } else {
+            // No organization selected (optional)
+            $validated['organization_id'] = null;
+        }
 
         $retreat = Retreat::create($validated);
 
@@ -247,7 +282,15 @@ class RetreatController extends Controller
     {
         $criteriaOptions = \App\Models\Criteria::where('status', 1)->pluck('name', 'id');
         
-        return view('admin.retreats.edit', compact('retreat', 'criteriaOptions'));
+        $user = auth()->user();
+        $organizations = [];
+        
+        // Only show organization dropdown for Super Admins and users without organization_id
+        if ($user->isSuperAdmin() || !$user->organization_id) {
+            $organizations = \App\Models\Organization::active()->pluck('name', 'id');
+        }
+        
+        return view('admin.retreats.edit', compact('retreat', 'criteriaOptions', 'organizations'));
     }
 
     /**
@@ -258,6 +301,21 @@ class RetreatController extends Controller
         $validated = $request->validated();
 
         $validated['updated_by'] = Auth::id();
+        
+        $user = auth()->user();
+        
+        // Handle organization_id assignment
+        if ($user->organization_id) {
+            // If user has organization_id, keep their organization (can't change)
+            $validated['organization_id'] = $user->organization_id;
+        } elseif (isset($validated['organization_id']) && !empty($validated['organization_id'])) {
+            // If user is Super Admin or without organization, use selected organization
+            $validated['organization_id'] = $validated['organization_id'];
+        } else {
+            // No organization selected (optional)
+            $validated['organization_id'] = null;
+        }
+        
         $retreat->update($validated);
 
         return redirect()->route('admin.retreats.index')

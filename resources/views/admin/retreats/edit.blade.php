@@ -141,6 +141,33 @@
                                             @enderror
                                         </div>
 
+                                        @if(auth()->user()->isSuperAdmin() || !auth()->user()->organization_id)
+                                        <div class="form-group mb-3">
+                                            <label for="organization_id" class="form-label">Organization</label>
+                                            <select class="form-select @error('organization_id') is-invalid @enderror" 
+                                                    id="organization_id" name="organization_id">
+                                                <option value="">No Organization</option>
+                                                @foreach($organizations as $id => $name)
+                                                    <option value="{{ $id }}" {{ old('organization_id', $retreat->organization_id) == $id ? 'selected' : '' }}>
+                                                        {{ $name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            @error('organization_id')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                            <small class="form-text text-muted">Optional - Select organization for this retreat</small>
+                                        </div>
+                                        @elseif(auth()->user()->organization_id)
+                                        <div class="form-group mb-3">
+                                            <label class="form-label">Organization</label>
+                                            <div class="form-control-plaintext">
+                                                <span class="badge bg-info">{{ auth()->user()->organization->name }}</span>
+                                                <small class="text-muted d-block">Auto-assigned to your organization</small>
+                                            </div>
+                                        </div>
+                                        @endif
+
                                         <div class="form-group mb-3">
                                             <label for="special_remarks" class="form-label">Special Remarks</label>
                                             <textarea class="form-control @error('special_remarks') is-invalid @enderror" 

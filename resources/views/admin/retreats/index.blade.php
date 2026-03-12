@@ -25,22 +25,38 @@
                     
                     <!-- Filter Buttons -->
                     <div class="mb-3">
-                        <div class="btn-group" role="group" aria-label="Retreat filters">
-                            <button type="button" class="btn btn-outline-primary filter-btn active" data-filter="all">
-                                <i class="fas fa-list me-1"></i> All
-                            </button>
-                            <button type="button" class="btn btn-outline-success filter-btn" data-filter="active">
-                                <i class="fas fa-check-circle me-1"></i> Active
-                            </button>
-                            <button type="button" class="btn btn-outline-secondary filter-btn" data-filter="inactive">
-                                <i class="fas fa-times-circle me-1"></i> Inactive
-                            </button>
-                            <button type="button" class="btn btn-outline-warning filter-btn" data-filter="featured">
-                                <i class="fas fa-star me-1"></i> Featured
-                            </button>
-                            <button type="button" class="btn btn-outline-danger filter-btn" data-filter="deleted">
-                                <i class="fas fa-trash me-1"></i> Deleted
-                            </button>
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="btn-group" role="group" aria-label="Retreat filters">
+                                    <button type="button" class="btn btn-outline-primary filter-btn active" data-filter="all">
+                                        <i class="fas fa-list me-1"></i> All
+                                    </button>
+                                    <button type="button" class="btn btn-outline-success filter-btn" data-filter="active">
+                                        <i class="fas fa-check-circle me-1"></i> Active
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary filter-btn" data-filter="inactive">
+                                        <i class="fas fa-times-circle me-1"></i> Inactive
+                                    </button>
+                                    <button type="button" class="btn btn-outline-warning filter-btn" data-filter="featured">
+                                        <i class="fas fa-star me-1"></i> Featured
+                                    </button>
+                                    <button type="button" class="btn btn-outline-danger filter-btn" data-filter="deleted">
+                                        <i class="fas fa-trash me-1"></i> Deleted
+                                    </button>
+                                </div>
+                            </div>
+                            @if(auth()->user()->isSuperAdmin() || !auth()->user()->organization_id)
+                            <div class="col-md-4">
+                                <div class="d-flex justify-content-end">
+                                    <select class="form-select form-select-sm" id="organization-filter" style="max-width: 250px;">
+                                        <option value="">All Organizations</option>
+                                        @foreach(\App\Models\Organization::active()->get() as $org)
+                                            <option value="{{ $org->id }}">{{ $org->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            @endif
                         </div>
                     </div>
                     
@@ -154,6 +170,12 @@
         background-color: var(--bs-danger);
         border-color: var(--bs-danger);
     }
+    
+    /* Organization badge styling */
+    .badge.bg-info {
+        font-size: 0.75em;
+        font-weight: 500;
+    }
 </style>
 @endpush
 
@@ -170,6 +192,7 @@
 <script>
 $(document).ready(function() {
     var currentFilter = 'all';
+    var currentOrganization = '';
     
     var table = $('#retreats-table').DataTable({
         processing: true,
@@ -179,6 +202,7 @@ $(document).ready(function() {
             type: "GET",
             data: function(d) {
                 d.status_filter = currentFilter;
+                d.organization_filter = currentOrganization;
             }
         },
         columns: [
@@ -303,6 +327,12 @@ $(document).ready(function() {
         $('.filter-btn').removeClass('active');
         $(this).addClass('active');
         currentFilter = $(this).data('filter');
+        table.ajax.reload();
+    });
+    
+    // Organization filter change handler
+    $('#organization-filter').on('change', function() {
+        currentOrganization = $(this).val();
         table.ajax.reload();
     });
 });
