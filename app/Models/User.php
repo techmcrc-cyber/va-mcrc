@@ -24,6 +24,7 @@ class User extends Authenticatable
         'phone',
         'profile_image',
         'role_id',
+        'organization_id',
         'is_active',
         'last_login_at',
         'last_login_ip'
