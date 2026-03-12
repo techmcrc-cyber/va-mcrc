@@ -130,10 +130,13 @@ class RoleController extends Controller
     {
         $this->authorize('create-roles');
         
-        $permissions = Permission::where('is_active', true)
-            ->orderBy('module')
-            ->get()
-            ->groupBy('module');
+        // Get permissions ordered by ID, then group by module
+        // This ensures modules are ordered by their first permission ID
+        $allPermissions = Permission::where('is_active', true)
+            ->orderBy('id')
+            ->get();
+            
+        $permissions = $allPermissions->groupBy('module');
             
         return view('admin.roles.create', compact('permissions'));
     }
@@ -188,10 +191,13 @@ class RoleController extends Controller
                 ->with('error', 'Super admin role cannot be edited.');
         }
         
-        $permissions = Permission::where('is_active', true)
-            ->orderBy('module')
-            ->get()
-            ->groupBy('module');
+        // Get permissions ordered by ID, then group by module
+        // This ensures modules are ordered by their first permission ID
+        $allPermissions = Permission::where('is_active', true)
+            ->orderBy('id')
+            ->get();
+            
+        $permissions = $allPermissions->groupBy('module');
             
         $role->load('permissions');
         
