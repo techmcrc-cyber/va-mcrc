@@ -537,10 +537,18 @@ class BookingController extends Controller
 
     public function create()
     {
-        $retreats = Retreat::where('is_active', true)
+        $user = auth()->user();
+        
+        $retreatsQuery = Retreat::where('is_active', true)
             ->where('end_date', '>=', now()->toDateString())
-            ->orderBy('start_date')
-            ->get()
+            ->orderBy('start_date');
+            
+        // Filter by organization for organization users
+        if (!$user->isSuperAdmin() && $user->organization_id) {
+            $retreatsQuery->where('organization_id', $user->organization_id);
+        }
+        
+        $retreats = $retreatsQuery->get()
             ->filter(function ($retreat) {
                 // Only show retreats that have available seats
                 $bookedSeats = Booking::where('retreat_id', $retreat->id)
@@ -599,6 +607,7 @@ class BookingController extends Controller
         $primaryBooking = Booking::create([
             'booking_id' => $bookingId,
             'retreat_id' => $bookingData['retreat_id'],
+            'organization_id' => $retreat->organization_id, // Auto-fetch from retreat
             'firstname' => $bookingData['firstname'],
             'lastname' => $bookingData['lastname'],
             'country_code' => $bookingData['country_code'] ?? '+91',
@@ -640,6 +649,7 @@ class BookingController extends Controller
             Booking::create([
                 'booking_id' => $bookingId,
                 'retreat_id' => $bookingData['retreat_id'],
+                'organization_id' => $retreat->organization_id, // Auto-fetch from retreat
                 'firstname' => $participant['firstname'] ?? '',
                 'lastname' => $participant['lastname'] ?? '',
                 'country_code' => $participant['country_code'] ?? '+91',
@@ -717,14 +727,25 @@ class BookingController extends Controller
             $q->withTrashed();
         }]);
         
-        $retreats = Retreat::where(function ($query) {
+        $user = auth()->user();
+        
+        $retreatsQuery = Retreat::where(function ($query) {
                 $query->where('is_active', true)
                       ->where('end_date', '>=', now()->toDateString());
             })
             ->orWhere('id', $booking->retreat_id) // Include current retreat even if inactive or deleted
             ->withTrashed() // Include soft-deleted retreats
-            ->orderBy('start_date')
-            ->get()
+            ->orderBy('start_date');
+            
+        // Filter by organization for organization users
+        if (!$user->isSuperAdmin() && $user->organization_id) {
+            $retreatsQuery->where(function($query) use ($user, $booking) {
+                $query->where('organization_id', $user->organization_id)
+                      ->orWhere('id', $booking->retreat_id); // Always include current retreat
+            });
+        }
+        
+        $retreats = $retreatsQuery->get()
             ->filter(function ($retreat) use ($booking) {
                 // Always include the current retreat
                 if ($retreat->id === $booking->retreat_id) {
@@ -793,6 +814,7 @@ class BookingController extends Controller
         // All validations passed, update primary booking
         $booking->update([
             'retreat_id' => $bookingData['retreat_id'],
+            'organization_id' => $retreat->organization_id, // Auto-fetch from retreat
             'firstname' => $bookingData['firstname'],
             'lastname' => $bookingData['lastname'],
             'country_code' => $bookingData['country_code'] ?? '+91',
@@ -846,6 +868,7 @@ class BookingController extends Controller
                 
                 $participantData = [
                     'retreat_id' => $bookingData['retreat_id'],
+                    'organization_id' => $retreat->organization_id, // Auto-fetch from retreat
                     'firstname' => $participant['firstname'],
                     'lastname' => $participant['lastname'],
                     'country_code' => $participant['country_code'] ?? '+91',

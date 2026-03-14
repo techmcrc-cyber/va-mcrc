@@ -129,7 +129,16 @@ class SpecialBookingController extends Controller
      */
     public function create()
     {
-        $retreats = Retreat::active()->upcoming()->orderBy('start_date')->get()->map(function ($retreat) {
+        $user = auth()->user();
+        
+        $retreatsQuery = Retreat::active()->upcoming()->orderBy('start_date');
+        
+        // Filter by organization for organization users
+        if (!$user->isSuperAdmin() && $user->organization_id) {
+            $retreatsQuery->where('organization_id', $user->organization_id);
+        }
+        
+        $retreats = $retreatsQuery->get()->map(function ($retreat) {
             $bookedSeats = Booking::where('retreat_id', $retreat->id)
                 ->where('is_active', true)
                 ->count();
@@ -137,6 +146,7 @@ class SpecialBookingController extends Controller
             $retreat->is_full = $bookedSeats >= $retreat->seats;
             return $retreat;
         });
+        
         return view('admin.special-bookings.create', compact('retreats'));
     }
 
@@ -162,6 +172,7 @@ class SpecialBookingController extends Controller
         $primaryBooking = Booking::create([
             'booking_id' => $bookingId,
             'retreat_id' => $bookingData['retreat_id'],
+            'organization_id' => $retreat->organization_id, // Auto-fetch from retreat
             'firstname' => $bookingData['firstname'],
             'lastname' => $bookingData['lastname'],
             'country_code' => $bookingData['country_code'] ?? '+91',
@@ -205,6 +216,7 @@ class SpecialBookingController extends Controller
             Booking::create([
                 'booking_id' => $bookingId,
                 'retreat_id' => $bookingData['retreat_id'],
+                'organization_id' => $retreat->organization_id, // Auto-fetch from retreat
                 'firstname' => $participant['firstname'] ?? '',
                 'lastname' => $participant['lastname'] ?? '',
                 'country_code' => $participant['country_code'] ?? '+91',
@@ -272,7 +284,19 @@ class SpecialBookingController extends Controller
      */
     public function edit(Booking $specialBooking)
     {
-        $retreats = Retreat::active()->upcoming()->orderBy('start_date')->get()->map(function ($retreat) use ($specialBooking) {
+        $user = auth()->user();
+        
+        $retreatsQuery = Retreat::active()->upcoming()->orderBy('start_date');
+        
+        // Filter by organization for organization users, but always include current retreat
+        if (!$user->isSuperAdmin() && $user->organization_id) {
+            $retreatsQuery->where(function($query) use ($user, $specialBooking) {
+                $query->where('organization_id', $user->organization_id)
+                      ->orWhere('id', $specialBooking->retreat_id); // Always include current retreat
+            });
+        }
+        
+        $retreats = $retreatsQuery->get()->map(function ($retreat) use ($specialBooking) {
             $bookedSeats = Booking::where('retreat_id', $retreat->id)
                 ->where('is_active', true)
                 ->count();
@@ -280,6 +304,7 @@ class SpecialBookingController extends Controller
             $retreat->is_full = $bookedSeats >= $retreat->seats && $retreat->id !== $specialBooking->retreat_id;
             return $retreat;
         });
+        
         $allParticipants = Booking::where('booking_id', $specialBooking->booking_id)
             ->where('is_active', true)
             ->orderBy('participant_number')
@@ -315,6 +340,7 @@ class SpecialBookingController extends Controller
         // Update primary booking
         $primaryBooking->update([
             'retreat_id' => $bookingData['retreat_id'],
+            'organization_id' => $retreat->organization_id, // Auto-fetch from retreat
             'firstname' => $bookingData['firstname'],
             'lastname' => $bookingData['lastname'],
             'country_code' => $bookingData['country_code'] ?? '+91',
@@ -368,6 +394,7 @@ class SpecialBookingController extends Controller
                 if ($existingParticipant) {
                     $existingParticipant->update([
                         'retreat_id' => $bookingData['retreat_id'],
+                        'organization_id' => $retreat->organization_id, // Auto-fetch from retreat
                         'firstname' => $participant['firstname'] ?? '',
                         'lastname' => $participant['lastname'] ?? '',
                         'country_code' => $participant['country_code'] ?? '+91',
@@ -386,6 +413,7 @@ class SpecialBookingController extends Controller
                 Booking::create([
                     'booking_id' => $specialBooking->booking_id,
                     'retreat_id' => $bookingData['retreat_id'],
+                    'organization_id' => $retreat->organization_id, // Auto-fetch from retreat
                     'firstname' => $participant['firstname'] ?? '',
                     'lastname' => $participant['lastname'] ?? '',
                     'country_code' => $participant['country_code'] ?? '+91',

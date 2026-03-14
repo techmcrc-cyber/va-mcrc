@@ -113,6 +113,7 @@ class BookingAPIController extends BaseAPIController
                     $booking = Booking::create([
                         'booking_id' => $bookingId,
                         'retreat_id' => $retreat->id,
+                        'organization_id' => $retreat->organization_id, // Auto-fetch from retreat
                         'firstname' => $participantData['firstname'],
                         'lastname' => $participantData['lastname'],
                         'country_code' => $participantData['country_code'] ?? '+91',

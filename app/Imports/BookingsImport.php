@@ -213,6 +213,9 @@ class BookingsImport implements ToCollection, WithHeadingRow
         $bookingId = Booking::generateBookingId();
         $userId = Auth::id();
         
+        // Load retreat to get organization_id
+        $retreat = Retreat::find($this->retreatId);
+        
         // Sort participants - ensure primary participant is first
         $sortedParticipants = $participants->sortBy(function ($participant, $index) {
             // First row in group becomes primary participant
@@ -230,6 +233,7 @@ class BookingsImport implements ToCollection, WithHeadingRow
             $booking = Booking::create([
                 'booking_id' => $bookingId,
                 'retreat_id' => $this->retreatId,
+                'organization_id' => $retreat->organization_id, // Auto-fetch from retreat
                 'firstname' => $data['firstname'],
                 'lastname' => $data['lastname'],
                 'country_code' => $data['country_code'] ?? '+91',
@@ -267,13 +271,11 @@ class BookingsImport implements ToCollection, WithHeadingRow
         
         // Queue confirmation email to primary booking contact
         if ($primaryBooking && $primaryBooking->email) {
-            $retreat = Retreat::find($this->retreatId);
             \App\Jobs\SendBookingConfirmationEmail::dispatch($primaryBooking, $retreat, collect($allBookings));
         }
 
         // Queue confirmation WhatsApp message to primary booking contact
         if ($primaryBooking && $primaryBooking->whatsapp_number) {
-            $retreat = $retreat ?? Retreat::find($this->retreatId);
             if ($retreat->whatsapp_template_id) {
                 \App\Jobs\SendBookingConfirmationWhatsApp::dispatch($primaryBooking, $retreat->whatsapp_template_id);
             }
