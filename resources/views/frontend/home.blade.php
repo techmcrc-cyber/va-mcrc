@@ -416,6 +416,33 @@ document.addEventListener('DOMContentLoaded', function() {
                     </p>
                 </div>
             </div>
+
+
+
+            <!-- Organization-Specific Leaders (if any) -->
+            @if($organizationLeaders->count() > 0)
+            <div class="mt-5 pt-5" style="border-top: 2px solid #e8e8e8;">
+                <div class="text-center mb-4">
+                    <h3 style="color: var(--text-dark); font-size: 1.5rem;">Our Team</h3>
+                </div>
+                <div class="row g-4">
+                    @foreach($organizationLeaders as $leader)
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            <div class="guide-image mx-auto mb-3" style="width: 200px; height: 200px;">
+                                <img src="{{ asset('storage/' . $leader->image) }}" alt="{{ $leader->name }}" onerror="this.src='{{ asset('images/placeholder.jpg') }}'">
+                            </div>
+                            <h4 class="mb-2">{{ $leader->name }}</h4>
+                            <p style="color: var(--primary-color);" class="mb-3">{{ $leader->title }}</p>
+                            <p style="color: var(--text-light);">
+                                {{ $leader->description }}
+                            </p>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+            @endif
         </div>
     </div>
 </div>

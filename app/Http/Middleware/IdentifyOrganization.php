@@ -16,28 +16,34 @@ class IdentifyOrganization
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // Get organization slug from route parameter
+        // Get organization slug from URL path parameter
         $organizationSlug = $request->route('organization');
         
         if ($organizationSlug) {
-            // Find organization by slug
-            $organization = Organization::where('slug', $organizationSlug)
-                ->active()
-                ->verified()
-                ->first();
+            // Set URL default for organization parameter (for route generation)
+            \Illuminate\Support\Facades\URL::defaults(['organization' => $organizationSlug]);
             
-            if (!$organization) {
-                abort(404, 'Organization not found');
+            // If slug is 'all', don't filter by organization
+            if ($organizationSlug === 'all') {
+                // No organization filtering - show all data
+                config(['app.current_organization' => null]);
+                view()->share('currentOrganization', null);
+            } else {
+                // Find organization by slug
+                $organization = Organization::where('slug', $organizationSlug)
+                    ->active()
+                    ->verified()
+                    ->first();
+                
+                if (!$organization) {
+                    abort(404, 'Organization not found');
+                }
+                
+                // Store organization globally
+                $request->merge(['current_organization' => $organization]);
+                config(['app.current_organization' => $organization]);
+                view()->share('currentOrganization', $organization);
             }
-            
-            // Store organization in request for easy access
-            $request->merge(['current_organization' => $organization]);
-            
-            // Also store in config for global access
-            config(['app.current_organization' => $organization]);
-            
-            // Share with views
-            view()->share('currentOrganization', $organization);
         }
         
         return $next($request);

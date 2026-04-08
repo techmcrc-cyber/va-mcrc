@@ -227,6 +227,64 @@
                 padding: 0.3rem 0.6rem;
             }
         }
+
+        /* Organization Dropdown */
+        .navbar-nav .dropdown-toggle::after {
+            content: '';
+            display: inline-block;
+            margin-left: 0.5rem;
+            vertical-align: 0.255em;
+            border-top: 0.3em solid;
+            border-right: 0.3em solid transparent;
+            border-bottom: 0;
+            border-left: 0.3em solid transparent;
+        }
+
+        .navbar-nav .dropdown-menu {
+            border: 1px solid #e8e8e8;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 0.5rem 0;
+        }
+
+        .navbar-nav .dropdown-item {
+            color: var(--text-dark);
+            padding: 0.75rem 1.5rem;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .navbar-nav .dropdown-item:hover {
+            background-color: #f8f9fa;
+            color: var(--primary-color);
+        }
+
+        .navbar-nav .dropdown-item.active {
+            background-color: #f0f0f0;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .navbar-nav .dropdown-item.disabled {
+            color: #999;
+            cursor: not-allowed;
+        }
+
+        .navbar-nav .dropdown-divider {
+            margin: 0.5rem 0;
+            border-color: #e8e8e8;
+        }
+
+        /* Login Icon */
+        .navbar-nav .nav-link i {
+            font-size: 1.2rem;
+            transition: all 0.3s;
+        }
+
+        .navbar-nav .nav-link:hover i {
+            color: var(--primary-color);
+            transform: scale(1.1);
+        }
     </style>
     @stack('styles')
 </head>
@@ -253,6 +311,39 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('booking.check-status*') || request()->routeIs('booking.status') ? 'active' : '' }}" href="{{ route('booking.check-status') }}">Check Status</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="organizationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-building me-1"></i>
+                            {{ $currentOrganization ? $currentOrganization->name : 'All Organizations' }}
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="organizationDropdown">
+                            <li>
+                                <a class="dropdown-item {{ request()->route('organization') === 'all' ? 'active' : '' }}" href="{{ route('home', ['organization' => 'all']) }}">
+                                    <i class="fas fa-globe me-2"></i>All Organizations
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            @php
+                                $organizations = \App\Models\Organization::active()->verified()->orderBy('name')->get();
+                            @endphp
+                            @forelse($organizations as $org)
+                                <li>
+                                    <a class="dropdown-item {{ $currentOrganization && $currentOrganization->id === $org->id ? 'active' : '' }}" href="{{ route('home', ['organization' => $org->slug]) }}">
+                                        <i class="fas fa-church me-2"></i>{{ $org->name }}
+                                    </a>
+                                </li>
+                            @empty
+                                <li>
+                                    <span class="dropdown-item disabled">No organizations available</span>
+                                </li>
+                            @endforelse
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('login') }}" title="Login">
+                            <i class="fas fa-sign-in-alt"></i>
+                        </a>
                     </li>
                 </ul>
             </div>

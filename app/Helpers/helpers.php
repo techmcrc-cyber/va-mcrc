@@ -86,3 +86,19 @@ if (!function_exists('format_whatsapp_number')) {
         return $code . ' ' . $number;
     }
 }
+
+if (!function_exists('org_route')) {
+    /**
+     * Generate route URL with organization parameter in path
+     * 
+     * @param string $name Route name
+     * @param array $parameters
+     * @param bool $absolute
+     * @return string
+     */
+    function org_route($name, $parameters = [], $absolute = true)
+    {
+        // URL defaults are set by middleware, so just call route()
+        return route($name, $parameters, $absolute);
+    }
+}

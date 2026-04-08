@@ -29,23 +29,32 @@ class BookingController extends Controller
         $retreat = null;
 
         if ($retreatId) {
-            $retreat = Retreat::active()
-                ->where('id', $retreatId)
-                ->whereDate('end_date', '>=', now()->toDateString())
-                ->first();
+            // Use the API controller to get retreat details (with organization filtering)
+            $apiController = new \App\Http\Controllers\Api\RetreatAPIController();
+            $response = $apiController->show($request, $retreatId);
+            $responseData = json_decode($response->getContent(), true);
+            
+            if ($response->isSuccessful()) {
+                $retreat = $responseData['data'];
+            }
         }
 
-        $retreats = Retreat::with(['criteriaRelation', 'bookings' => function($query) {
-                $query->where('is_active', true);
-            }])
-            ->active()
-            ->upcoming()
-            ->orderBy('start_date', 'asc')
-            ->get()
-            ->filter(function ($retreat) {
-                $bookedSeats = $retreat->bookings->count();
-                return $bookedSeats < $retreat->seats; // Only show retreats with available seats
-            });
+        // Use the API controller to get all retreats (with organization filtering)
+        $apiController = new \App\Http\Controllers\Api\RetreatAPIController();
+        $response = $apiController->index($request);
+        $responseData = json_decode($response->getContent(), true);
+
+        $retreats = collect([]);
+        
+        if ($response->isSuccessful() && isset($responseData['data']['retreats'])) {
+            // Filter to only show retreats with available spots
+            $retreats = collect($responseData['data']['retreats'])
+                ->filter(function ($retreat) {
+                    return $retreat['available_spots'] > 0; // Only show retreats with available seats
+                })
+                ->sortBy('start_date')
+                ->values();
+        }
 
         // Get max participants from database settings
         $maxAdditionalMembers = \App\Models\Setting::get('MAX_ADDITIONAL_MEMBERS', 3);

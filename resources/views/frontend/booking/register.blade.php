@@ -152,15 +152,15 @@
                     <select name="retreat_id" id="retreat_id" class="form-select" required {{ $retreat ? 'disabled' : '' }}>
                         <option value="">-- Select a Retreat --</option>
                         @foreach($retreats as $r)
-                            <option value="{{ $r->id }}" 
-                                    {{ (old('retreat_id', $retreat?->id) == $r->id) ? 'selected' : '' }}
-                                    data-criteria="{{ $r->criteriaRelation?->vocation ?? '' }}">
-                                {{ $r->title }} ({{ $r->start_date->format('M d, Y') }})
+                            <option value="{{ $r['retreat_id'] }}" 
+                                    {{ (old('retreat_id', $retreat['retreat_id'] ?? null) == $r['retreat_id']) ? 'selected' : '' }}
+                                    data-criteria="{{ $r['criteria'] ?? '' }}">
+                                {{ $r['retreat_name'] }} ({{ \Carbon\Carbon::parse($r['start_date'])->format('M d, Y') }})
                             </option>
                         @endforeach
                     </select>
                     @if($retreat)
-                        <input type="hidden" name="retreat_id" value="{{ $retreat->id }}">
+                        <input type="hidden" name="retreat_id" value="{{ $retreat['retreat_id'] }}">
                         <small class="text-muted mt-1 d-block"><i class="fas fa-lock"></i> Retreat pre-selected from your previous selection</small>
                     @else
                         <small class="text-muted mt-1 d-block">Select the retreat you wish to attend</small>
@@ -186,23 +186,19 @@
                             </thead>
                             <tbody>
                                 @foreach($retreats as $r)
-                                <tr style="cursor: pointer;" onclick="document.getElementById('retreat_id').value='{{ $r->id }}'; document.getElementById('retreat_id').dispatchEvent(new Event('change'));">
-                                    <td><strong>{{ $r->title }}</strong></td>
+                                <tr style="cursor: pointer;" onclick="document.getElementById('retreat_id').value='{{ $r['retreat_id'] }}'; document.getElementById('retreat_id').dispatchEvent(new Event('change'));">
+                                    <td><strong>{{ $r['retreat_name'] }}</strong></td>
                                     <td>
-                                        {{ $r->start_date->format('M d') }} - {{ $r->end_date->format('M d, Y') }}
+                                        {{ \Carbon\Carbon::parse($r['start_date'])->format('M d') }} - {{ \Carbon\Carbon::parse($r['end_date'])->format('M d, Y') }}
                                     </td>
-                                    <td>{{ $r->start_date->diffInDays($r->end_date) + 1 }} days</td>
+                                    <td>{{ \Carbon\Carbon::parse($r['start_date'])->diffInDays(\Carbon\Carbon::parse($r['end_date'])) + 1 }} days</td>
                                     <td>
-                                        @php
-                                            $booked = $r->bookings()->where('is_active', true)->count();
-                                            $available = $r->seats - $booked;
-                                        @endphp
-                                        <span class="badge {{ $available > 5 ? 'bg-success' : ($available > 0 ? 'bg-warning' : 'bg-danger') }}">
-                                            {{ $available }} / {{ $r->seats }}
+                                        <span class="badge {{ $r['available_spots'] > 5 ? 'bg-success' : ($r['available_spots'] > 0 ? 'bg-warning' : 'bg-danger') }}">
+                                            {{ $r['available_spots'] }} / {{ $r['total_seats'] }}
                                         </span>
                                     </td>
                                     <td>
-                                        <small class="text-muted">{{ $r->criteriaRelation ? $r->criteriaRelation->name : 'Open to all' }}</small>
+                                        <small class="text-muted">{{ $r['criteria_name'] }}</small>
                                     </td>
                                 </tr>
                                 @endforeach

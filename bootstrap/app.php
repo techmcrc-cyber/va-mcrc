@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
         
         $middleware->alias([
             'api.auth' => \App\Http\Middleware\ApiAuthentication::class,
+            'organization' => \App\Http\Middleware\IdentifyOrganization::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

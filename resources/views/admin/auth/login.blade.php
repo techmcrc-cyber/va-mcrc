@@ -84,6 +84,12 @@
                                 <i class="fas fa-sign-in-alt me-2"></i> {{ __('Login') }}
                             </button>
                         </div>
+
+                        <div class="text-center mt-3">
+                            <a href="{{ route('home', ['organization' => 'all']) }}" class="text-decoration-none">
+                                <i class="fas fa-home me-1"></i> Go to Home
+                            </a>
+                        </div>
                     </form>
                 </div>
                 <div class="card-footer text-center py-2">
@@ -134,6 +140,15 @@
     .form-control:focus {
         border-color: #86b7fe;
         box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+    .text-decoration-none {
+        color: #ba4165;
+        font-weight: 500;
+        transition: all 0.3s;
+    }
+    .text-decoration-none:hover {
+        color: #700000;
+        text-decoration: underline !important;
     }
 </style>
 @endpush
