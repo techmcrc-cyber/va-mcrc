@@ -17,9 +17,18 @@
                         <img src="{{ asset('storage/' . $organization->logo) }}" alt="{{ $organization->name }}" class="img-fluid" style="max-height: 80px;">
                     </div>
                     @else
-                        <div class="navbar-brand mb-0" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 20px; border-radius: 10px; font-size: 1.2rem; font-weight: bold; text-align: center;">
-                            MyRetreatBooking.Com
-                        </div>
+                       <div class="navbar-brand mb-0" 
+                        style="font-family: 'Poppins', sans-serif;
+                        font-weight: 700;
+                        font-size: 0.93rem;
+                        color: white !important;
+                        margin-right: auto;
+                        padding: 1.5rem 0.5rem;
+                        background: rgb(186, 65, 101);
+                        border-radius: 8px;
+                        box-shadow: 0 2px 8px rgba(186, 65, 101, 0.3);">
+                        MyRetreatBooking.Com
+                    </div>
                     @endif
                 </div>
                 <h5 class="mb-0 mt-2">{{ $organization->name }}</h5>
