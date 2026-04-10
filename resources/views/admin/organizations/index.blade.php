@@ -38,7 +38,7 @@
                             <th>ID</th>
                             <th>Logo</th>
                             <th>Name</th>
-                            <th>Slug</th>
+                            <th>Organization URL</th>
                             <th>Email</th>
                             <th>Users</th>
                             <th>Retreats</th>
@@ -69,7 +69,7 @@
                             </td>
                             <td>
                                 <code>{{ $organization->slug }}</code>
-                                <a href="{{ $organization->getSubdomainUrl() }}" target="_blank" class="ms-1">
+                                <a href="{{ rtrim(config('app.url'), '/') }}/{{ $organization->slug }}" target="_blank" class="ms-1">
                                     <i class="fas fa-external-link-alt"></i>
                                 </a>
                             </td>

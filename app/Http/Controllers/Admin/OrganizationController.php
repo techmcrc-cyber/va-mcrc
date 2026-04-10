@@ -96,7 +96,11 @@ class OrganizationController extends Controller
             // Get or create Organization Admin role
             $orgAdminRole = Role::firstOrCreate(
                 ['name' => 'Organization Admin'],
-                ['description' => 'Administrator for organization', 'is_super_admin' => false]
+                [
+                    'slug' => 'organization-admin',
+                    'description' => 'Administrator for organization',
+                    'is_super_admin' => false
+                ]
             );
 
             // Create organization owner user

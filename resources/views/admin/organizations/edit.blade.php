@@ -31,11 +31,11 @@
                             </div>
                             
                             <div class="col-md-6">
-                                <label for="slug" class="form-label">Subdomain Slug <span class="text-danger">*</span></label>
+                                <label for="organization_url" class="form-label">Organization URL <span class="text-danger">*</span></label>
                                 <div class="input-group">
+                                    <span class="input-group-text">{{ rtrim(config('app.url'), '/') }}/</span>
                                     <input type="text" class="form-control @error('slug') is-invalid @enderror" 
-                                           id="slug" name="slug" value="{{ old('slug', $organization->slug) }}" required>
-                                    <span class="input-group-text">.myretreatbooking.com</span>
+                                           id="organization_url" name="slug" value="{{ old('slug', $organization->slug) }}" required>
                                 </div>
                                 <small class="form-text text-muted">Only lowercase letters, numbers, and hyphens</small>
                                 @error('slug')
