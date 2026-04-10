@@ -229,6 +229,16 @@
         }
 
         /* Organization Dropdown */
+        .navbar-nav .nav-item.dropdown {
+            max-width: 230px;
+        }
+        
+        .navbar-nav .nav-item.dropdown .nav-link {
+            white-space: normal;
+            word-wrap: break-word;
+            line-height: 1.4;
+        }
+        
         .navbar-nav .dropdown-toggle::after {
             content: '';
             display: inline-block;
@@ -314,13 +324,13 @@
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="organizationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-building me-1"></i>
+                            <i class="fas fa-church me-2"></i>
                             {{ $currentOrganization ? $currentOrganization->name : 'All Organizations' }}
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="organizationDropdown">
                             <li>
                                 <a class="dropdown-item {{ request()->route('organization') === 'all' ? 'active' : '' }}" href="{{ route('home', ['organization' => 'all']) }}">
-                                    <i class="fas fa-globe me-2"></i>All Organizations
+                                    <i class="fas fa-church me-2"></i></i>All Organizations
                                 </a>
                             </li>
                             <li><hr class="dropdown-divider"></li>

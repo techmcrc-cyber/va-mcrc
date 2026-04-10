@@ -13,7 +13,7 @@
                 <!-- Organization Admin: Show org logo and name -->
                 <div class="position-relative mb-2">
                     @if($organization->logo)
-                    <div style="color: #5a5c69;background: #dd3463;padding: 10px 70px;">
+                    <div style="color: #5a5c69;background: #b53d5e;padding: 10px 70px;    border-radius: 10px;">
                         <img src="{{ asset('storage/' . $organization->logo) }}" alt="{{ $organization->name }}" class="img-fluid" style="max-height: 80px;">
                     </div>
                     @else
