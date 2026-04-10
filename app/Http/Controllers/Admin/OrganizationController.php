@@ -60,7 +60,7 @@ class OrganizationController extends Controller
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string',
             'description' => 'nullable|string',
-            'logo' => 'nullable|image|max:2048',
+            'logo' => 'nullable|image|max:2048|dimensions:width=120,height=100',
             'is_verified' => 'boolean',
             'is_active' => 'boolean',
             
@@ -170,7 +170,7 @@ class OrganizationController extends Controller
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string',
             'description' => 'nullable|string',
-            'logo' => 'nullable|image|max:2048',
+            'logo' => 'nullable|image|max:2048|dimensions:width=120,height=100',
             'is_verified' => 'boolean',
             'is_active' => 'boolean',
         ]);

@@ -1,12 +1,44 @@
 <!-- Sidebar -->
 <div class="sidebar border-end" id="sidebar-wrapper" style="background-color: #edf2f7;">
     <!-- Sidebar Header -->
-    <div class="sidebar-heading text-center py-1>
+    <div class="sidebar-heading text-center py-1">
+        @php
+            $user = Auth::user();
+            $isOrgAdmin = $user->role && $user->role->name === 'Organization Admin';
+            $organization = $isOrgAdmin ? $user->organization : null;
+        @endphp
+        
         <a href="{{ route('admin.dashboard') }}" class="text-decoration-none d-flex flex-column align-items-center" style="color: #5a5c69;">
-            <div class="position-relative mb-2">
-                <img src="{{ asset('images/mcrc_logo.png') }}" alt="Mount Carmel Retreat Centre" class="img-fluid" >
-            </div>
-            <h5 class="mb-0 mt-2">{{ config('app.name') }}</h5>
+            @if($isOrgAdmin && $organization)
+                <!-- Organization Admin: Show org logo and name -->
+                <div class="position-relative mb-2">
+                    @if($organization->logo)
+                    <div style="color: #5a5c69;background: #dd3463;padding: 10px 70px;">
+                        <img src="{{ asset('storage/' . $organization->logo) }}" alt="{{ $organization->name }}" class="img-fluid" style="max-height: 80px;">
+                    </div>
+                    @else
+                        <div class="navbar-brand mb-0" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 20px; border-radius: 10px; font-size: 1.2rem; font-weight: bold; text-align: center;">
+                            MyRetreatBooking.Com
+                        </div>
+                    @endif
+                </div>
+                <h5 class="mb-0 mt-2">{{ $organization->name }}</h5>
+            @else
+                <!-- Other roles: Show MyRetreatBooking.Com brand -->
+                <div class="navbar-brand mb-0" 
+                style="font-family: 'Poppins', sans-serif;
+                    font-weight: 700;
+                    font-size: 0.93rem;
+                    color: white !important;
+                    margin-right: auto;
+                    padding: 1.5rem 0.5rem;
+                    background: rgb(186, 65, 101);
+                    border-radius: 8px;
+                    box-shadow: 0 2px 8px rgba(186, 65, 101, 0.3);">
+                    MyRetreatBooking.Com
+                </div>
+                <h5 class="mb-0 mt-2">My Retreat Booking</h5>
+            @endif
         </a>
     </div>
     

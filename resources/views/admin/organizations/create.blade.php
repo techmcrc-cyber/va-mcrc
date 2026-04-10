@@ -88,7 +88,7 @@
                             <label for="logo" class="form-label">Logo</label>
                             <input class="form-control @error('logo') is-invalid @enderror" 
                                    type="file" id="logo" name="logo" accept="image/*">
-                            <small class="form-text text-muted">Max size: 2MB. Recommended: 200x200px</small>
+                            <small class="form-text text-muted">Max size: 2MB. Recommended: 120x100px</small>
                             @error('logo')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror

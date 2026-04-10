@@ -87,12 +87,12 @@
                             @if($organization->logo)
                                 <div class="mb-2">
                                     <img src="{{ asset('storage/' . $organization->logo) }}" alt="Current Logo" 
-                                         class="img-thumbnail" style="max-width: 150px;">
+                                         class="img-thumbnail" style="max-width: 120px; max-height: 100px;">
                                 </div>
                             @endif
                             <input class="form-control @error('logo') is-invalid @enderror" 
                                    type="file" id="logo" name="logo" accept="image/*">
-                            <small class="form-text text-muted">Max size: 2MB. Leave empty to keep current logo.</small>
+                            <small class="form-text text-muted">Max size: 2MB. Recommended: 120x100px. Leave empty to keep current logo.</small>
                             @error('logo')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
