@@ -38,14 +38,14 @@ class OrganizationSeeder extends Seeder
         ]);
 
         // Create MCRC Admin user for the organization
-        $mcrc = User::create([
-            'role_id' => $role->id,
-            'organization_id' => $organization->id,
-            'name' => 'MCRC Admin',
-            'email' => 'mcrcadmin@gmail.com',
-            'password' => Hash::make('password@123'),
-            'is_active' => true,
-        ]);
+        // $mcrc = User::create([
+        //     'role_id' => $role->id,
+        //     'organization_id' => $organization->id,
+        //     'name' => 'MCRC Admin',
+        //     'email' => 'mcrcadmin@gmail.com',
+        //     'password' => Hash::make('password@123'),
+        //     'is_active' => true,
+        // ]);
 
 
         $usersUpdated = User::whereIn('id', [5, 6])->update([
