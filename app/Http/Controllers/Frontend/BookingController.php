@@ -20,7 +20,7 @@ class BookingController extends Controller
         $this->bookingAPI = $bookingAPI;
     }
 
-    public function create(Request $request)
+    public function create(Request $request, $organization)
     {
         // Track user session
         $this->trackSession($request);
@@ -63,7 +63,7 @@ class BookingController extends Controller
         return view('frontend.booking.register', compact('retreats', 'retreat', 'maxParticipants'));
     }
 
-    public function store(Request $request)
+    public function store(Request $request, $organization)
     {
         // Use the API controller directly (same application)
         $response = $this->bookingAPI->store($request);
@@ -87,7 +87,7 @@ class BookingController extends Controller
             ->withErrors(['error' => $responseData['message'] ?? 'Booking failed. Please try again.']);
     }
 
-    public function success()
+    public function success($organization)
     {
         $bookingData = session('booking_data');
         
@@ -98,7 +98,7 @@ class BookingController extends Controller
         return view('frontend.booking.success', compact('bookingData'));
     }
 
-    public function checkStatusForm(Request $request)
+    public function checkStatusForm(Request $request, $organization)
     {
         // Track user session
         $this->trackSession($request);
@@ -106,7 +106,7 @@ class BookingController extends Controller
         return view('frontend.booking.check-status');
     }
 
-    public function checkStatus(Request $request)
+    public function checkStatus(Request $request, $organization)
     {
         $request->validate([
             'booking_id' => 'required|string',
@@ -147,7 +147,7 @@ class BookingController extends Controller
             ->withErrors(['error' => $responseData['message'] ?? 'Booking not found. Please check your details.']);
     }
 
-    public function cancelParticipant(Request $request)
+    public function cancelParticipant(Request $request, $organization)
     {
         $request->validate([
             'serial_number' => 'required|integer|min:1|max:4',

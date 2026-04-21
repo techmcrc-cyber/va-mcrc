@@ -18,7 +18,7 @@ class RetreatController extends Controller
         $this->retreatAPI = $retreatAPI;
     }
 
-    public function index(Request $request)
+    public function index(Request $request, $organization)
     {
         // Track user session
         $this->trackSession($request);
@@ -55,16 +55,30 @@ class RetreatController extends Controller
         return view('frontend.retreats.index', compact('retreats'));
     }
 
-    public function show(Request $request, $id)
+    public function show(Request $request, $organization, $id)
     {
         // Track user session
         $this->trackSession($request);
         
+        // Debug logging
+        \Log::info('RetreatController::show called', [
+            'organization' => $organization,
+            'id' => $id,
+            'url' => $request->fullUrl()
+        ]);
+        
         // Use the API controller to get retreat details
         $response = $this->retreatAPI->show($request, $id);
         $responseData = json_decode($response->getContent(), true);
+        
+        \Log::info('API Response', [
+            'status' => $response->getStatusCode(),
+            'success' => $response->isSuccessful(),
+            'data' => $responseData
+        ]);
 
         if (!$response->isSuccessful()) {
+            \Log::error('Retreat not found', ['id' => $id, 'response' => $responseData]);
             abort(404, 'Retreat not found');
         }
 

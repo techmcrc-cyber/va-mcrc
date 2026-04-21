@@ -20,7 +20,7 @@ class HomeController extends Controller
         $this->retreatAPI = $retreatAPI;
     }
 
-    public function index(Request $request)
+    public function index(Request $request, $organization)
     {
         // Track user session
         $this->trackSession($request);

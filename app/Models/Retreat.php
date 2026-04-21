@@ -5,14 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
-use Spatie\MediaLibrary\HasMedia;
-use Spatie\MediaLibrary\InteractsWithMedia;
-use Spatie\Image\Manipulations;
-use Spatie\MediaLibrary\MediaCollections\Models\Media;
+// use Spatie\MediaLibrary\HasMedia;
+// use Spatie\MediaLibrary\InteractsWithMedia;
+// use Spatie\Image\Manipulations;
+// use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
-class Retreat extends Model implements HasMedia
+class Retreat extends Model // implements HasMedia
 {
-    use SoftDeletes, InteractsWithMedia;
+    use SoftDeletes; // , InteractsWithMedia;
 
     protected $fillable = [
         'organization_id',
@@ -149,8 +149,10 @@ class Retreat extends Model implements HasMedia
      */
     public function getFeaturedImageUrlAttribute()
     {
-        $media = $this->getFirstMedia('featured_image');
-        return $media ? $media->getUrl() : asset('images/default-retreat.jpg');
+        // Temporarily disabled due to missing media table
+        // $media = $this->getFirstMedia('featured_image');
+        // return $media ? $media->getUrl() : asset('images/default-retreat.jpg');
+        return asset('images/default-retreat.jpg');
     }
 
     /**
@@ -194,22 +196,22 @@ class Retreat extends Model implements HasMedia
     /**
      * Register media collections.
      */
-    public function registerMediaCollections(): void
-    {
-        $this->addMediaCollection('featured_image')
-             ->singleFile()
-             ->registerMediaConversions(function (Media $media) {
-                 $this->addMediaConversion('thumb')
-                       ->fit(Manipulations::FIT_CROP, 150, 150)
-                       ->nonQueued();
+    // public function registerMediaCollections(): void
+    // {
+    //     $this->addMediaCollection('featured_image')
+    //          ->singleFile()
+    //          ->registerMediaConversions(function (Media $media) {
+    //              $this->addMediaConversion('thumb')
+    //                    ->fit(Manipulations::FIT_CROP, 150, 150)
+    //                    ->nonQueued();
                  
-                 $this->addMediaConversion('banner')
-                       ->fit(Manipulations::FIT_CROP, 1200, 400)
-                       ->nonQueued();
-             });
+    //              $this->addMediaConversion('banner')
+    //                    ->fit(Manipulations::FIT_CROP, 1200, 400)
+    //                    ->nonQueued();
+    //          });
 
-        $this->addMediaCollection('gallery');
-    }
+    //     $this->addMediaCollection('gallery');
+    // }
 
     /**
      * Scope a query to only include active retreats.
