@@ -367,64 +367,15 @@ document.addEventListener('DOMContentLoaded', function() {
 @endpush
 
 <!-- Guide Section -->
-<div class="guide-section">
-    <div class="container">
-        <div class="text-center mb-5">
-            <h2 class="section-title">Meet the Leadership</h2>
-            <!-- <p class="section-subtitle">Every mission with a divine purpose needs inspired leadership. At the heart of Mount Carmel Retreat Centre is a team deeply rooted in Scripture. </p> -->
-        </div>
-        
-        <div class="row g-4">
-            <!-- Guide 1 -->
-            <div class="col-md-4">
-                <div class="text-center">
-                    <div class="guide-image mx-auto mb-3" style="width: 200px; height: 200px;">
-                        <img src="{{ asset('images/fr_daniel.jpg') }}" alt="Fr. Daniel Poovannathil">
-                    </div>
-                    <h4 class="mb-2">Fr. Daniel Poovannathil</h4>
-                    <p style="color: var(--primary-color);" class="mb-3">Spiritual Director</p>
-                    <p style="color: var(--text-light);">
-                        The Spiritual Director of Mount Carmel Retreat Centre, he is known for his deep love of Scripture. His approachable nature and inspiring faith have made him especially dear to the youth. His presence across television and digital platforms continues to draw people closer to the Word of God and to the heart of the Church. He also travels widely, leading retreats and faith encounters that strengthen communities and renew souls across the world.
-                    </p>
-                </div>
+<!-- Organization-Specific Leaders (if any) -->
+@if($organizationLeaders->count() > 0)
+    <div class="guide-section">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="section-title">Meet the Leadership</h2>
+                <!-- <p class="section-subtitle">Every mission with a divine purpose needs inspired leadership. At the heart of Mount Carmel Retreat Centre is a team deeply rooted in Scripture. </p> -->
             </div>
-
-            <!-- Guide 2 -->
-            <div class="col-md-4">
-                <div class="text-center">
-                    <div class="guide-image mx-auto mb-3" style="width: 200px; height: 200px;">
-                        <img src="{{ asset('images/fr_adarsh.jpg') }}" alt="Fr. Adarsh Kumbalathu">
-                    </div>
-                    <h4 class="mb-2">Fr. Adarsh Kumbalathu</h4>
-                    <p style="color: var(--primary-color);" class="mb-3">Preacher</p>
-                    <p style="color: var(--text-light);">
-                        As Minister at Mount Carmel Retreat Centre, Fr Adarsh brings youthful energy and a compassionate spirit to the ministry. His presence helps bridge faith and everyday life, guiding retreatants to experience God’s love through simplicity, service and joy.
-                    </p>
-                </div>
-            </div>
-
-            <!-- Guide 3 -->
-            <div class="col-md-4">
-                <div class="text-center">
-                    <div class="guide-image mx-auto mb-3" style="width: 200px; height: 200px;">
-                        <img src="{{ asset('images/fr_wilson.jpg') }}" alt="Fr. Wilson Thattaruthundil">
-                    </div>
-                    <h4 class="mb-2">Fr. Wilson Thattaruthundil</h4>
-                    <p style="color: var(--primary-color);" class="mb-3">Preacher</p>
-                    <p style="color: var(--text-light);">
-                        Serving as Administrator of the Retreat Centre, Fr. Wilson handles the organisational, logistical and administrative aspects that allow MCRC’s spiritual programmes to run smoothly and effectively. His leadership ensures the peaceful, retreat-friendly atmosphere of the campus in Vettinad
-                    </p>
-                </div>
-            </div>
-
-
-
-            <!-- Organization-Specific Leaders (if any) -->
-            @if($organizationLeaders->count() > 0)
-            <div class="mt-5 pt-5" style="border-top: 2px solid #e8e8e8;">
-                <div class="text-center mb-4">
-                    <h3 style="color: var(--text-dark); font-size: 1.5rem;">Our Team</h3>
-                </div>
+            <div class="row g-4">
                 <div class="row g-4">
                     @foreach($organizationLeaders as $leader)
                     <div class="col-md-4">
@@ -442,10 +393,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     @endforeach
                 </div>
             </div>
-            @endif
         </div>
     </div>
-</div>
+@endif
 
 <!-- Featured Retreats -->
 @if($upcomingRetreats->count() > 0)
