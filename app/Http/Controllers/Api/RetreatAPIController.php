@@ -18,7 +18,7 @@ class RetreatAPIController extends BaseAPIController
         try {
             $query = Retreat::with(['bookings' => function($query) {
                     $query->where('is_active', true);
-                }, 'criteriaRelation'])
+                }, 'criteriaRelation', 'organization'])
                 ->active() // Only active retreats
                 ->upcoming(); // Starting from current day
             
@@ -44,7 +44,8 @@ class RetreatAPIController extends BaseAPIController
                     'criteria' => $retreat->criteria,
                     'criteria_name' => $retreat->criteriaRelation ? $retreat->criteriaRelation->name : 'Open to all',
                     'criteria_label' => $retreat->criteria_label,
-                    'is_featured' => (bool) $retreat->is_featured
+                    'is_featured' => (bool) $retreat->is_featured,
+                    'organization_name' => $retreat->organization ? $retreat->organization->name : null
                 ];
             })->values();
 
@@ -77,7 +78,7 @@ class RetreatAPIController extends BaseAPIController
             // Find the retreat with bookings
             $query = Retreat::with(['bookings' => function($query) {
                     $query->where('is_active', true);
-                }, 'criteriaRelation'])
+                }, 'criteriaRelation', 'organization'])
                 ->where('id', $id)
                 ->active();
             
@@ -108,6 +109,7 @@ class RetreatAPIController extends BaseAPIController
                 'start_date' => $retreat->start_date->format('Y-m-d'),
                 'end_date' => $retreat->end_date->format('Y-m-d'),
                 'timings' => $retreat->timings,
+                'organization_name' => $retreat->organization ? $retreat->organization->name : null,
                 // 'location' => [
                 //     'name' => $retreat->location,
                 //     'address' => $retreat->address,

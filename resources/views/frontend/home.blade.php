@@ -384,7 +384,12 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <img src="{{ asset('storage/' . $leader->image) }}" alt="{{ $leader->name }}" onerror="this.src='{{ asset('images/placeholder.jpg') }}'">
                             </div>
                             <h4 class="mb-2">{{ $leader->name }}</h4>
-                            <p style="color: var(--primary-color);" class="mb-3">{{ $leader->title }}</p>
+                            <p style="color: var(--primary-color);" class="mb-2">{{ $leader->title }}</p>
+                            @if(!App\Helpers\OrganizationHelper::hasContext() && $leader->organization)
+                            <p style="color: var(--text-light); font-size: 0.9rem; font-style: italic;" class="mb-3">
+                                <i class="fas fa-building"></i> {{ $leader->organization->name }}
+                            </p>
+                            @endif
                             <p style="color: var(--text-light);">
                                 {{ $leader->description }}
                             </p>
@@ -410,6 +415,11 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="retreat-card">
                 <div class="retreat-card-body">
                     <h5>{{ $retreat['retreat_name'] }}</h5>
+                    @if(!App\Helpers\OrganizationHelper::hasContext() && isset($retreat['organization_name']) && $retreat['organization_name'])
+                    <p style="color: var(--text-light); font-size: 0.85rem; font-style: italic; margin-bottom: 0.5rem;">
+                        <i class="fas fa-building"></i> {{ $retreat['organization_name'] }}
+                    </p>
+                    @endif
                     <p style="color: var(--text-light); font-size: 0.95rem; margin-bottom: 1rem;">
                         {{ \Carbon\Carbon::parse($retreat['start_date'])->format('M d') }} - 
                         {{ \Carbon\Carbon::parse($retreat['end_date'])->format('M d, Y') }}

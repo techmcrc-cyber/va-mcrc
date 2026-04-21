@@ -11,6 +11,11 @@
     <div class="row">
         <div class="col-lg-8">
             <h1 class="mb-3">{{ $retreat['retreat_name'] }}</h1>
+            @if(!App\Helpers\OrganizationHelper::hasContext() && isset($retreat['organization_name']) && $retreat['organization_name'])
+            <p class="text-muted mb-4" style="font-size: 1.1rem; font-style: italic;">
+                <i class="fas fa-building"></i> {{ $retreat['organization_name'] }}
+            </p>
+            @endif
             
             <div class="card mb-4">
                 <div class="card-body">

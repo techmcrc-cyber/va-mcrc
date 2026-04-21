@@ -65,6 +65,12 @@
             <div class="card h-100">
                 <div class="card-body">
                     <h5 class="card-title">{{ $retreat['retreat_name'] }}</h5>
+                    @if(!App\Helpers\OrganizationHelper::hasContext() && isset($retreat['organization_name']) && $retreat['organization_name'])
+                    <p class="card-text text-muted mb-2" style="font-size: 0.9rem; font-style: italic;">
+                        <i class="fas fa-building"></i> 
+                        {{ $retreat['organization_name'] }}
+                    </p>
+                    @endif
                     <p class="card-text text-muted mb-2">
                         <i class="fas fa-calendar"></i> 
                         {{ \Carbon\Carbon::parse($retreat['start_date'])->format('M d, Y') }} - {{ \Carbon\Carbon::parse($retreat['end_date'])->format('M d, Y') }}

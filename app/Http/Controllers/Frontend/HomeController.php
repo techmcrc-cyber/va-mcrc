@@ -56,13 +56,15 @@ class HomeController extends Controller
         
         if ($organizationId) {
             // If viewing a specific organization, show that organization's leaders
-            $organizationLeaders = Leader::where('organization_id', $organizationId)
+            $organizationLeaders = Leader::with('organization')
+                ->where('organization_id', $organizationId)
                 ->active()
                 ->ordered()
                 ->get();
         } else {
             // If viewing /all/, show leaders from ALL organizations
-            $organizationLeaders = Leader::whereNotNull('organization_id')
+            $organizationLeaders = Leader::with('organization')
+                ->whereNotNull('organization_id')
                 ->active()
                 ->ordered()
                 ->get();
