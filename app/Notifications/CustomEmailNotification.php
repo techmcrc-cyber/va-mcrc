@@ -40,8 +40,12 @@ class CustomEmailNotification extends Notification implements ShouldQueue
         // Process dynamic greeting
         $processedGreeting = $this->processGreeting();
         
+        $replyToAddress = env('MAIL_REPLY_TO_ADDRESS', config('mail.from.address'));
+        $replyToName = env('MAIL_REPLY_TO_NAME', config('mail.from.name'));
+        
         return (new MailMessage)
             ->subject($this->subject)
+            ->replyTo($replyToAddress, $replyToName)
             ->view('emails.custom-notification', [
                 'heading' => $this->heading,
                 'body' => $this->body,
