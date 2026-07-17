@@ -8,6 +8,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
+use Illuminate\Mail\Mailables\Address;
 use Illuminate\Queue\SerializesModels;
 
 class BookingConfirmation extends Mailable
@@ -33,8 +34,14 @@ class BookingConfirmation extends Mailable
      */
     public function envelope(): Envelope
     {
+        $replyToAddress = env('MAIL_REPLY_TO_ADDRESS', config('mail.from.address'));
+        $replyToName = env('MAIL_REPLY_TO_NAME', config('mail.from.name'));
+        
         return new Envelope(
             subject: 'Retreat Booking Confirmation - ' . $this->booking->booking_id,
+            replyTo: [
+                new Address($replyToAddress, $replyToName)
+            ],
         );
     }
 

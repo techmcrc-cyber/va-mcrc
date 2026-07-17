@@ -4,6 +4,9 @@ namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Mailables\Content;
+use Illuminate\Mail\Mailables\Envelope;
+use Illuminate\Mail\Mailables\Address;
 use Illuminate\Queue\SerializesModels;
 
 class SupportTicket extends Mailable
@@ -24,18 +27,31 @@ class SupportTicket extends Mailable
     }
 
     /**
-     * Build the message.
-     *
-     * @return $this
+     * Get the message envelope.
      */
-    public function build()
+    public function envelope(): Envelope
     {
-        $subject = "[Support Ticket] {$this->ticket['subject']}";
+        $replyToAddress = env('MAIL_REPLY_TO_ADDRESS', config('mail.from.address'));
+        $replyToName = env('MAIL_REPLY_TO_NAME', config('mail.from.name'));
         
-        return $this->subject($subject)
-                    ->view('emails.support-ticket')
-                    ->with([
-                        'ticket' => $this->ticket,
-                    ]);
+        return new Envelope(
+            subject: "[Support Ticket] {$this->ticket['subject']}",
+            replyTo: [
+                new Address($replyToAddress, $replyToName)
+            ],
+        );
+    }
+
+    /**
+     * Get the message content definition.
+     */
+    public function content(): Content
+    {
+        return new Content(
+            view: 'emails.support-ticket',
+            with: [
+                'ticket' => $this->ticket,
+            ]
+        );
     }
 }
